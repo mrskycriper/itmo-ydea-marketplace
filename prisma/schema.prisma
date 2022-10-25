@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id
+  name        String    @unique
+  isModerator Boolean   @default(false)
+  isAdmin     Boolean   @default(false)
+  posts       Post[]
+  comments    Comment[]
+  messages    Message[]
+  chats       Chat[]
+  profile     Profile?
+
+  ChatToUser ChatToUser[]
+  @@map("user")
+}
+
+model Profile {
+  id     Int    @id @default(autoincrement())
+  bio    String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  @@map("profile")
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  title     String
+  content   String
+  author    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  userId    String
+  topicId   Int
+
+  @@map("post")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  author    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  postId    Int
+
+  @@map("comment")
+}
+
+model Topic {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  posts       Post[]
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  Int
+
+  @@map("topic")
+}
+
+model Category {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String
+  topics      Topic[]
+
+  @@map("category")
+}
+
+model Chat {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  users       User[]
+  messages    Message[]
+  ChatToUser  ChatToUser[]
+
+  @@map("chat")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  author    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  userId    String
+  chatId    Int
+
+  @@map("message")
+}
+
+model ChatToUser {
+  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@id([chatId, userId])
+}

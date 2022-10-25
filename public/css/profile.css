@@ -1,0 +1,148 @@
+.profile__header-text {
+    margin: 20px 20px 0;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.profile__container {
+    padding: 10px;
+    margin: auto;
+    max-width: 800px;
+}
+
+.profile__card {
+    margin: 10px;
+    padding: 10px;
+    background-color: #156f9c;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile__card-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.profile__card-edit {
+    border: none;
+    background: none;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.profile__card-edit:hover {
+    text-decoration: underline;
+}
+
+.profile__card-from {
+    border: none;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 10px 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.025);
+    background: rgba(75, 79, 81, 0.43);
+}
+
+.profile__card-form-options{
+    display: flex;
+    flex-direction: column;
+}
+
+.profile__card-name {
+    margin: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.profile__card-content {
+    margin: 10px;
+    font-size: 18px;
+    overflow-wrap: anywhere;
+}
+
+.profile__card-from-group {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile__card-from-label {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.profile__card-from-input--checkbox {
+    cursor: pointer;
+}
+
+.profile__card-from-input--text {
+    color: white;
+    font-size: 18px;
+    overflow: visible;
+    border-radius: 5px;
+    background-clip: padding-box;
+    padding: 5px;
+    border: 1px solid #3232321A;
+    background: rgba(75, 79, 81, 0.43);
+    box-sizing: border-box;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.025);
+    outline: none;
+    resize: none;
+    height: 80px;
+    width: 400px;
+}
+
+.profile__card-from-submit {
+    margin-top: 15px;
+    padding: 10px;
+    font-size: 18px;
+    color: white;
+    background-color: #156f9c;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.profile__card-from-submit:hover {
+    box-shadow: none;
+}
+
+.profile__card--danger {
+    margin: 10px;
+    padding: 10px;
+    background-color: crimson;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile__card--danger-container {
+    transition: all 0.2s ease-in-out;
+    border: none;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 10px 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.025);
+    background: rgba(75, 79, 81, 0.43);
+}
+
+.profile__delete-button {
+    padding: 10px;
+    font-size: 18px;
+    color: white;
+    background-color: crimson;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.profile__delete-button:hover {
+    box-shadow: none;
+}

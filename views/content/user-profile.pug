@@ -1,0 +1,48 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/profile.js')
+
+block content
+    p(class='profile__header-text' id='name') #{userName}
+    div(class='profile__container')
+        div(class='profile__card')
+            if admin
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Роль
+                    button(class='profile__card-edit' onclick='showEditRole();') изменить
+            else
+                p(class='profile__card-name') Роль
+            p(class='profile__card-content') #{role}
+            if admin
+                form(id='role-form' style='display: none' class='profile__card-from' onsubmit='editRole("' + userName + '");')
+                    div(class='profile__card-form-options')
+                        div(class='profile__card-from-group')
+                            label(for='isModerator' class='profile__card-from-label') Модератор
+                            input(id='isModerator' type='checkbox' class='profile__card-from-input--checkbox')
+                        div(class='profile__card-from-group')
+                            label(for='isAdmin' class='profile__card-from-label') Администратор
+                            input(id='isAdmin' type='checkbox' class='profile__card-from-input--checkbox')
+                    input(type='submit' value='Обновить' class='profile__card-from-submit')
+        div(class='profile__card')
+            if edit
+                div(class='profile__card-header')
+                    p(class='profile__card-name') О себе
+                    button(class='profile__card-edit' onclick='showEditBio();') изменить
+            else
+                p(class='profile__card-name') О себе
+            p(class='profile__card-content') #{bio}
+            if edit
+                form(id='bio-form' style='display: none' class='profile__card-from' onsubmit='editBio("' + userName + '");')
+                    div(class='profile__card-form-options')
+                        label(for='bio' class='profile__card-from-label') О себе
+                        textarea(id='bio' type='text' class='profile__card-from-input--text' maxlength=1000)= bio
+                    input(type='submit' value='Обновить' class='profile__card-from-submit')
+        if edit
+            div(class='profile__card--danger')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Опасная зона
+                    button(class='profile__card-edit' id='show-danger' onclick='showDelete();') развернуть
+                div(class='profile__card--danger-container' id='danger-container' style='display: none')
+                    button(class='profile__delete-button' id='delete-profile' onclick='handleDeleteUser("' + userName + '");') Удалить аккаунт
+

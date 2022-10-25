@@ -1,0 +1,25 @@
+.footer {
+    background-color: #156f9c;
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    flex-grow: 0;
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.footer__text {
+    color: white;
+    margin: 5px;
+}
+
+.footer__link:any-link {
+    color: white;
+    margin: 5px;
+    text-decoration: none;
+}
+
+.footer__link:hover {
+    color: white;
+    margin: 5px;
+    text-decoration: underline;
+}

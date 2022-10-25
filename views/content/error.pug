@@ -1,0 +1,10 @@
+extends ../template
+
+block title
+    title= response.error + " - OpenForum"
+
+block content
+    div(class="error-card")
+        p(class="error-card__header")= response.statusCode + " " + response.error
+        p(class="error-card__text")= response.message
+

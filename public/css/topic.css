@@ -1,0 +1,23 @@
+.topics-container {
+    max-width: 500px;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.category-header__name {
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+    flex-grow: 0;
+    margin: 0;
+    padding: 20px 20px 10px;
+}
+
+.category-header__settings-link:any-link {
+    padding: 20px 20px 10px;
+    display: flex;
+    width: 24px;
+    height: 24px;
+}

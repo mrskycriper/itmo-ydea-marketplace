@@ -1,0 +1,23 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/chat.js')
+
+block content
+    div(class='chat-main')
+        div(class='chat-header')
+            p(class='chat-header__name') #{chatName}
+            a(class='chat-header__settings-link' href='/chats/'+ chatId+'/settings')
+                img(class='chat-header__settings-icon' src='/images/gear-wide-connected.svg' alt='Настройки')
+        div(class="message-container" id='messages')
+          each val in messages
+              div(class="message-card")
+                  img(src="https://ui-avatars.com/api/?name=" + val.author.name + "&rounded=true&size=32" class="message-card__avatar")
+                  div
+                      div(class="message-card__header")
+                        a(class="message-card__name" href='/users/' + val.author.name)= val.author.name
+                        p(class="message-card__date")= val.createdAt.toLocaleString('ru-RU', { hour: 'numeric', minute: 'numeric', year: 'numeric', month: 'numeric', day: 'numeric' })
+                      p(class="message-card__content")= val.content
+        form(class="message-from" id='post-message')
+            textarea(class='message-from__input' id="message" name="message" placeholder='Введите текст сообщения' required=true maxlength=300)
+            input(class='message-from__submit-button' id='send' type="image" src='/images/send-fill.svg' alt='Отправить')

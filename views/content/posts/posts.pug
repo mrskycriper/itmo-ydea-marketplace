@@ -1,0 +1,42 @@
+extends ../../template
+
+block additionalScripts
+    script(src='/js/post.js')
+
+block content
+    div(class='categories-main')
+        div(class='chat-header')
+            p(class='category-header__name') #{topicName}
+            if(admin)
+                a(class='category-header__settings-link' href='/topics/' + topicId + '/settings')
+                    img(class='chat-header__settings-icon' src='/images/gear-wide-connected.svg' alt='Настройки')
+        div(class="category-navigation-container")
+            if page === 1
+                a(href="#" class="category-navigation-container__navigation-button--disabled") ←
+            else
+                a(href='/topics/' + topicId + '?page=' + (page - 1) class="category-navigation-container__navigation-button") ←
+            if page === pageCount
+                a(href="#" class="category-navigation-container__navigation-button--disabled") →
+            else
+                a(href='/topics/' + topicId + '?page=' + (page + 1) class="category-navigation-container__navigation-button") →
+            p(class="category-navigation-container__page-count") Страница #{page} из #{pageCount}
+            if(edit)
+                button(class="category-navigation-container__create-chat-button" onclick='showCreatePost();') Создать пост
+        if(edit)
+            form(class='create-category-form' id='create-post' style='display: none;' onsubmit='handleCreatePost(' + topicId + ');')
+                div(class='create-category-from__input-group')
+                    label(class='create-category-from__label' for='title') Заголовок
+                    input(class='create-category-from__input' id='title' type='text' required=true minlength=2 maxlength=64)
+                div(class='create-category-from__input-group')
+                    label(class='create-chat-from__label' for='content') Текст
+                    textarea(class='create-category-from__input--textarea' id='content' required=true maxlength=1000)
+                input(class='create-category-from__submit-button' type='submit' value='Опубликовать')
+        div(class="topics-container")
+            if (!empty)
+              each post in posts
+                  div(class="category-card")
+                      div
+                          a(href='/posts/' + post.id +'?page=1' class="category-card__header" )= post.title
+                          p(class="category-card__description")= post.content
+            else
+                p(class='empty-list') Нет доступных постов

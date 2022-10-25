@@ -1,0 +1,49 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/chat.js')
+
+block content
+    div(class='chat-main')
+        div(class='chat-header')
+            a(class='chat-header__link' href='/chats/' + chatId) Вернуться к чату
+        div(class='settings-container')
+            div(class='settings-card')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Название чата
+                    button(class='settings-card__edit' onclick='showEditChat();') изменить
+                p(class='settings-card__content') #{chatName}
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Описание чата
+                p(class='settings-card__content') #{chatDescription}
+                form(id='chat-form' style='display: none' class='settings-card__form' onsubmit='handleEditChat(' + chatId + ');')
+                    div(class='settings-card__form-options')
+                        div(class='settings-card__from-group')
+                            label(for='name' class='settings-card__from-label') Название
+                            input(type='text' id='name' class='settings-card__from-input--text' minlength=2 maxlength=32 required=true value=chatName)
+                        div(class='settings-card__from-group')
+                            label(for='description' class='settings-card__from-label') Описание
+                            textarea(id='description' class='settings-card__from-input--textarea' maxlength=300)= chatDescription
+                    input(type='submit' value='Обновить' class='settings-card__from-submit')
+            div(class='settings-card')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Участники
+                    button(class='settings-card__edit' onclick='showUsers();') развернуть
+                div(id='user-container' style='display: none')
+                    form(id='user-form' class='settings-card__form' onsubmit='handleInviteUser(' + chatId + ');')
+                        div(class='settings-card__form-options')
+                            div(class='settings-card__from-group')
+                                label(for='username' class='settings-card__from-label') Пользователь
+                                input(type='text' id='username' class='settings-card__from-input--text' minlength=2 maxlength=32 required=true)
+                        input(type='submit' value='Пригласить' class='settings-card__from-submit')
+                    div(class="user-container")
+                        each user in users
+                            div(class="user-container__entry")
+                                a(class="user-container__name" href='/users/' + user.name)= user.name
+                                button(class="user-container__delete" onclick='unInviteUser(' + chatId + ', "' + user.name + '"); window.location.reload();') удалить
+            div(class='settings-card--danger')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Опасная зона
+                    button(class='settings-card__edit' onclick='showDeleteChat();') развернуть
+                div(class='profile__card--danger-container' id='danger-container' style='display: none')
+                    button(class='profile__delete-button' id='delete-profile' onclick='handleDeleteChat(' + chatId + ');') Удалить чат

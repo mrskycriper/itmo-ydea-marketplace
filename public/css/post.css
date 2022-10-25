@@ -1,0 +1,101 @@
+.post-card {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #156f9c;
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    margin: 10px auto 10px;
+}
+
+.post-card__title {
+    color: white;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.post-card__content {
+    color: white;
+    margin: 0;
+    font-size: 16px;
+    overflow-wrap: anywhere;
+}
+
+.post-card__footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.post-card__author:any-link {
+    text-decoration: none;
+    color: white;
+}
+
+.post-card__author:hover {
+    text-decoration: underline;
+}
+
+.post-card__date {
+    color: white;
+    margin: 0;
+}
+
+.comment-card {
+    margin: 5px auto;
+    padding: 10px;
+    background: #156f9c;
+    display: flex;
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    width: 100%;
+}
+
+.comment-card__avatar {
+    display: inline-block;
+    height: 48px;
+    width: 48px;
+    padding-right: 10px;
+    flex-grow: 0;
+}
+
+.comment-card__text {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-card__header {
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.comment-card__name:any-link {
+    display: inline-block;
+    margin: 0;
+    font-size: 18px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.comment-card__name:hover {
+    text-decoration: underline;
+}
+
+.comment-card__date {
+    display: inline-block;
+    margin: 0;
+    color: white;
+    padding-left: 10px;
+}
+
+.comment-card__content {
+    margin: 0;
+    font-size: 16px;
+    color: white;
+    overflow-wrap: anywhere;
+}

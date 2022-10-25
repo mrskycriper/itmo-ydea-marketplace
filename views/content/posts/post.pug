@@ -1,0 +1,47 @@
+extends ../../template
+
+block additionalScripts
+    script(src='/js/post.js')
+
+block content
+    div(class='categories-main')
+        div(class='chat-header')
+            if(edit)
+                a(class='category-header__settings-link' href='/posts/' + postId + '/settings')
+                    img(class='chat-header__settings-icon' src='/images/gear-wide-connected.svg' alt='Настройки')
+        div(class='post-card')
+            p(class='post-card__title')= postTitle
+            p(class='post-card__content')= postContent
+            div(class='post-card__footer')
+                a(class='post-card__author' href='/users/' + authorName)= authorName
+                p(class='post-card__date')= createdAt.toLocaleString('ru-RU', {hour: 'numeric',minute: 'numeric',year: 'numeric',month: 'numeric',day: 'numeric'})
+        div(class="category-navigation-container")
+            if page === 1
+                a(href="#" class="category-navigation-container__navigation-button--disabled") ←
+            else
+                a(href='/posts/' + postId + '?page=' + (page - 1) class="category-navigation-container__navigation-button") ←
+            if page === pageCount
+                a(href="#" class="category-navigation-container__navigation-button--disabled") →
+            else
+                a(href='/posts/' + postId + '?page=' + (page + 1) class="category-navigation-container__navigation-button") →
+            p(class="category-navigation-container__page-count") Страница #{page} из #{pageCount}
+            if(post)
+                button(class="category-navigation-container__create-chat-button" onclick='showCreateComment();') Добавить комментарий
+        if(post)
+            form(class='create-category-form' id='create-comment' style='display: none;' onsubmit='handleCreateComment(' + postId + ');')
+                div(class='create-category-from__input-group')
+                    label(class='create-chat-from__label' for='content') Текст
+                    textarea(class='create-category-from__input--textarea' id='content' required=true maxlength=300)
+                input(class='create-category-from__submit-button' type='submit' value='Отправить')
+        div(class="topics-container")
+            if (!empty)
+              each comment in comments
+                  div(class="comment-card")
+                      img(src="https://ui-avatars.com/api/?name=" + comment.author.name + "&rounded=true&size=48" class="comment-card__avatar")
+                      div(class='comment-card__text')
+                          div(class="comment-card__header")
+                              a(class="comment-card__name" href='/users/' + comment.author.name)= comment.author.name
+                              p(class="comment-card__date")= comment.createdAt.toLocaleString('ru-RU', {hour: 'numeric',minute: 'numeric',year: 'numeric',month: 'numeric',day: 'numeric'})
+                          p(class='comment-card__content')= comment.content
+            else
+                p(class='empty-list') Нет комментариев

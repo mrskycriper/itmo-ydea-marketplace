@@ -1,0 +1,10 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/pageLoadTime.js')
+
+block content
+    p(class='main-text') Добро пожаловать на OpenForum. У нас нет особых правил, но администрация оставляет за собой право блокировать пользователей и уадлять посты без объяснения причин. Кибербуллинг запрещен.
+
+block footer
+    include ../partials/footer-timer

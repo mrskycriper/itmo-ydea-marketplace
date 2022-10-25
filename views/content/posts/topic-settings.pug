@@ -1,0 +1,33 @@
+extends ../../template
+
+block additionalScripts
+    script(src='/js/topic.js')
+
+block content
+    div(class='chat-main')
+        div(class='chat-header')
+            a(class='chat-header__link' href='/topics/' + topicId +'?page=1') Вернуться к топику
+        div(class='settings-container')
+            div(class='settings-card')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Название топика
+                    button(class='settings-card__edit' onclick='showEditTopic();') изменить
+                p(class='settings-card__content') #{topicName}
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Описание топика
+                p(class='settings-card__content') #{topicDescription}
+                form(id='topic-form' style='display: none' class='settings-card__form' onsubmit='handleEditTopic(' + topicId + ');')
+                    div(class='settings-card__form-options')
+                        div(class='settings-card__from-group')
+                            label(for='name' class='settings-card__from-label') Название
+                            input(type='text' id='name' class='settings-card__from-input--text' minlength=2 maxlength=32 required=true value=topicName)
+                        div(class='settings-card__from-group')
+                            label(for='description' class='settings-card__from-label') Описание
+                            textarea(id='description' class='settings-card__from-input--textarea' maxlength=300)= topicDescription
+                    input(type='submit' value='Обновить' class='settings-card__from-submit')
+            div(class='settings-card--danger')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Опасная зона
+                    button(class='settings-card__edit' onclick='showDeleteTopic();') развернуть
+                div(class='profile__card--danger-container' id='danger-container' style='display: none')
+                    button(class='profile__delete-button' id='delete-profile' onclick='handleDeleteTopic(' + topicId + ');') Удалить топик

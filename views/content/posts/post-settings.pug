@@ -1,0 +1,33 @@
+extends ../../template
+
+block additionalScripts
+    script(src='/js/post.js')
+
+block content
+    div(class='chat-main')
+        div(class='chat-header')
+            a(class='chat-header__link' href='/posts/' + postId +'?page=1') Вернуться к посту
+        div(class='settings-container')
+            div(class='settings-card')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Заголовок поста
+                    button(class='settings-card__edit' onclick='showEditPost();') изменить
+                p(class='settings-card__content')= postTitle
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Текст поста
+                p(class='settings-card__content')= postContent
+                form(id='post-form' style='display: none' class='settings-card__form' onsubmit='handleEditPost(' + postId + ');')
+                    div(class='settings-card__form-options')
+                        div(class='settings-card__from-group')
+                            label(for='title' class='settings-card__from-label') Заголовок
+                            input(type='text' id='title' class='settings-card__from-input--text' minlength=2 maxlength=64 required=true value=postTitle)
+                        div(class='settings-card__from-group')
+                            label(for='content' class='settings-card__from-label') Текст
+                            textarea(id='content' class='settings-card__from-input--textarea' required=true maxlength=1000)= postContent
+                    input(type='submit' value='Обновить' class='settings-card__from-submit')
+            div(class='settings-card--danger')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Опасная зона
+                    button(class='settings-card__edit' onclick='showDeletePost();') развернуть
+                div(class='profile__card--danger-container' id='danger-container' style='display: none')
+                    button(class='profile__delete-button' onclick='handleDeletePost(' + postId + ');') Удалить пост

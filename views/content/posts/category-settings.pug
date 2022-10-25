@@ -1,0 +1,33 @@
+extends ../../template
+
+block additionalScripts
+    script(src='/js/category.js')
+
+block content
+    div(class='chat-main')
+        div(class='chat-header')
+            a(class='chat-header__link' href='/categories/' + categoryId +'?page=1') Вернуться к категории
+        div(class='settings-container')
+            div(class='settings-card')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Название категории
+                    button(class='settings-card__edit' onclick='showEditCategory();') изменить
+                p(class='settings-card__content') #{categoryName}
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Описание категории
+                p(class='settings-card__content') #{categoryDescription}
+                form(id='category-form' style='display: none' class='settings-card__form' onsubmit='handleEditCategory(' + categoryId + ');')
+                    div(class='settings-card__form-options')
+                        div(class='settings-card__from-group')
+                            label(for='name' class='settings-card__from-label') Название
+                            input(type='text' id='name' class='settings-card__from-input--text' minlength=2 maxlength=32 required=true value=categoryName)
+                        div(class='settings-card__from-group')
+                            label(for='description' class='settings-card__from-label') Описание
+                            textarea(id='description' class='settings-card__from-input--textarea' maxlength=300)= categoryDescription
+                    input(type='submit' value='Обновить' class='settings-card__from-submit')
+            div(class='settings-card--danger')
+                div(class='settings-card__header')
+                    p(class='settings-card__name') Опасная зона
+                    button(class='settings-card__edit' onclick='showDeleteCategory();') развернуть
+                div(class='profile__card--danger-container' id='danger-container' style='display: none')
+                    button(class='profile__delete-button' id='delete-profile' onclick='handleDeleteCategory(' + categoryId + ');') Удалить категорию

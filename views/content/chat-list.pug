@@ -1,0 +1,34 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/chatList.js')
+
+block content
+    div(class='chat-list-main')
+        div(class="chat-navigation-container")
+            if page === 1
+                a(href="#" class="chat-navigation-container__navigation-button--disabled") ←
+            else
+                a(href="/chats?page=" + (page - 1) class="chat-navigation-container__navigation-button") ←
+            if page === pageCount
+                a(href="#" class="chat-navigation-container__navigation-button--disabled") →
+            else
+                a(href="/chats?page=" + (page + 1) class="chat-navigation-container__navigation-button") →
+            p(class="chat-navigation-container__page-count") Страница #{page} из #{pageCount}
+            button(class="chat-navigation-container__create-chat-button" onclick='showCreateChat();') Создать чат
+        form(class='create-chat-form' id='create-chat' style='display: none;')
+            div(class='create-chat-from__input-group')
+                label(class='create-chat-from__label' for='name') Название
+                input(class='create-chat-from__input' id='name' type='text' required=true minlength=2 maxlength=32)
+            div(class='create-chat-from__input-group')
+                label(class='create-chat-from__label' for='description') Описание
+                textarea(class='create-chat-from__input--textarea' id='description' maxlength=300)
+            input(class='create-chat-from__submit-button' type='submit' value='Создать')
+        div(class="chat-container")
+            if (!empty)
+              each val in chatData
+                  div(class="chat-card")
+                      a(href="/chats/" + val.id class="chat-card__header" )= val.name
+                      p(class="chat-card__description")= val.description
+            else
+                p(class='empty-list') Вы не состоите ни в одном чате

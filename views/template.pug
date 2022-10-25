@@ -1,0 +1,27 @@
+doctype html
+html(lang="ru")
+    head
+        meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+        link(rel='icon' href='/favicon.ico')
+        block title
+            title= title
+        block style
+            include styles
+        block scripts
+            script(src='https://cdn.jsdelivr.net/gh/supertokens/supertokens-website/bundle/bundle.js')
+            script(src='https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js')
+            script(src='https://unpkg.com/axios/dist/axios.min.js')
+            script(src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous")
+            script(src='/js/supertokens.js')
+            script(src='/js/api.js')
+        block additionalScripts
+
+        body
+            block body
+                header
+                    include partials/header
+                main
+                    block content
+                footer
+                    block footer
+                        include partials/footer
