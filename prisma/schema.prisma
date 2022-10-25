@@ -7,107 +7,170 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
 }
 
 model User {
-  id          String    @id
-  name        String    @unique
-  isModerator Boolean   @default(false)
-  isAdmin     Boolean   @default(false)
-  posts       Post[]
-  comments    Comment[]
-  messages    Message[]
-  chats       Chat[]
-  profile     Profile?
+  id String @id
+  name String @unique
+  is_moderator Boolean @default(false)
+  is_admin Boolean @default(false)
+  is_support Boolean @default(false)
+  is_seller Boolean @default(false)
+  posts Post[]
+  comments Comment[]
+  messages Message[]
+  chats Chat[]
 
   ChatToUser ChatToUser[]
   @@map("user")
 }
 
-model Profile {
-  id     Int    @id @default(autoincrement())
-  bio    String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique
-
-  @@map("profile")
-}
-
 model Post {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  title     String
-  content   String
-  author    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  comments  Comment[]
-  userId    String
-  topicId   Int
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+  title String
+  content String
+  author User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  topic Topic @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  comments comment[]
+  user_id String
+  topic_id Int
 
   @@map("post")
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-  author    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  userId    String
-  postId    Int
+  id Int @id @default(autoincrement())
+  content String
+  created_at DateTime @default(now())
+  author User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user_id String
+  post_id Int
 
   @@map("comment")
 }
 
 model Topic {
-  id          Int      @id @default(autoincrement())
-  name        String
+  id Int @id @default(autoincrement())
+  name String
   description String
-  posts       Post[]
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId  Int
+  posts Post[]
+  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id Int
 
   @@map("topic")
 }
 
 model Category {
-  id          Int     @id @default(autoincrement())
-  name        String
+  id Int @id @default(autoincrement())
+  name String
   description String
-  topics      Topic[]
+  topics Topic[]
 
   @@map("category")
 }
 
 model Chat {
-  id          Int          @id @default(autoincrement())
-  name        String
+  id Int @id @default(autoincrement())
+  name String
   description String
-  users       User[]
-  messages    Message[]
-  ChatToUser  ChatToUser[]
+  users User[]
+  messages Message[]
+  chat_to_user ChatToUser[]
 
   @@map("chat")
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
-  content   String
+  id Int @id @default(autoincrement())
+  content String
   createdAt DateTime @default(now())
-  author    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  userId    String
-  chatId    Int
+  author User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  chat Chat @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  user_id String
+  chat_id Int
 
   @@map("message")
 }
 
 model ChatToUser {
-  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  chatId Int
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  chat Chat @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  chat_id Int
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
 
   @@id([chatId, userId])
+  @@map("chat_to_user")
 }
+
+model Seller {
+  id String @id @default(autoincrement())
+  description String
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+
+  @@map("seller")
+}
+
+model Product {
+  id String @id @default(autoincrement())
+  description String
+  price Decimal @db.Money
+  number Int
+  number_booked Int
+  rating_average Float
+  seller Seller @relation(fields: [seller_id], references: [id], onDelete: Cascade)
+  seller_id String
+
+  @@map("product")
+}
+
+model Review {
+  id String @id
+  rating Int
+  text String
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id String
+
+  @@map("review")
+}
+
+model Photo {
+  id String @id
+  photo_url String
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id String
+
+  @@map("photo")
+}
+
+model ProductsInOrder {
+  id String @id
+  number Int
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id String
+  order Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id String
+
+  @@map("products_in_order")
+}
+
+model Order {
+  id String @id
+  start_timestamp DateTime
+  status String
+  sum Decimal @db.Money
+  times_booked Int
+  timeslot_start DateTime
+  itmeslot_end DateTime
+  address String
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+
+  @@map("order")
+}
+
