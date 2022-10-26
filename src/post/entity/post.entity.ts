@@ -8,7 +8,7 @@ export class PostEntity {
     example: '15 august 1984',
     description: 'When post was created',
   })
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty({ example: 'My first post here', description: 'Post title' })
   title: string;
@@ -20,11 +20,11 @@ export class PostEntity {
   content: string;
 
   @ApiProperty({ example: '3421', description: 'Author id' })
-  userId: number;
+  user_id: number;
 
   @ApiProperty({
     example: '3421',
     description: 'Unique topic id this post is attached to',
   })
-  topicId: number;
+  topic_id: number;
 }

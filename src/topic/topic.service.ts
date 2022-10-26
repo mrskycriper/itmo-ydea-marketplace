@@ -41,14 +41,14 @@ export class TopicService {
     const posts = await prisma.post.findMany({
       skip: (page - 1) * take,
       take: take,
-      where: { topicId: topicId },
+      where: { topic_id: topicId },
     });
     let empty = true;
     if (Object.keys(posts).length != 0) {
       empty = false;
     }
     const postsAll = await prisma.post.findMany({
-      where: { topicId: topicId },
+      where: { topic_id: topicId },
     });
 
     let pageCount = Math.ceil(postsAll.length / take);

@@ -14,14 +14,14 @@ export class CommentEntity {
     example: '15 august 1984',
     description: 'When comment was created',
   })
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty({ example: '3421', description: 'Author id' })
-  userId: number;
+  user_id: number;
 
   @ApiProperty({
     example: '3421',
     description: 'Unique post id this comment is referring to',
   })
-  postId: number;
+  post_id: number;
 }

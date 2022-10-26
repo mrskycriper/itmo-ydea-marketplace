@@ -12,7 +12,7 @@ import prisma from '../client';
 export class PostService {
   async createPost(createPostDto: CreatePostDto): Promise<object> {
     const topic = await prisma.topic.findUnique({
-      where: { id: createPostDto.topicId },
+      where: { id: createPostDto.topic_id },
     });
     if (topic == null) {
       throw new NotFoundException('Topic not found');
@@ -54,7 +54,7 @@ export class PostService {
     if (userId != null) {
       user = await prisma.user.findUnique({ where: { id: userId } });
       canPost = true;
-      if (post.userId == user.id || user.isAdmin || user.isModerator) {
+      if (post.user_id == user.id || user.is_admin || user.is_moderator) {
         edit = true;
       }
     }
@@ -62,8 +62,8 @@ export class PostService {
     const comments = await prisma.comment.findMany({
       skip: (page - 1) * take,
       take: take,
-      orderBy: { createdAt: 'asc' },
-      where: { postId: postId },
+      orderBy: { created_at: 'asc' },
+      where: { post_id: postId },
       include: {
         author: true,
       },
@@ -73,7 +73,7 @@ export class PostService {
       empty = false;
     }
     const commentsAll = await prisma.comment.findMany({
-      where: { postId: postId },
+      where: { post_id: postId },
     });
 
     let pageCount = Math.ceil(commentsAll.length / take);
@@ -84,12 +84,14 @@ export class PostService {
       throw new BadRequestException('Invalid page number');
     }
 
-    const author = await prisma.user.findUnique({ where: { id: post.userId } });
+    const author = await prisma.user.findUnique({
+      where: { id: post.user_id },
+    });
     return {
       title: post.title + ' - OpenForum',
       postTitle: post.title,
       postContent: post.content,
-      createdAt: post.createdAt,
+      createdAt: post.created_at,
       authorName: author.name,
       comments: comments,
       postId: postId,
@@ -103,7 +105,7 @@ export class PostService {
 
   async createComment(createCommentDto: CreateCommentDto) {
     const post = await prisma.post.findUnique({
-      where: { id: createCommentDto.postId },
+      where: { id: createCommentDto.post_id },
     });
     if (post == null) {
       throw new NotFoundException('Post not found');

@@ -25,13 +25,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { UpdateBioDto } from './dto/update.bio.dto';
-import { SessionDecorator } from '../auth/session.decorator';
-import { SessionContainer } from 'supertokens-node/recipe/session';
 import { CheckUsernameDto } from './dto/check.username.dto';
 import { EditRoleDto } from './dto/edit.role.dto';
 import { DeleteUserGuard } from '../auth/guards/delete.user.guard';
-import { UpdateBioGuard } from '../auth/guards/update.bio.guard';
 import { UpdateRoleGuard } from '../auth/guards/update.role.guard';
 
 @ApiTags('user')
@@ -59,27 +55,6 @@ export class UserController {
     return await this.usersService.createUser(createUserDto);
   }
 
-  @ApiOperation({ summary: 'Get user profile' })
-  @ApiParam({
-    name: 'userName',
-    type: 'string',
-    description: 'Unique user name',
-  })
-  @ApiOkResponse({ description: 'OK' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  @Get('users/:userName')
-  @Render('user-profile')
-  async getUserProfile(
-    @SessionDecorator() session: SessionContainer,
-    @Param('userName') userName: string,
-  ): Promise<object> {
-    let userId = null;
-    try {
-      userId = session.getUserId();
-    } catch (err) {}
-    return await this.usersService.getUserProfile(userId, userName);
-  }
-
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Change user role flags' })
   @ApiParam({
@@ -100,28 +75,6 @@ export class UserController {
     @Body() editRoleDto: EditRoleDto,
   ) {
     return await this.usersService.updateRole(userName, editRoleDto);
-  }
-
-  @ApiCookieAuth()
-  @ApiOperation({ summary: 'Update user biography' })
-  @ApiParam({
-    name: 'userName',
-    type: 'string',
-    description: 'Unique user name',
-  })
-  @ApiBody({ type: UpdateBioDto })
-  @ApiOkResponse({ description: 'OK' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiForbiddenResponse({ description: 'Forbidden' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(UpdateBioGuard)
-  @Put('users/:userName/bio')
-  async updateBio(
-    @Param('userName') userName: string,
-    @Body() updateBioDto: UpdateBioDto,
-  ) {
-    return await this.usersService.updateBio(userName, updateBioDto);
   }
 
   @ApiCookieAuth()

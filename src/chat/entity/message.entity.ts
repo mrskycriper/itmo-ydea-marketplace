@@ -8,11 +8,11 @@ export class MessageEntity {
   content: string;
 
   @ApiProperty({ example: '15 august 1984', description: 'Chat description' })
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty({ example: '3421', description: 'Author id' })
-  userId: number;
+  user_id: number;
 
   @ApiProperty({ example: '3421', description: 'Chat id' })
-  chatId: number;
+  chat_id: number;
 }

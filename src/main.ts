@@ -9,7 +9,6 @@ import { CreateUserDto } from './user/dto/create.user.dto';
 import { CreateMessageDto } from './chat/dto/create.message.dto';
 import { CreateChatDto } from './chat/dto/create.chat.dto';
 import { EditChatDto } from './chat/dto/edit.chat.dto';
-import { UpdateBioDto } from './user/dto/update.bio.dto';
 import { CreateCategoryDto } from './category/dto/create.category.dto';
 import { CreateTopicDto } from './topic/dto/create.topic.dto';
 import { CreatePostDto } from './post/dto/create.post.dto';
@@ -50,7 +49,6 @@ async function bootstrap() {
       CheckUsernameDto,
       CreateUserDto,
       EditRoleDto,
-      UpdateBioDto,
       CreateChatDto,
       CreateMessageDto,
       EditChatDto,

@@ -39,7 +39,7 @@ export class DeletePostGuard implements CanActivate {
 
     const userId = session.getUserId();
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user.isAdmin && !user.isModerator && post.userId != userId) {
+    if (!user.is_admin && !user.is_moderator && post.user_id != userId) {
       throw new ForbiddenException('Forbidden operation');
     }
 

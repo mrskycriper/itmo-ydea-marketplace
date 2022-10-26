@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumberString, MaxLength } from 'class-validator';
 
 export class ReceiveMessageDto {
@@ -7,8 +6,8 @@ export class ReceiveMessageDto {
   readonly content: string;
 
   @IsNumberString()
-  readonly chatId: number;
+  readonly chat_id: number;
 
   @IsNotEmpty()
-  readonly userId: string;
+  readonly user_id: string;
 }

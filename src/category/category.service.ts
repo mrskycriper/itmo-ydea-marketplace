@@ -115,7 +115,7 @@ export class CategoryService {
     const topics = await prisma.topic.findMany({
       skip: (page - 1) * take,
       take: take,
-      where: { categoryId: categoryId },
+      where: { category_id: categoryId },
     });
     let empty = true;
     if (Object.keys(topics).length != 0) {
@@ -123,7 +123,7 @@ export class CategoryService {
     }
 
     const topicsAll = await prisma.topic.findMany({
-      where: { categoryId: categoryId },
+      where: { category_id: categoryId },
     });
 
     let pageCount = Math.ceil(topicsAll.length / take);
