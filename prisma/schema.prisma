@@ -118,11 +118,11 @@ model Seller {
 
 model Product {
   id                Int               @id @default(autoincrement())
-  description       String
+  description       String?
   price             Decimal           @db.Money
   number            Int
-  number_booked     Int
-  rating_average    Float
+  number_booked     Int               @default(0)
+  rating_average    Float             @default(0)
   seller            Seller            @relation(fields: [seller_id], references: [id], onDelete: Cascade)
   seller_id         Int
   review            Review[]
@@ -167,12 +167,12 @@ model ProductsInOrder {
 model Order {
   id                String            @id
   start_timestamp   DateTime
-  status            String
-  sum               Decimal           @db.Money
-  times_booked      Int
-  timeslot_start    DateTime
-  itmeslot_end      DateTime
-  address           String
+  status            String            @default("COLLECTING")
+  sum               Decimal           @db.Money @default(0)
+  times_booked      Int               @default(0)
+  timeslot_start    DateTime?
+  itmeslot_end      DateTime?
+  address           String?
   user              User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id           String
   products_in_order ProductsInOrder[]

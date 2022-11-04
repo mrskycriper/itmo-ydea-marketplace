@@ -11,7 +11,7 @@ import prisma from '../client';
 export class OrderService {
   async createOrder(createOrderDto: CreateOrderDto): Promise<object> {
     const user = await prisma.user.findUnique({
-      where: { id: createOrderDto.userId },
+      where: { id: createOrderDto.user_id },
     });
     if (user == null) {
       throw new NotFoundException('User not found');
@@ -34,29 +34,29 @@ export class OrderService {
     createProductsInOrderDto: CreateProductsInOrderDto,
   ): Promise<object> {
     const product = await prisma.product.findUnique({
-      where: { id: createProductsInOrderDto.productId },
+      where: { id: createProductsInOrderDto.product_id },
     });
     if (product == null) {
       throw new NotFoundException('Product not found');
     }
     const orderForProducts = await prisma.order.findUnique({
-      where: { id: createProductsInOrderDto.orderId },
+      where: { id: createProductsInOrderDto.order_id },
     });
     if (orderForProducts == null) {
       throw new NotFoundException('Order not found');
     }
-    const productsinorder = await prisma.productsinorder.create({
+    const productsinorder = await prisma.productsInOrder.create({
       data: createProductsInOrderDto,
     });
     return { productsinorderId: productsinorder.id };
   }
 
   async deleteProductsInOrder(productsinorderId: string) {
-    await prisma.productsinorder.delete({ where: { id: productsinorderId } });
+    await prisma.productsInOrder.delete({ where: { id: productsinorderId } });
   }
 
   async getProductsInOrder(productsinorderId: string) {
-    return await prisma.productsinorder.findUnique({
+    return await prisma.productsInOrder.findUnique({
       where: { id: productsinorderId },
     });
   }

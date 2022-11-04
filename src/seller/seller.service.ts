@@ -10,7 +10,7 @@ import prisma from '../client';
 export class SellerService {
   async createSeller(createSellerDto: CreateSellerDto): Promise<object> {
     const user = await prisma.user.findUnique({
-      where: { id: createSellerDto.userId },
+      where: { id: createSellerDto.user_id },
     });
     if (user == null) {
       throw new NotFoundException('User not found');

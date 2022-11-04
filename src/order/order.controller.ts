@@ -50,7 +50,7 @@ export class OrderController {
     @SessionDecorator() session: SessionContainer,
     @Body() createOrderDto: CreateOrderDto,
   ): Promise<object> {
-    if (session.getUserId() != createOrderDto.userId) {
+    if (session.getUserId() != createOrderDto.user_id) {
       throw new BadRequestException('userIds does not match');
     }
     return await this.orderService.createOrder(createOrderDto);

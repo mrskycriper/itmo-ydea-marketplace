@@ -12,7 +12,7 @@ import { CreatePhotoDto } from './dto/create.photo.dto';
 export class ProductService {
   async createProduct(createProductDto: CreateProductDto): Promise<object> {
     const seller = await prisma.seller.findUnique({
-      where: { id: createProductDto.sellerId },
+      where: { id: createProductDto.seller_id },
     });
     if (seller == null) {
       throw new NotFoundException('Seller not found');
@@ -33,7 +33,7 @@ export class ProductService {
 
   async createReview(createReviewDto: CreateReviewDto) {
     const product = await prisma.product.findUnique({
-      where: { id: createReviewDto.productId },
+      where: { id: createReviewDto.product_id },
     });
     if (product == null) {
       throw new NotFoundException('Product not found');
@@ -51,7 +51,7 @@ export class ProductService {
 
   async createPhoto(createPhotoDto: CreatePhotoDto) {
     const product = await prisma.product.findUnique({
-      where: { id: createPhotoDto.productId },
+      where: { id: createPhotoDto.product_id },
     });
     if (product == null) {
       throw new NotFoundException('Product not found');

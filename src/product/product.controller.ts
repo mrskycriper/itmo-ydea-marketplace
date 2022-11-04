@@ -107,7 +107,7 @@ export class ProductController {
     @SessionDecorator() session: SessionContainer,
     @Body() createReviewDto: CreateReviewDto,
   ) {
-    if (session.getUserId() != createReviewDto.userId) {
+    if (session.getUserId() != createReviewDto.user_id) {
       throw new BadRequestException('userIds does not match');
     }
     return await this.productService.createReview(createReviewDto);
