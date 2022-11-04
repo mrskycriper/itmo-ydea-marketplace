@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id           String       @id
+  id           String       @id @db.Uuid @default(uuid())
   name         String       @unique
   is_moderator Boolean      @default(false)
   is_admin     Boolean      @default(false)
@@ -133,7 +133,7 @@ model Product {
 }
 
 model Review {
-  id         String  @id
+  id         String  @id @db.Uuid @default(uuid())
   rating     Int
   text       String
   user       User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -145,7 +145,7 @@ model Review {
 }
 
 model Photo {
-  id         String  @id
+  id         String  @id @db.Uuid @default(uuid())
   photo_url  String
   product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id Int
@@ -154,7 +154,7 @@ model Photo {
 }
 
 model ProductsInOrder {
-  id         String  @id
+  id         String  @id @db.Uuid @default(uuid())
   number     Int
   product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id Int
@@ -165,7 +165,7 @@ model ProductsInOrder {
 }
 
 model Order {
-  id                String            @id
+  id                String            @id @db.Uuid @default(uuid())
   start_timestamp   DateTime
   status            String            @default("COLLECTING")
   sum               Decimal           @db.Money @default(0)

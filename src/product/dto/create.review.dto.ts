@@ -9,12 +9,6 @@ import {
 } from 'class-validator';
 
 export class CreateReviewDto {
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'c7a18e82-6741-4b29-bd58-26a84c5e2088',
-    description: 'Unique review id',
-  })
-  readonly id: string;
 
   @IsAlphanumeric()
   @MaxLength(500)

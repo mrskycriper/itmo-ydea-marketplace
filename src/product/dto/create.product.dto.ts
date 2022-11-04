@@ -42,7 +42,5 @@ export class CreateProductDto {
      })
     readonly seller_id: number;
 
-
-
   }
   
