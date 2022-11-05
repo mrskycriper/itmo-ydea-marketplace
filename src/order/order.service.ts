@@ -16,8 +16,9 @@ export class OrderService {
     if (user == null) {
       throw new NotFoundException('User not found');
     }
+    const date = new Date(createOrderDto.start_timestamp);
     const order = await prisma.order.create({
-      data: createOrderDto,
+      data: { start_timestamp: date, user_id: createOrderDto.user_id },
     });
     return { orderId: order.id };
   }

@@ -50,9 +50,9 @@ export class OrderController {
     @SessionDecorator() session: SessionContainer,
     @Body() createOrderDto: CreateOrderDto,
   ): Promise<object> {
-    if (session.getUserId() != createOrderDto.user_id) {
-      throw new BadRequestException('userIds does not match');
-    }
+    // if (session.getUserId() != createOrderDto.user_id) {
+    //   throw new BadRequestException('userIds does not match');
+    // }
     return await this.orderService.createOrder(createOrderDto);
   }
 
@@ -85,7 +85,7 @@ export class OrderController {
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Create new product in order' })
-  @ApiBody({ type: CreateOrderDto })
+  @ApiBody({ type: CreateProductsInOrderDto })
   @ApiCreatedResponse({ description: 'Created' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

@@ -49,9 +49,9 @@ export class SellerController {
     @SessionDecorator() session: SessionContainer,
     @Body() createSellerDto: CreateSellerDto,
   ): Promise<object> {
-    if (session.getUserId() != createSellerDto.user_id) {
-      throw new BadRequestException('userIds does not match');
-    }
+    // if (session.getUserId() != createSellerDto.user_id) {
+    //   throw new BadRequestException('userIds does not match');
+    // }
     return await this.sellerService.createSeller(createSellerDto);
   }
 

@@ -9,10 +9,6 @@ import {
 } from 'class-validator';
 
 export class CreateReviewDto {
-
-  @IsAlphanumeric()
-  @MaxLength(500)
-  @MinLength(3)
   @ApiProperty({
     example: 'review text',
     description: 'Text of the review',
@@ -20,7 +16,6 @@ export class CreateReviewDto {
   readonly text: string;
 
   @IsNotEmpty()
-  @IsAlphanumeric()
   @Min(0)
   @Max(5)
   @ApiProperty({
@@ -28,14 +23,6 @@ export class CreateReviewDto {
     description: 'Review rating',
   })
   readonly rating: number;
-
-  @IsNotEmpty()
-  @IsAlphanumeric()
-  @ApiProperty({
-    example: '10',
-    description: 'Product quantity',
-  })
-  readonly number: number;
 
   @IsNotEmpty()
   @ApiProperty({

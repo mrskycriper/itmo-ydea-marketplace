@@ -2,14 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNotEmpty,
+  IsUrl,
   MaxLength,
   MinLength,
 } from 'class-validator';
 
 export class CreatePhotoDto {
-  @IsAlphanumeric()
-  @MaxLength(50)
-  @MinLength(15)
+  @IsNotEmpty()
+  @IsUrl()
   @ApiProperty({
     example: 'https://smthsmth.com',
     description: 'Link to the photo',

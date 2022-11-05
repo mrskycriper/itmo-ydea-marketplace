@@ -3,7 +3,6 @@ import { IsAlphanumeric, IsNotEmpty } from 'class-validator';
 
 export class CreateProductsInOrderDto {
   @IsNotEmpty()
-  @IsAlphanumeric()
   @ApiProperty({
     example: '10',
     description: 'Quantity of the product',
