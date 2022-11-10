@@ -32,6 +32,8 @@ import { SessionDecorator } from '../auth/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { CreateProductsinorderDto } from './dto/create.productsinorder.dto';
+import { SetTimeSlotDto } from './dto/set.timeslot.dto';
+import { SetAddressDto } from './dto/set.address.dto';
 
 @ApiTags('order')
 @Controller()
@@ -54,7 +56,7 @@ export class OrderController {
     // if (session.getUserId() != createOrderDto.user_id) {
     //   throw new BadRequestException('userIds does not match');
     // }
-    // TODO Авторизация
+    // TODO Guard
     return await this.orderService.createOrder(createOrderDto);
   }
 
@@ -73,10 +75,10 @@ export class OrderController {
     @Body() createProductsInOrderDto: CreateProductsinorderDto,
     @Param('orderId', ParseIntPipe) orderId: number,
   ): Promise<object> {
-    /*if (session.getUserId() != createProductsInOrderDto.userId) {
+    /*if (session.getUserId() != order.userId) {
       throw new BadRequestException('userIds does not match');
     } check if the order belongs to the user?*/
-    // TODO Авторизация
+    // TODO Guard
     return await this.orderService.createProductsInOrder(
       createProductsInOrderDto,
     );
@@ -94,13 +96,14 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Delete('orders/:orderId/products/:productsinorderId')
   async removeProductFromOrder(
     @SessionDecorator() session: SessionContainer,
     @Param('productsinorderId') productsinorderId: string,
     @Param('orderId', ParseIntPipe) orderId: number,
   ) {
-    // TODO Авторизация
+    // TODO Guard
     return await this.orderService.removeProductFromOrder(productsinorderId);
   }
 
@@ -112,12 +115,13 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Delete('orders/:orderId')
   async deleteOrder(
     @SessionDecorator() session: SessionContainer,
     @Param('orderId', ParseIntPipe) orderId: number,
   ) {
-    // TODO Авторизация
+    // TODO Guard
     return await this.orderService.deleteOrder(orderId);
   }
 
@@ -127,11 +131,11 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Get('cart')
   @Render('cart') // TODO вид корзины
   async getShoppingCart(@SessionDecorator() session: SessionContainer) {
-    // TODO Авторизация и извлечение id
-    return await this.orderService.getShoppingCart();
+    return await this.orderService.getShoppingCart(session.getUserId());
   }
 
   @ApiCookieAuth()
@@ -140,11 +144,11 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Get('orders')
   @Render('orders') // TODO вид списка заказов
   async getOrders(@SessionDecorator() session: SessionContainer) {
-    // TODO Авторизация и извлечение id
-    return await this.orderService.getOrders();
+    return await this.orderService.getOrders(session.getUserId());
   }
 
   @ApiCookieAuth()
@@ -153,13 +157,13 @@ export class OrderController {
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Get('orders/:orderId')
   @Render('order') // TODO вид заказа
   async getOrder(
     @SessionDecorator() session: SessionContainer,
     @Param('orderId', ParseIntPipe) orderId: number,
   ): Promise<object> {
-    // TODO Авторизация
     return await this.orderService.getOrder(orderId);
   }
 
@@ -172,28 +176,37 @@ export class OrderController {
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Set timeslot' })
+  @ApiBody({ type: SetTimeSlotDto })
   @ApiParam({ name: 'orderId', type: 'string', description: 'Unique order id' })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Post('order/:orderId/timeslot')
-  async setTimeslot() {
-    // TODO Авторизация
-    return await this.orderService.setTimeslot();
+  async setTimeslot(
+    @Body() setTimeSlotDto: SetTimeSlotDto,
+    @Param('orderId', ParseIntPipe) orderId: number) {
+    // TODO Guard
+    return await this.orderService.setTimeslot(orderId, setTimeSlotDto);
   }
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Set address' })
+  @ApiBody({ type: SetAddressDto })
   @ApiParam({ name: 'orderId', type: 'string', description: 'Unique order id' })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Post('order/:orderId/address')
-  async setAddress() {
-    // TODO Авторизация
-    return await this.orderService.setAddress();
+  async setAddress(
+    @Body() setAddressDto: SetAddressDto,
+    @Param('orderId', ParseIntPipe) orderId: number
+  ) {
+    // TODO Guard
+    return await this.orderService.setAddress(orderId, setAddressDto);
   }
 
   @ApiCookieAuth()
@@ -203,10 +216,13 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Post('order/:orderId/book')
-  async bookOrder() {
-    // TODO Авторизация
-    return await this.orderService.bookOrder();
+  async bookOrder(
+    @Param('orderId', ParseIntPipe) orderId: number
+  ) {
+    // TODO Guard
+    return await this.orderService.bookOrder(orderId);
   }
 
   @ApiCookieAuth()
@@ -216,9 +232,10 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Post('order/:orderId/rebook')
   async reBookOrder() {
-    // TODO Авторизация
+    // TODO Guard
     return await this.orderService.reBookOrder();
   }
 
@@ -229,10 +246,13 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Post('order/:orderId/unbook')
-  async unBookOrder() {
-    // TODO Авторизация
-    return await this.orderService.unBookOrder();
+  async unBookOrder(
+    @Param('orderId', ParseIntPipe) orderId: number
+  ) {
+    // TODO Guard
+    return await this.orderService.unBookOrder(orderId);
   }
 
   @ApiCookieAuth()
@@ -242,10 +262,13 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Post('order/:orderId/discard')
-  async discardOrder() {
-    // TODO Авторизация
-    return await this.orderService.discardOrder();
+  async discardOrder(
+    @Param('orderId', ParseIntPipe) orderId: number
+  ) {
+    // TODO Guard
+    return await this.orderService.discardOrder(orderId);
   }
 
   @ApiCookieAuth()
@@ -255,10 +278,13 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
   @Post('order/:orderId/pay')
-  async payForOrder() {
-    // TODO Авторизация
-    return await this.orderService.payForOrder();
+  async payForOrder(
+    @Param('orderId', ParseIntPipe) orderId: number
+  ) {
+    // TODO Guard
+    return await this.orderService.payForOrder(orderId);
   }
 
   // @ApiOperation({ summary: 'Get product in order' })

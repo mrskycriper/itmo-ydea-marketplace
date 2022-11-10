@@ -6,6 +6,9 @@ import {
 import { CreateOrderDto } from './dto/create.order.dto';
 import { CreateProductsinorderDto } from './dto/create.productsinorder.dto';
 import prisma from '../client';
+import { SetTimeSlotDto } from './dto/set.timeslot.dto';
+import { SetAddressDto } from './dto/set.address.dto';
+import { timeStamp } from 'console';
 
 @Injectable()
 export class OrderService {
@@ -61,39 +64,116 @@ export class OrderService {
     });
   }
 
-  async getShoppingCart() {
-    return Promise.resolve(undefined);
-    // TODO Вернуть текущий заказа или создать новый
+  async getShoppingCart(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    const orderId = user.current_order_id;
+    if (orderId == 0){
+      const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId); 
+      return this.createOrder(createOrderDto);
+    }
+    return await prisma.order.findUnique({ where: { id: orderId } });
   }
 
-  async getOrders() {
-    return Promise.resolve(undefined);
+  async getOrders(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    return await prisma.order.findMany({ where: { user_id: userId } });
     // TODO Вернуть список заказов
   }
 
   async getTimeslots() {
-    return Promise.resolve(undefined);
-    // TODO Выдать таймслоты
+    var date = new Date(Date.now());
+    date.setDate(date.getDate()+3);
+    var timeSlotMorning = new SetTimeSlotDto(new Date(date.setHours(9, 0, 0, 0)), new Date(date.setHours(11, 0, 0, 0)));
+    var timeSlotDay = new SetTimeSlotDto(new Date(date.setHours(13, 0, 0, 0)), new Date(date.setHours(15, 0, 0, 0)));
+    var timeSlotEvening = new SetTimeSlotDto(new Date(date.setHours(17, 0, 0, 0)), new Date(date.setHours(19, 0, 0, 0)));
+    var timeSlots = [timeSlotMorning, timeSlotDay, timeSlotEvening];
+    return timeSlots;
   }
 
-  async setTimeslot() {
-    return Promise.resolve(undefined);
-    // TODO Установить таймслот
+  async setTimeslot(orderId: number, setTimeSlotDto: SetTimeSlotDto) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null){
+      throw new NotFoundException('Order not found');
+    }
+    await prisma.order.update({
+      where: { id: orderId },
+      data: setTimeSlotDto,
+    });
   }
 
-  async setAddress() {
-    return Promise.resolve(undefined);
-    // TODO Установить адрес
+  async setAddress(orderId: number, setAddressDto: SetAddressDto) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null){
+      throw new NotFoundException('Order not found');
+    }
+    await prisma.order.update({
+      where: { id: orderId },
+      data: setAddressDto,
+    });
   }
 
-  async bookOrder() {
-    return Promise.resolve(undefined);
-    // TODO Забронировать заказ
+  async bookOrder(orderId: number) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null){
+      throw new NotFoundException('Order not found');
+    }
+    const timesBooked = order.times_booked;
+    if (timesBooked == 3){
+      throw new BadRequestException('Already has been booked three times');
+    }
+    const status = order.status
+    if (status != "COLLECTING" && status != "BOOKED"){
+      throw new BadRequestException('Order status is incorrect');
+    }
+    const newTimesBooked = timesBooked + 1;
+    await prisma.order.update({
+      where: { id: orderId },
+      status: "BOOKED",
+      times_booked: newTimesBooked,
+      start_timestamp: new Date(Date.now()),
+    });
+    const userId = order.user_id;
+    await prisma.user.update({
+      where: { id: userId },
+      current_order_id: 0,
+    });
+    // TODO Забронировать товары в заказе
   }
 
-  async unBookOrder() {
-    return Promise.resolve(undefined);
-    // TODO Разбронировать заказ
+  async unBookOrder(orderId: number) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null){
+      throw new NotFoundException('Order not found');
+    }
+    const userId = order.user_id;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const cart = user.current_order_id;
+    if (cart != 0){
+      throw new BadRequestException('This user already has an unbooked order');
+    }
+    const status = order.status
+    if (status != "BOOKED"){
+      throw new BadRequestException('Order status is incorrect');
+    }
+    await prisma.order.update({
+      where: { id: orderId },
+      status: "COLLECTING",
+    });
+    // TODO Разбронировать товары в заказе
   }
 
   async reBookOrder() {
@@ -101,13 +181,37 @@ export class OrderService {
     // TODO Продлить бронирование заказа
   }
 
-  async discardOrder() {
-    return Promise.resolve(undefined);
-    // TODO Отменить заказ
+  async discardOrder(orderId: number) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null){
+      throw new NotFoundException('Order not found');
+    }
+    const status = order.status
+    if (status != "COLLECTING" && status != "BOOKED"){
+      throw new BadRequestException('Order status is incorrect');
+    }
+    await prisma.order.update({
+      where: { id: orderId },
+      status: "DISCARDED",
+    });
   }
 
-  async payForOrder() {
-    return Promise.resolve(undefined);
-    // TODO Оплатить заказ
+  async payForOrder(orderId: number) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null){
+      throw new NotFoundException('Order not found');
+    }
+    const status = order.status
+    if (status != "BOOKED"){
+      throw new BadRequestException('Order status is incorrect');
+    }
+    await prisma.order.update({
+      where: { id: orderId },
+      status: "PAID",
+    });
   }
 }
