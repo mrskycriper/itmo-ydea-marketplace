@@ -11,19 +11,20 @@ datasource db {
 }
 
 model User {
-  id           String       @id @db.Uuid
-  name         String       @unique
-  is_moderator Boolean      @default(false)
-  is_admin     Boolean      @default(false)
-  is_support   Boolean      @default(false)
-  is_seller    Boolean      @default(false)
-  posts        Post[]
-  comments     Comment[]
-  messages     Message[]
-  seller       Seller[]
-  review       Review[]
-  order        Order[]
-  chat_to_user ChatToUser[]
+  id               String       @id @db.Uuid
+  name             String       @unique
+  is_moderator     Boolean      @default(false)
+  is_admin         Boolean      @default(false)
+  is_support       Boolean      @default(false)
+  is_seller        Boolean      @default(false)
+  current_order_id Int          @default(0)
+  posts            Post[]
+  comments         Comment[]
+  messages         Message[]
+  seller           Seller[]
+  review           Review[]
+  order            Order[]
+  chat_to_user     ChatToUser[]
 
   @@map("user")
 }
@@ -159,13 +160,13 @@ model ProductsInOrder {
   product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id Int
   order      Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
-  order_id   String  @db.Uuid
+  order_id   Int
 
   @@map("products_in_order")
 }
 
 model Order {
-  id                String            @id @default(uuid()) @db.Uuid
+  id                Int               @id @default(autoincrement())
   start_timestamp   DateTime
   status            String            @default("COLLECTING")
   sum               Decimal           @default(0) @db.Money

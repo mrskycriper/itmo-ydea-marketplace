@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create.order.dto';
-import { CreateProductsInOrderDto } from './dto/create.productsinorder.dto';
+import { CreateProductsinorderDto } from './dto/create.productsinorder.dto';
 import prisma from '../client';
 
 @Injectable()
@@ -23,16 +23,16 @@ export class OrderService {
     return { orderId: order.id };
   }
 
-  async deleteOrder(orderId: string) {
+  async deleteOrder(orderId: number) {
     await prisma.order.delete({ where: { id: orderId } });
   }
 
-  async getOrder(orderId: string) {
+  async getOrder(orderId: number) {
     return await prisma.order.findUnique({ where: { id: orderId } });
   }
 
   async createProductsInOrder(
-    createProductsInOrderDto: CreateProductsInOrderDto,
+    createProductsInOrderDto: CreateProductsinorderDto,
   ): Promise<object> {
     const product = await prisma.product.findUnique({
       where: { id: createProductsInOrderDto.product_id },
@@ -46,13 +46,12 @@ export class OrderService {
     if (orderForProducts == null) {
       throw new NotFoundException('Order not found');
     }
-    const productsinorder = await prisma.productsInOrder.create({
+    return await prisma.productsInOrder.create({
       data: createProductsInOrderDto,
     });
-    return { productsinorderId: productsinorder.id };
   }
 
-  async deleteProductsInOrder(productsinorderId: string) {
+  async removeProductFromOrder(productsinorderId: string) {
     await prisma.productsInOrder.delete({ where: { id: productsinorderId } });
   }
 
@@ -60,5 +59,55 @@ export class OrderService {
     return await prisma.productsInOrder.findUnique({
       where: { id: productsinorderId },
     });
+  }
+
+  async getShoppingCart() {
+    return Promise.resolve(undefined);
+    // TODO Вернуть текущий заказа или создать новый
+  }
+
+  async getOrders() {
+    return Promise.resolve(undefined);
+    // TODO Вернуть список заказов
+  }
+
+  async getTimeslots() {
+    return Promise.resolve(undefined);
+    // TODO Выдать таймслоты
+  }
+
+  async setTimeslot() {
+    return Promise.resolve(undefined);
+    // TODO Установить таймслот
+  }
+
+  async setAddress() {
+    return Promise.resolve(undefined);
+    // TODO Установить адрес
+  }
+
+  async bookOrder() {
+    return Promise.resolve(undefined);
+    // TODO Забронировать заказ
+  }
+
+  async unBookOrder() {
+    return Promise.resolve(undefined);
+    // TODO Разбронировать заказ
+  }
+
+  async reBookOrder() {
+    return Promise.resolve(undefined);
+    // TODO Продлить бронирование заказа
+  }
+
+  async discardOrder() {
+    return Promise.resolve(undefined);
+    // TODO Отменить заказ
+  }
+
+  async payForOrder() {
+    return Promise.resolve(undefined);
+    // TODO Оплатить заказ
   }
 }

@@ -4,7 +4,7 @@ import { IsNotEmpty } from 'class-validator';
 export class CreateOrderDto {
   @IsNotEmpty()
   @ApiProperty({
-    example: '01.10.2022',
+    example: '2022-11-07T11:05:06',
     description: 'Date of order creation',
   })
   readonly start_timestamp: Date;
