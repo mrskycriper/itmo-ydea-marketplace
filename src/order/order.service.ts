@@ -140,14 +140,20 @@ export class OrderService {
     const newTimesBooked = timesBooked + 1;
     await prisma.order.update({
       where: { id: orderId },
-      status: "BOOKED",
-      times_booked: newTimesBooked,
-      start_timestamp: new Date(Date.now()),
+      data:
+      {
+        status: "BOOKED",
+        times_booked: newTimesBooked,
+        start_timestamp: new Date(Date.now())
+      }
     });
     const userId = order.user_id;
     await prisma.user.update({
       where: { id: userId },
-      current_order_id: 0,
+      data:
+        {
+          current_order_id: 0,
+        }
     });
     // TODO Забронировать товары в заказе
   }
@@ -171,7 +177,10 @@ export class OrderService {
     }
     await prisma.order.update({
       where: { id: orderId },
-      status: "COLLECTING",
+      data:
+      {
+        status: "COLLECTING",
+      }
     });
     // TODO Разбронировать товары в заказе
   }
@@ -194,7 +203,10 @@ export class OrderService {
     }
     await prisma.order.update({
       where: { id: orderId },
-      status: "DISCARDED",
+      data:
+        {
+          status: "DISCARDED",
+        }
     });
   }
 
@@ -211,7 +223,10 @@ export class OrderService {
     }
     await prisma.order.update({
       where: { id: orderId },
-      status: "PAID",
+      data:
+        {
+          status: "PAID",
+        }
     });
   }
 }
