@@ -29,6 +29,7 @@ export class ProductService {
 
   async getProduct(productId: number) {
     return await prisma.product.findUnique({ where: { id: productId } });
+    // TODO Переделать в нормальное получение данных для рендера
   }
 
   async createReview(createReviewDto: CreateReviewDto) {
@@ -39,10 +40,12 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
     await prisma.review.create({ data: createReviewDto });
+    // TODO Добавить пересчет рейтинга товара при появлении нового отзыва
   }
 
   async deleteReview(reviewId: string) {
     await prisma.review.delete({ where: { id: reviewId } });
+    // TODO Добавить пересчет рейтинга товара при удалении отзыва
   }
 
   async getReview(reviewId: string) {

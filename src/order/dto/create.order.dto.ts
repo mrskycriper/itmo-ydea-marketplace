@@ -16,7 +16,7 @@ export class CreateOrderDto {
   })
   readonly user_id: string;
 
-  constructor(timestamp : Date, user : string){
+  constructor(timestamp: Date, user: string) {
     this.start_timestamp = timestamp;
     this.user_id = user;
   }

@@ -46,12 +46,8 @@ export class SellerController {
   @UseGuards(AuthGuard)
   @Post('/sellers')
   async createSeller(
-    @SessionDecorator() session: SessionContainer,
     @Body() createSellerDto: CreateSellerDto,
   ): Promise<object> {
-    // if (session.getUserId() != createSellerDto.user_id) {
-    //   throw new BadRequestException('userIds does not match');
-    // }
     return await this.sellerService.createSeller(createSellerDto);
   }
 
@@ -67,6 +63,7 @@ export class SellerController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  // TODO Seller guard (c проверкой id)
   @Delete('sellers/:sellerId')
   async deleteSeller(@Param('sellerId', ParseIntPipe) sellerId: number) {
     return await this.sellerService.deleteSeller(sellerId);
@@ -89,4 +86,6 @@ export class SellerController {
   ): Promise<object> {
     return await this.sellerService.getSeller(sellerId);
   }
+
+  // TODO Добавить редактирование описания продавца
 }

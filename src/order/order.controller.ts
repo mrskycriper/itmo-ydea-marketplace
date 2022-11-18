@@ -8,12 +8,10 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -48,6 +46,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO create order guard (сравнить id юзера из сессии и дто)
   @Post('/orders')
   async createOrder(
     @SessionDecorator() session: SessionContainer,
@@ -56,7 +55,6 @@ export class OrderController {
     // if (session.getUserId() != createOrderDto.user_id) {
     //   throw new BadRequestException('userIds does not match');
     // }
-    // TODO Guard
     return await this.orderService.createOrder(createOrderDto);
   }
 
@@ -69,6 +67,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Post('orders/:orderId/products')
   async createProductsInOrder(
     @SessionDecorator() session: SessionContainer,
@@ -97,13 +96,13 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Delete('orders/:orderId/products/:productsinorderId')
   async removeProductFromOrder(
     @SessionDecorator() session: SessionContainer,
     @Param('productsinorderId') productsinorderId: string,
     @Param('orderId', ParseIntPipe) orderId: number,
   ) {
-    // TODO Guard
     return await this.orderService.removeProductFromOrder(productsinorderId);
   }
 
@@ -116,12 +115,12 @@ export class OrderController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Delete('orders/:orderId')
   async deleteOrder(
     @SessionDecorator() session: SessionContainer,
     @Param('orderId', ParseIntPipe) orderId: number,
   ) {
-    // TODO Guard
     return await this.orderService.deleteOrder(orderId);
   }
 
@@ -133,7 +132,7 @@ export class OrderController {
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @Get('cart')
-  @Render('cart') // TODO вид корзины
+  @Render('cart') // TODO Рендер корзины
   async getShoppingCart(@SessionDecorator() session: SessionContainer) {
     return await this.orderService.getShoppingCart(session.getUserId());
   }
@@ -146,7 +145,7 @@ export class OrderController {
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @Get('orders')
-  @Render('orders') // TODO вид списка заказов
+  @Render('orders') // TODO Рендер вида списка заказов пользователя
   async getOrders(@SessionDecorator() session: SessionContainer) {
     return await this.orderService.getOrders(session.getUserId());
   }
@@ -158,8 +157,9 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Get('orders/:orderId')
-  @Render('order') // TODO вид заказа
+  @Render('order') // TODO Рендер страницы заказа
   async getOrder(
     @SessionDecorator() session: SessionContainer,
     @Param('orderId', ParseIntPipe) orderId: number,
@@ -183,11 +183,12 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Post('order/:orderId/timeslot')
   async setTimeslot(
     @Body() setTimeSlotDto: SetTimeSlotDto,
-    @Param('orderId', ParseIntPipe) orderId: number) {
-    // TODO Guard
+    @Param('orderId', ParseIntPipe) orderId: number,
+  ) {
     return await this.orderService.setTimeslot(orderId, setTimeSlotDto);
   }
 
@@ -200,12 +201,12 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Post('order/:orderId/address')
   async setAddress(
     @Body() setAddressDto: SetAddressDto,
-    @Param('orderId', ParseIntPipe) orderId: number
+    @Param('orderId', ParseIntPipe) orderId: number,
   ) {
-    // TODO Guard
     return await this.orderService.setAddress(orderId, setAddressDto);
   }
 
@@ -217,11 +218,9 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Post('order/:orderId/book')
-  async bookOrder(
-    @Param('orderId', ParseIntPipe) orderId: number
-  ) {
-    // TODO Guard
+  async bookOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.bookOrder(orderId);
   }
 
@@ -233,9 +232,9 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Post('order/:orderId/rebook')
   async reBookOrder() {
-    // TODO Guard
     return await this.orderService.reBookOrder();
   }
 
@@ -247,11 +246,9 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Post('order/:orderId/unbook')
-  async unBookOrder(
-    @Param('orderId', ParseIntPipe) orderId: number
-  ) {
-    // TODO Guard
+  async unBookOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.unBookOrder(orderId);
   }
 
@@ -263,11 +260,9 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Post('order/:orderId/discard')
-  async discardOrder(
-    @Param('orderId', ParseIntPipe) orderId: number
-  ) {
-    // TODO Guard
+  async discardOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.discardOrder(orderId);
   }
 
@@ -279,29 +274,11 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
   @Post('order/:orderId/pay')
-  async payForOrder(
-    @Param('orderId', ParseIntPipe) orderId: number
-  ) {
-    // TODO Guard
+  async payForOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.payForOrder(orderId);
   }
 
-  // @ApiOperation({ summary: 'Get product in order' })
-  // @ApiParam({
-  //   name: 'productsinorderId',
-  //   type: 'string',
-  //   description: 'Unique products in order id',
-  // })
-  // @ApiOkResponse({ description: 'OK' })
-  // @ApiBadRequestResponse({ description: 'Bad Request' })
-  // @ApiNotFoundResponse({ description: 'Not Found' })
-  // @Get('productsinorders/:productsinorderId')
-  // @Render('productsinorder')
-  // async getProductsInOrder(
-  //   @SessionDecorator() session: SessionContainer,
-  //   @Param('productsinorderId', ParseIntPipe) productsinorderId: string,
-  // ): Promise<object> {
-  //   return await this.orderService.getProductsInOrder(productsinorderId);
-  // }
+  // TODO Добавить изменение количества товара в заказе
 }

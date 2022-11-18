@@ -8,7 +8,6 @@ function getRegisterData() {
 
 const register = () => {
   const registerData = getRegisterData();
-  //TODO добавить проверку почты и красивое сообщение
   let card = document.getElementById('info-card');
   card.style = 'visibility: hidden';
   _api.checkUsername(registerData.username).then(async (response) => {

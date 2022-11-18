@@ -7,7 +7,6 @@ function getLoginData() {
 
 const login = () => {
   const loginData = getLoginData();
-  //TODO добавить красивое сообщение что пароль или почта не валидны
   _api.signIn(loginData.email, loginData.password).then((response) => {
     if (response.data.status === 'OK') {
       window.location.href = '/';

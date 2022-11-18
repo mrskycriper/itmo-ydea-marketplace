@@ -8,7 +8,6 @@ import { CreateProductsinorderDto } from './dto/create.productsinorder.dto';
 import prisma from '../client';
 import { SetTimeSlotDto } from './dto/set.timeslot.dto';
 import { SetAddressDto } from './dto/set.address.dto';
-import { timeStamp } from 'console';
 
 @Injectable()
 export class OrderService {
@@ -70,8 +69,8 @@ export class OrderService {
       throw new NotFoundException('User not found');
     }
     const orderId = user.current_order_id;
-    if (orderId == 0){
-      const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId); 
+    if (orderId == 0) {
+      const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId);
       return this.createOrder(createOrderDto);
     }
     return await prisma.order.findUnique({ where: { id: orderId } });
@@ -87,20 +86,28 @@ export class OrderService {
   }
 
   async getTimeslots() {
-    var date = new Date(Date.now());
-    date.setDate(date.getDate()+3);
-    var timeSlotMorning = new SetTimeSlotDto(new Date(date.setHours(9, 0, 0, 0)), new Date(date.setHours(11, 0, 0, 0)));
-    var timeSlotDay = new SetTimeSlotDto(new Date(date.setHours(13, 0, 0, 0)), new Date(date.setHours(15, 0, 0, 0)));
-    var timeSlotEvening = new SetTimeSlotDto(new Date(date.setHours(17, 0, 0, 0)), new Date(date.setHours(19, 0, 0, 0)));
-    var timeSlots = [timeSlotMorning, timeSlotDay, timeSlotEvening];
-    return timeSlots;
+    const date = new Date(Date.now());
+    date.setDate(date.getDate() + 3);
+    const timeSlotMorning = new SetTimeSlotDto(
+      new Date(date.setHours(9, 0, 0, 0)),
+      new Date(date.setHours(11, 0, 0, 0)),
+    );
+    const timeSlotDay = new SetTimeSlotDto(
+      new Date(date.setHours(13, 0, 0, 0)),
+      new Date(date.setHours(15, 0, 0, 0)),
+    );
+    const timeSlotEvening = new SetTimeSlotDto(
+      new Date(date.setHours(17, 0, 0, 0)),
+      new Date(date.setHours(19, 0, 0, 0)),
+    );
+    return [timeSlotMorning, timeSlotDay, timeSlotEvening];
   }
 
   async setTimeslot(orderId: number, setTimeSlotDto: SetTimeSlotDto) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     });
-    if (order == null){
+    if (order == null) {
       throw new NotFoundException('Order not found');
     }
     await prisma.order.update({
@@ -113,7 +120,7 @@ export class OrderService {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     });
-    if (order == null){
+    if (order == null) {
       throw new NotFoundException('Order not found');
     }
     await prisma.order.update({
@@ -126,61 +133,58 @@ export class OrderService {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     });
-    if (order == null){
+    if (order == null) {
       throw new NotFoundException('Order not found');
     }
     const timesBooked = order.times_booked;
-    if (timesBooked == 3){
+    if (timesBooked == 3) {
       throw new BadRequestException('Already has been booked three times');
     }
-    const status = order.status
-    if (status != "COLLECTING" && status != "BOOKED"){
+    const status = order.status;
+    if (status != 'COLLECTING' && status != 'BOOKED') {
       throw new BadRequestException('Order status is incorrect');
     }
     const newTimesBooked = timesBooked + 1;
     await prisma.order.update({
       where: { id: orderId },
-      data:
-      {
-        status: "BOOKED",
+      data: {
+        status: 'BOOKED',
         times_booked: newTimesBooked,
-        start_timestamp: new Date(Date.now())
-      }
+        start_timestamp: new Date(Date.now()),
+      },
     });
     const userId = order.user_id;
     await prisma.user.update({
       where: { id: userId },
-      data:
-        {
-          current_order_id: 0,
-        }
+      data: {
+        current_order_id: 0,
+      },
     });
-    // TODO Забронировать товары в заказе
+    // TODO Добавить бронирование товаров (product) при бронировании заказа
   }
 
   async unBookOrder(orderId: number) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     });
-    if (order == null){
+    if (order == null) {
       throw new NotFoundException('Order not found');
     }
     const userId = order.user_id;
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const cart = user.current_order_id;
-    if (cart != 0){
+    if (cart != 0) {
       throw new BadRequestException('This user already has an unbooked order');
     }
-    const status = order.status
-    if (status != "BOOKED"){
+    const status = order.status;
+    if (status != 'BOOKED') {
       throw new BadRequestException('Order status is incorrect');
     }
     await prisma.order.update({
       where: { id: orderId },
-      data:
-      {
-        status: "COLLECTING",
-      }
+      data: {
+        status: 'COLLECTING',
+      },
     });
     // TODO Разбронировать товары в заказе
   }
@@ -194,19 +198,18 @@ export class OrderService {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     });
-    if (order == null){
+    if (order == null) {
       throw new NotFoundException('Order not found');
     }
-    const status = order.status
-    if (status != "COLLECTING" && status != "BOOKED"){
+    const status = order.status;
+    if (status != 'COLLECTING' && status != 'BOOKED') {
       throw new BadRequestException('Order status is incorrect');
     }
     await prisma.order.update({
       where: { id: orderId },
-      data:
-        {
-          status: "DISCARDED",
-        }
+      data: {
+        status: 'DISCARDED',
+      },
     });
   }
 
@@ -214,19 +217,18 @@ export class OrderService {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     });
-    if (order == null){
+    if (order == null) {
       throw new NotFoundException('Order not found');
     }
-    const status = order.status
-    if (status != "BOOKED"){
+    const status = order.status;
+    if (status != 'BOOKED') {
       throw new BadRequestException('Order status is incorrect');
     }
     await prisma.order.update({
       where: { id: orderId },
-      data:
-        {
-          status: "PAID",
-        }
+      data: {
+        status: 'PAID',
+      },
     });
   }
 }

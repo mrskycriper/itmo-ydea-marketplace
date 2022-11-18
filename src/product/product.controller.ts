@@ -8,12 +8,10 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -33,7 +31,6 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { CreateReviewDto } from './dto/create.review.dto';
 import { CreatePhotoDto } from './dto/create.photo.dto';
-//import { DeleteProductGuard } from '../auth/guards/delete.product.guard';
 @ApiTags('product')
 @Controller()
 export class ProductController {
@@ -47,6 +44,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Seller Guard
   @Post('/products')
   async createProduct(
     @SessionDecorator() session: SessionContainer,
@@ -70,7 +68,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  //@UseGuards(DeleteProductGuard)
+  // TODO Seller Guard
   @Delete('products/:productId')
   async deleteProduct(@Param('productId', ParseIntPipe) productId: number) {
     return await this.productService.deleteProduct(productId);
@@ -86,9 +84,8 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('products/:productId')
-  @Render('product')
+  @Render('product') // TODO Рендер страницы продукта
   async getProduct(
-    @SessionDecorator() session: SessionContainer,
     @Param('productId', ParseIntPipe) productId: number,
   ): Promise<object> {
     return await this.productService.getProduct(productId);
@@ -110,6 +107,7 @@ export class ProductController {
     // if (session.getUserId() != createReviewDto.user_id) {
     //   throw new BadRequestException('userIds does not match');
     // }
+    // TODO Добавить проверку что id из сессии и из дто совпадают
     return await this.productService.createReview(createReviewDto);
   }
 
@@ -126,6 +124,7 @@ export class ProductController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   //@UseGuards(DeleteProductGuard)
+  // TODO DeleteProductGuard дла автора отзыва, модератора или админа
   @Delete('reviews/:reviewId')
   async deleteReview(@Param('reviewId', ParseIntPipe) reviewId: string) {
     return await this.productService.deleteReview(reviewId);
@@ -141,7 +140,7 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('reviews/:reviewId')
-  @Render('review')
+  @Render('review') // TODO Рендер страницы с отзывом (?)
   async getReview(
     @SessionDecorator() session: SessionContainer,
     @Param('reviewId', ParseIntPipe) reviewId: string,
@@ -150,13 +149,14 @@ export class ProductController {
   }
 
   @ApiCookieAuth()
-  @ApiOperation({ summary: 'Create new photo' })
+  @ApiOperation({ summary: 'Add new product photo' })
   @ApiBody({ type: CreatePhotoDto })
   @ApiCreatedResponse({ description: 'Created' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO Seller guard
   @Post('photos')
   async createPhoto(
     @SessionDecorator() session: SessionContainer,
@@ -166,7 +166,7 @@ export class ProductController {
   }
 
   @ApiCookieAuth()
-  @ApiOperation({ summary: 'Delete photo' })
+  @ApiOperation({ summary: 'Delete product photo' })
   @ApiParam({ name: 'photoId', type: 'string', description: 'Unique photo id' })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
@@ -174,22 +174,25 @@ export class ProductController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   //@UseGuards(DeleteProductGuard)
+  // TODO Seller guard
   @Delete('photos/:photoId')
   async deletePhoto(@Param('photoId', ParseIntPipe) photoId: string) {
     return await this.productService.deletePhoto(photoId);
   }
 
-  @ApiOperation({ summary: 'Get photo' })
+  @ApiOperation({ summary: 'Get product photo' })
   @ApiParam({ name: 'photoId', type: 'string', description: 'Unique photo id' })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('photos/:photoId')
-  @Render('photo')
+  @Render('photo') // TODO Рендер страницы с картинкой (?)
   async getPhoto(
     @SessionDecorator() session: SessionContainer,
     @Param('photoId', ParseIntPipe) photoId: string,
   ): Promise<object> {
     return await this.productService.getPhoto(photoId);
   }
+
+  // TODO Добавить редактирование свойств товара
 }
