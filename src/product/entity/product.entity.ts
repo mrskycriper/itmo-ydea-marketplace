@@ -7,12 +7,17 @@ export class ProductEntity {
   })
   readonly id: string;
 
-  /* 
-    @ApiProperty({
-      example: 'name',
-      description: 'Product name',
-    })
-    readonly name: string; */
+  @ApiProperty({
+    example: 'name',
+    description: 'Product name',
+  })
+  readonly name: string;
+
+  @ApiProperty({
+    example: 'description',
+    description: 'Product description',
+  })
+  readonly description: string;
 
   @ApiProperty({
     example: '100',

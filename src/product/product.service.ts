@@ -1,12 +1,9 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create.product.dto';
 import { CreateReviewDto } from './dto/create.review.dto';
 import prisma from '../client';
 import { CreatePhotoDto } from './dto/create.photo.dto';
+import { EditProductDto } from './dto/edit.product.dto';
 
 @Injectable()
 export class ProductService {
@@ -40,12 +37,50 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
     await prisma.review.create({ data: createReviewDto });
-    // TODO Добавить пересчет рейтинга товара при появлении нового отзыва
+
+    const aggregations = await prisma.review.aggregate({
+      _avg: {
+        rating: true,
+      },
+      where: {
+        product_id: createReviewDto.product_id,
+      },
+    });
+
+    await prisma.product.update({
+      where: { id: product.id },
+      data: { rating_average: aggregations._avg.rating },
+    });
   }
 
   async deleteReview(reviewId: string) {
+    const review = await prisma.review.findUnique({ where: { id: reviewId } });
+    if (review == null) {
+      throw new NotFoundException('Review not found');
+    }
+
+    const product = await prisma.product.findUnique({
+      where: { id: review.product_id },
+    });
+    if (product == null) {
+      throw new NotFoundException('Product not found');
+    }
+
     await prisma.review.delete({ where: { id: reviewId } });
-    // TODO Добавить пересчет рейтинга товара при удалении отзыва
+
+    const aggregations = await prisma.review.aggregate({
+      _avg: {
+        rating: true,
+      },
+      where: {
+        product_id: product.id,
+      },
+    });
+
+    await prisma.product.update({
+      where: { id: product.id },
+      data: { rating_average: aggregations._avg.rating },
+    });
   }
 
   async getReview(reviewId: string) {
@@ -68,5 +103,18 @@ export class ProductService {
 
   async getPhoto(photoId: string) {
     return await prisma.photo.findUnique({ where: { id: photoId } });
+  }
+
+  async editProduct(productId: number, editProductDto: EditProductDto) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
+    if (product == null) {
+      throw new NotFoundException('Product not found');
+    }
+    return await prisma.product.update({
+      where: { id: productId },
+      data: editProductDto,
+    });
   }
 }

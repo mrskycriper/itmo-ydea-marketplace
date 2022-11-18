@@ -8,6 +8,7 @@ import { CreateProductsinorderDto } from './dto/create.productsinorder.dto';
 import prisma from '../client';
 import { SetTimeSlotDto } from './dto/set.timeslot.dto';
 import { SetAddressDto } from './dto/set.address.dto';
+import { EditProductsInOrderDto } from './dto/edit.productsinorder.dto';
 
 @Injectable()
 export class OrderService {
@@ -57,12 +58,6 @@ export class OrderService {
     await prisma.productsInOrder.delete({ where: { id: productsinorderId } });
   }
 
-  async getProductsInOrder(productsinorderId: string) {
-    return await prisma.productsInOrder.findUnique({
-      where: { id: productsinorderId },
-    });
-  }
-
   async getShoppingCart(userId: string) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user == null) {
@@ -82,7 +77,6 @@ export class OrderService {
       throw new NotFoundException('User not found');
     }
     return await prisma.order.findMany({ where: { user_id: userId } });
-    // TODO Вернуть список заказов
   }
 
   async getTimeslots() {
@@ -144,6 +138,14 @@ export class OrderService {
     if (status != 'COLLECTING' && status != 'BOOKED') {
       throw new BadRequestException('Order status is incorrect');
     }
+
+    const productsInOrder = await prisma.productsInOrder.findMany({
+      where: { order_id: orderId },
+    });
+    for (const i of productsInOrder) {
+      await this.bookProduct(i.id);
+    }
+
     const newTimesBooked = timesBooked + 1;
     await prisma.order.update({
       where: { id: orderId },
@@ -160,7 +162,6 @@ export class OrderService {
         current_order_id: 0,
       },
     });
-    // TODO Добавить бронирование товаров (product) при бронировании заказа
   }
 
   async unBookOrder(orderId: number) {
@@ -180,18 +181,20 @@ export class OrderService {
     if (status != 'BOOKED') {
       throw new BadRequestException('Order status is incorrect');
     }
+
+    const productsInOrder = await prisma.productsInOrder.findMany({
+      where: { order_id: orderId },
+    });
+    for (const i of productsInOrder) {
+      await this.unBookProduct(i.id);
+    }
+
     await prisma.order.update({
       where: { id: orderId },
       data: {
         status: 'COLLECTING',
       },
     });
-    // TODO Разбронировать товары в заказе
-  }
-
-  async reBookOrder() {
-    return Promise.resolve(undefined);
-    // TODO Продлить бронирование заказа
   }
 
   async discardOrder(orderId: number) {
@@ -229,6 +232,91 @@ export class OrderService {
       data: {
         status: 'PAID',
       },
+    });
+  }
+
+  async bookProduct(productInOrderId: string) {
+    const productInOrder = await prisma.productsInOrder.findUnique({
+      where: { id: productInOrderId },
+    });
+    if (productInOrder == null) {
+      throw new NotFoundException('ProductInOrder not found');
+    }
+
+    const product = await prisma.product.findUnique({
+      where: { id: productInOrder.product_id },
+    });
+    if (product == null) {
+      throw new NotFoundException('Product not found');
+    }
+
+    if (productInOrder.number > product.number - product.number_booked) {
+      throw new BadRequestException('Not enough product in stock');
+    }
+    await prisma.product.update({
+      where: { id: productInOrder.product_id },
+      data: { number_booked: product.number_booked + productInOrder.number },
+    });
+  }
+
+  async unBookProduct(productInOrderId: string) {
+    const productInOrder = await prisma.productsInOrder.findUnique({
+      where: { id: productInOrderId },
+    });
+    if (productInOrder == null) {
+      throw new NotFoundException('ProductInOrder not found');
+    }
+
+    const product = await prisma.product.findUnique({
+      where: { id: productInOrder.product_id },
+    });
+    if (product == null) {
+      throw new NotFoundException('Product not found');
+    }
+
+    if (product.number_booked >= productInOrder.number) {
+      throw new BadRequestException('Booked products exceeded total quantity');
+    }
+    await prisma.product.update({
+      where: { id: productInOrder.product_id },
+      data: { number_booked: product.number_booked - productInOrder.number },
+    });
+  }
+
+  async editProductInOrder(
+    productInOrderId: string,
+    editProductsInOrderDto: EditProductsInOrderDto,
+  ) {
+    const productInOrder = await prisma.productsInOrder.findUnique({
+      where: { id: productInOrderId },
+    });
+    if (productInOrder == null) {
+      throw new NotFoundException('ProductInOrder not found');
+    }
+
+    const product = await prisma.product.findUnique({
+      where: { id: productInOrder.product_id },
+    });
+    if (product == null) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const order = await prisma.order.findUnique({
+      where: { id: productInOrder.order_id },
+    });
+    if (order == null) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (
+      product.number - product.number_booked <
+      editProductsInOrderDto.number
+    ) {
+      throw new BadRequestException('Not enough product in stock');
+    }
+    await prisma.productsInOrder.update({
+      where: { id: productInOrderId },
+      data: editProductsInOrderDto,
     });
   }
 }

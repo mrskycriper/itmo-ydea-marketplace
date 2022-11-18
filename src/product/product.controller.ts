@@ -18,6 +18,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -31,6 +32,8 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { CreateReviewDto } from './dto/create.review.dto';
 import { CreatePhotoDto } from './dto/create.photo.dto';
+import { EditProductDto } from './dto/edit.product.dto';
+
 @ApiTags('product')
 @Controller()
 export class ProductController {
@@ -99,15 +102,12 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  // TODO create review guard (что id из сессии и из дто совпадают)
   @Post('reviews')
   async createReview(
     @SessionDecorator() session: SessionContainer,
     @Body() createReviewDto: CreateReviewDto,
   ) {
-    // if (session.getUserId() != createReviewDto.user_id) {
-    //   throw new BadRequestException('userIds does not match');
-    // }
-    // TODO Добавить проверку что id из сессии и из дто совпадают
     return await this.productService.createReview(createReviewDto);
   }
 
@@ -194,5 +194,23 @@ export class ProductController {
     return await this.productService.getPhoto(photoId);
   }
 
-  // TODO Добавить редактирование свойств товара
+  @ApiOperation({ summary: 'Get product photo' })
+  @ApiParam({
+    name: 'productId',
+    type: 'number',
+    description: 'Unique product id',
+  })
+  @ApiBody({ type: EditProductDto })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  // TODO Edit product guard
+  @Patch('products/:productId')
+  async editProduct(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Body() editProductDto: EditProductDto,
+  ) {
+    return await this.productService.editProduct(productId, editProductDto);
+  }
 }

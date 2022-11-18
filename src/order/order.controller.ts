@@ -18,6 +18,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -32,6 +33,7 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { CreateProductsinorderDto } from './dto/create.productsinorder.dto';
 import { SetTimeSlotDto } from './dto/set.timeslot.dto';
 import { SetAddressDto } from './dto/set.address.dto';
+import { EditProductsInOrderDto } from './dto/edit.productsinorder.dto';
 
 @ApiTags('order')
 @Controller()
@@ -86,7 +88,7 @@ export class OrderController {
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Delete product in order' })
   @ApiParam({
-    name: 'productsinorderId',
+    name: 'productsInOrderId',
     type: 'string',
     description: 'Unique product in order id',
   })
@@ -97,13 +99,13 @@ export class OrderController {
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
-  @Delete('orders/:orderId/products/:productsinorderId')
+  @Delete('orders/:orderId/products/:productsInOrderId')
   async removeProductFromOrder(
     @SessionDecorator() session: SessionContainer,
-    @Param('productsinorderId') productsinorderId: string,
+    @Param('productsInOrderId') productsInOrderId: string,
     @Param('orderId', ParseIntPipe) orderId: number,
   ) {
-    return await this.orderService.removeProductFromOrder(productsinorderId);
+    return await this.orderService.removeProductFromOrder(productsInOrderId);
   }
 
   @ApiCookieAuth()
@@ -225,20 +227,6 @@ export class OrderController {
   }
 
   @ApiCookieAuth()
-  @ApiOperation({ summary: 'Rebook order' })
-  @ApiParam({ name: 'orderId', type: 'string', description: 'Unique order id' })
-  @ApiOkResponse({ description: 'OK' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
-  @Post('order/:orderId/rebook')
-  async reBookOrder() {
-    return await this.orderService.reBookOrder();
-  }
-
-  @ApiCookieAuth()
   @ApiOperation({ summary: 'Unbook order' })
   @ApiParam({ name: 'orderId', type: 'string', description: 'Unique order id' })
   @ApiOkResponse({ description: 'OK' })
@@ -280,5 +268,27 @@ export class OrderController {
     return await this.orderService.payForOrder(orderId);
   }
 
-  // TODO Добавить изменение количества товара в заказе
+  @ApiOperation({ summary: 'Edit productsInOrder' })
+  @ApiParam({ name: 'orderId', type: 'string', description: 'Unique order id' })
+  @ApiParam({
+    name: 'productsInOrderId',
+    type: 'string',
+    description: 'Unique product in order id',
+  })
+  @ApiBody({ type: EditProductsInOrderDto })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  // TODO Edit order guard
+  @Patch('orders/:orderId/products/:productsInOrderId')
+  async editProductInOrder(
+    @Param('productsInOrderId') productsInOrderId: string,
+    @Body() editProductsInOrderDto: EditProductsInOrderDto,
+  ) {
+    return await this.orderService.editProductInOrder(
+      productsInOrderId,
+      editProductsInOrderDto,
+    );
+  }
 }

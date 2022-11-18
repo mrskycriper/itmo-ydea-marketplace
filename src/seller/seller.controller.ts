@@ -20,6 +20,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -31,6 +32,8 @@ import { CreateSellerDto } from './dto/create.seller.dto';
 import { SessionDecorator } from '../auth/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { UpdateSellerDto } from './dto/update.seller.dto';
+
 @ApiTags('seller')
 @Controller()
 export class SellerController {
@@ -87,5 +90,22 @@ export class SellerController {
     return await this.sellerService.getSeller(sellerId);
   }
 
-  // TODO Добавить редактирование описания продавца
+  @ApiOperation({ summary: 'Update seller' })
+  @ApiParam({
+    name: 'sellerId',
+    type: 'number',
+    description: 'Unique seller id',
+  })
+  @ApiBody({ type: UpdateSellerDto })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @Patch('sellers/:sellerId')
+  async updateSeller(
+    @Param('sellerId', ParseIntPipe) sellerId: number,
+    @Body() updateSellerDto: UpdateSellerDto,
+  ) {
+    return await this.sellerService.updateSeller(sellerId, updateSellerDto);
+  }
 }

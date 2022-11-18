@@ -119,6 +119,7 @@ model Seller {
 
 model Product {
   id                Int               @id @default(autoincrement())
+  name              String
   description       String?
   price             Decimal           @db.Money
   number            Int

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateSellerDto } from './dto/create.seller.dto';
 import prisma from '../client';
+import { UpdateSellerDto } from './dto/update.seller.dto';
 
 @Injectable()
 export class SellerService {
@@ -27,5 +28,19 @@ export class SellerService {
 
   async getSeller(sellerId: number) {
     return await prisma.seller.findUnique({ where: { id: sellerId } });
+  }
+
+  async updateSeller(sellerId: number, updateSellerDto: UpdateSellerDto) {
+    const seller = await prisma.seller.findUnique({
+      where: { id: sellerId },
+    });
+    if (seller == null) {
+      throw new NotFoundException('Seller not found');
+    }
+
+    await prisma.seller.update({
+      where: { id: sellerId },
+      data: updateSellerDto,
+    });
   }
 }

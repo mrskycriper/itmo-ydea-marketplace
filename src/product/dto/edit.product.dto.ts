@@ -6,13 +6,20 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateProductDto {
+export class EditProductDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 'name',
     description: 'Product name',
   })
   readonly name: string;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'description',
+    description: 'Product description',
+  })
+  readonly description: string;
 
   @IsNotEmpty()
   @ApiProperty({
@@ -27,11 +34,4 @@ export class CreateProductDto {
     description: 'Product quantity',
   })
   readonly number: number;
-
-  @IsNotEmpty()
-  @ApiProperty({
-    example: '4005',
-    description: 'Seller id',
-  })
-  readonly seller_id: number;
 }
