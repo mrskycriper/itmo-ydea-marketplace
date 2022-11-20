@@ -20,8 +20,6 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Put,
-  Query,
   Render,
   UseGuards,
 } from '@nestjs/common';
@@ -53,9 +51,6 @@ export class ProductController {
     @SessionDecorator() session: SessionContainer,
     @Body() createProductDto: CreateProductDto,
   ): Promise<object> {
-    /*if (session.getUserId() != createProductDto.sellerId) {
-      throw new BadRequestException('userIds does not match');
-    } надо как-то дёргать из пользователя его sellerid */
     return await this.productService.createProduct(createProductDto);
   }
 
@@ -87,7 +82,7 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('products/:productId')
-  @Render('product') // TODO Рендер страницы продукта
+  //@Render('product') // TODO Рендер страницы продукта
   async getProduct(
     @Param('productId', ParseIntPipe) productId: number,
   ): Promise<object> {
@@ -126,7 +121,7 @@ export class ProductController {
   //@UseGuards(DeleteProductGuard)
   // TODO DeleteProductGuard дла автора отзыва, модератора или админа
   @Delete('reviews/:reviewId')
-  async deleteReview(@Param('reviewId', ParseIntPipe) reviewId: string) {
+  async deleteReview(@Param('reviewId') reviewId: string) {
     return await this.productService.deleteReview(reviewId);
   }
 
@@ -140,10 +135,10 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('reviews/:reviewId')
-  @Render('review') // TODO Рендер страницы с отзывом (?)
+  //@Render('review') // TODO Рендер страницы с отзывом (?)
   async getReview(
     @SessionDecorator() session: SessionContainer,
-    @Param('reviewId', ParseIntPipe) reviewId: string,
+    @Param('reviewId') reviewId: string,
   ): Promise<object> {
     return await this.productService.getReview(reviewId);
   }
@@ -176,7 +171,7 @@ export class ProductController {
   //@UseGuards(DeleteProductGuard)
   // TODO Seller guard
   @Delete('photos/:photoId')
-  async deletePhoto(@Param('photoId', ParseIntPipe) photoId: string) {
+  async deletePhoto(@Param('photoId') photoId: string) {
     return await this.productService.deletePhoto(photoId);
   }
 
@@ -186,15 +181,15 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('photos/:photoId')
-  @Render('photo') // TODO Рендер страницы с картинкой (?)
+  //@Render('photo') // TODO Рендер страницы с картинкой (?)
   async getPhoto(
     @SessionDecorator() session: SessionContainer,
-    @Param('photoId', ParseIntPipe) photoId: string,
+    @Param('photoId') photoId: string,
   ): Promise<object> {
     return await this.productService.getPhoto(photoId);
   }
 
-  @ApiOperation({ summary: 'Get product photo' })
+  @ApiOperation({ summary: 'Edit product' })
   @ApiParam({
     name: 'productId',
     type: 'number',

@@ -21,12 +21,32 @@ export class ProductService {
   }
 
   async deleteProduct(productId: number) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
+    if (product == null) {
+      throw new NotFoundException('Product not found');
+    }
     await prisma.product.delete({ where: { id: productId } });
   }
 
   async getProduct(productId: number) {
-    return await prisma.product.findUnique({ where: { id: productId } });
-    // TODO Переделать в нормальное получение данных для рендера
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
+    if (product == null) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const photos = await prisma.photo.findMany({
+      where: { product_id: productId },
+    });
+
+    const reviews = await prisma.review.findMany({
+      where: { product_id: productId },
+    });
+
+    return { product: product, photos: photos, reviews: reviews };
   }
 
   async createReview(createReviewDto: CreateReviewDto) {
@@ -35,6 +55,12 @@ export class ProductService {
     });
     if (product == null) {
       throw new NotFoundException('Product not found');
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: createReviewDto.user_id },
+    });
+    if (user == null) {
+      throw new NotFoundException('User not found');
     }
     await prisma.review.create({ data: createReviewDto });
 
@@ -84,7 +110,11 @@ export class ProductService {
   }
 
   async getReview(reviewId: string) {
-    return await prisma.review.findUnique({ where: { id: reviewId } });
+    const review = await prisma.review.findUnique({ where: { id: reviewId } });
+    if (review == null) {
+      throw new NotFoundException('Review not found');
+    }
+    return { review: review };
   }
 
   async createPhoto(createPhotoDto: CreatePhotoDto) {
@@ -98,11 +128,19 @@ export class ProductService {
   }
 
   async deletePhoto(photoId: string) {
+    const photo = await prisma.photo.findUnique({ where: { id: photoId } });
+    if (photo == null) {
+      throw new NotFoundException('Photo not found');
+    }
     await prisma.photo.delete({ where: { id: photoId } });
   }
 
   async getPhoto(photoId: string) {
-    return await prisma.photo.findUnique({ where: { id: photoId } });
+    const photo = await prisma.photo.findUnique({ where: { id: photoId } });
+    if (photo == null) {
+      throw new NotFoundException('Photo not found');
+    }
+    return { photo: photo };
   }
 
   async editProduct(productId: number, editProductDto: EditProductDto) {
@@ -112,7 +150,7 @@ export class ProductService {
     if (product == null) {
       throw new NotFoundException('Product not found');
     }
-    return await prisma.product.update({
+    await prisma.product.update({
       where: { id: productId },
       data: editProductDto,
     });

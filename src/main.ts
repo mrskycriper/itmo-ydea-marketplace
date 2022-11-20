@@ -24,9 +24,9 @@ async function bootstrap() {
   app.use(express.urlencoded({ extended: true }));
 
   const config = new DocumentBuilder()
-    .setTitle('OpenForum api')
-    .setDescription('The OpenForum REST API definition')
-    .setVersion('7.0.0')
+    .setTitle('Ydea api')
+    .setDescription('Ydea REST API definition')
+    .setVersion('3.0.0')
     .addCookieAuth()
     .build();
 

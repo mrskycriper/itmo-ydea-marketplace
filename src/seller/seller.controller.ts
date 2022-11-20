@@ -82,7 +82,8 @@ export class SellerController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('sellers/:sellerId')
-  @Render('seller')
+  // @Render('seller')
+  // TODO Рендер страницы продавца
   async getSeller(
     @SessionDecorator() session: SessionContainer,
     @Param('sellerId', ParseIntPipe) sellerId: number,

@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsAlphanumeric,
-  IsNotEmpty,
-  IsUrl,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsUrl } from 'class-validator';
 
 export class CreatePhotoDto {
   @IsNotEmpty()
@@ -17,8 +11,9 @@ export class CreatePhotoDto {
   readonly photo_url: string;
 
   @IsNotEmpty()
+  @IsNumber()
   @ApiProperty({
-    example: 'c7a18e82-6741-4b29-bd58-26a84c5e2088',
+    example: 132,
     description: 'Product id',
   })
   readonly product_id: number;
