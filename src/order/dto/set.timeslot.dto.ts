@@ -16,7 +16,7 @@ export class SetTimeSlotDto {
   })
   readonly timeslot_end: Date;
 
-  constructor(start: Date, end: Date){
+  constructor(start: Date, end: Date) {
     this.timeslot_start = start;
     this.timeslot_end = end;
   }

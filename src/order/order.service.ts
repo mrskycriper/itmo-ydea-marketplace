@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create.order.dto';
-import { CreateProductsinorderDto } from './dto/create.productsinorder.dto';
+import { CreateProductsInOrderDto } from './dto/create.productsinorder.dto';
 import prisma from '../client';
 import { SetTimeSlotDto } from './dto/set.timeslot.dto';
 import { SetAddressDto } from './dto/set.address.dto';
@@ -23,39 +23,94 @@ export class OrderService {
     const order = await prisma.order.create({
       data: { start_timestamp: date, user_id: createOrderDto.user_id },
     });
-    return { orderId: order.id };
-  }
-
-  async deleteOrder(orderId: number) {
-    await prisma.order.delete({ where: { id: orderId } });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { current_order_id: order.id },
+    });
+    return await this.getOrder(order.id);
   }
 
   async getOrder(orderId: number) {
-    return await prisma.order.findUnique({ where: { id: orderId } });
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null) {
+      throw new NotFoundException('Order not found');
+    }
+    const productsInOrder = await prisma.productsInOrder.findMany({
+      where: { order_id: orderId },
+      include: { product: true },
+    });
+
+    return { order: order, productsInOrder: productsInOrder };
   }
 
   async createProductsInOrder(
-    createProductsInOrderDto: CreateProductsinorderDto,
-  ): Promise<object> {
+    createProductsInOrderDto: CreateProductsInOrderDto,
+  ) {
     const product = await prisma.product.findUnique({
       where: { id: createProductsInOrderDto.product_id },
     });
     if (product == null) {
       throw new NotFoundException('Product not found');
     }
-    const orderForProducts = await prisma.order.findUnique({
+    const order = await prisma.order.findUnique({
       where: { id: createProductsInOrderDto.order_id },
     });
-    if (orderForProducts == null) {
+    if (order == null) {
       throw new NotFoundException('Order not found');
     }
-    return await prisma.productsInOrder.create({
+    const status = order.status;
+    if (status != 'COLLECTING') {
+      throw new BadRequestException('Order status is incorrect');
+    }
+    if (createProductsInOrderDto.number <= 0) {
+      throw new BadRequestException('Product quantity must be above 0');
+    }
+    await prisma.productsInOrder.create({
       data: createProductsInOrderDto,
+    });
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        sum:
+          Number(order.sum) +
+          createProductsInOrderDto.number * Number(product.price),
+      },
     });
   }
 
-  async removeProductFromOrder(productsinorderId: string) {
-    await prisma.productsInOrder.delete({ where: { id: productsinorderId } });
+  async removeProductFromOrder(productInOrderId: string) {
+    const productInOrder = await prisma.productsInOrder.findUnique({
+      where: { id: productInOrderId },
+    });
+    if (productInOrder == null) {
+      throw new NotFoundException('ProductInOrder not found');
+    }
+    const order = await prisma.order.findUnique({
+      where: { id: productInOrder.order_id },
+    });
+    if (order == null) {
+      throw new NotFoundException('Order not found');
+    }
+    const status = order.status;
+    if (status != 'COLLECTING') {
+      throw new BadRequestException('Order status is incorrect');
+    }
+    const product = await prisma.product.findUnique({
+      where: { id: productInOrder.product_id },
+    });
+    if (product == null) {
+      throw new NotFoundException('Product not found');
+    }
+    await prisma.productsInOrder.delete({ where: { id: productInOrderId } });
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        sum: Number(order.sum) - productInOrder.number * Number(product.price),
+      },
+    });
   }
 
   async getShoppingCart(userId: string) {
@@ -67,8 +122,9 @@ export class OrderService {
     if (orderId == 0) {
       const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId);
       return this.createOrder(createOrderDto);
+    } else {
+      return await this.getOrder(orderId);
     }
-    return await prisma.order.findUnique({ where: { id: orderId } });
   }
 
   async getOrders(userId: string) {
@@ -104,9 +160,21 @@ export class OrderService {
     if (order == null) {
       throw new NotFoundException('Order not found');
     }
+    const address = order.address;
+    if (address == null) {
+      throw new BadRequestException('Order address is empty');
+    }
+    const status = order.status;
+    if (status != 'PAID') {
+      throw new BadRequestException('Order status is incorrect');
+    }
     await prisma.order.update({
       where: { id: orderId },
-      data: setTimeSlotDto,
+      data: {
+        timeslot_start: setTimeSlotDto.timeslot_start,
+        timeslot_end: setTimeSlotDto.timeslot_end,
+        status: 'SHIPPING',
+      },
     });
   }
 
@@ -116,6 +184,10 @@ export class OrderService {
     });
     if (order == null) {
       throw new NotFoundException('Order not found');
+    }
+    const status = order.status;
+    if (status != 'PAID') {
+      throw new BadRequestException('Order status is incorrect');
     }
     await prisma.order.update({
       where: { id: orderId },
@@ -184,8 +256,11 @@ export class OrderService {
 
     const productsInOrder = await prisma.productsInOrder.findMany({
       where: { order_id: orderId },
+      include: { product: true },
     });
+    let sum = 0;
     for (const i of productsInOrder) {
+      sum += i.number * Number(i.product.price);
       await this.unBookProduct(i.id);
     }
 
@@ -193,6 +268,7 @@ export class OrderService {
       where: { id: orderId },
       data: {
         status: 'COLLECTING',
+        sum: sum,
       },
     });
   }
@@ -233,6 +309,20 @@ export class OrderService {
         status: 'PAID',
       },
     });
+
+    const productsInOrder = await prisma.productsInOrder.findMany({
+      where: { order_id: orderId },
+      include: { product: true },
+    });
+    for (const i of productsInOrder) {
+      await prisma.product.update({
+        where: { id: i.product_id },
+        data: {
+          number: i.product.number - i.number,
+          number_booked: i.product.number_booked - i.number,
+        },
+      });
+    }
   }
 
   async bookProduct(productInOrderId: string) {
@@ -274,7 +364,7 @@ export class OrderService {
       throw new NotFoundException('Product not found');
     }
 
-    if (product.number_booked >= productInOrder.number) {
+    if (product.number_booked > productInOrder.number) {
       throw new BadRequestException('Booked products exceeded total quantity');
     }
     await prisma.product.update({
@@ -307,6 +397,10 @@ export class OrderService {
     if (order == null) {
       throw new NotFoundException('Order not found');
     }
+    const status = order.status;
+    if (status != 'COLLECTING') {
+      throw new BadRequestException('Order status is incorrect');
+    }
 
     if (
       product.number - product.number_booked <
@@ -318,5 +412,51 @@ export class OrderService {
       where: { id: productInOrderId },
       data: editProductsInOrderDto,
     });
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        sum:
+          Number(order.sum) +
+          Number(product.price) *
+            (editProductsInOrderDto.number - productInOrder.number),
+      },
+    });
   }
+
+  async refundOrder(orderId: number) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null) {
+      throw new NotFoundException('Order not found');
+    }
+    const status = order.status;
+    if (status != 'SHIPPING') {
+      throw new BadRequestException('Order status is incorrect');
+    }
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: 'REFUND' },
+    });
+  }
+
+  async completeOrder(orderId: number) {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (order == null) {
+      throw new NotFoundException('Order not found');
+    }
+    const status = order.status;
+    if (status != 'SHIPPING') {
+      throw new BadRequestException('Order status is incorrect');
+    }
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: 'COMPLETED' },
+    });
+  }
+
+  // TODO Перевод заказа в статус возврат
+  // TODO Перевод заказа в статус завершен
 }

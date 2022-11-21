@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create.product.dto';
 import { CreateReviewDto } from './dto/create.review.dto';
 import prisma from '../client';
@@ -18,6 +22,8 @@ export class ProductService {
       data: createProductDto,
     });
     return { productId: product.id };
+    // TODO цена должна быть > 0
+    // TODO количество должно быть >= 0
   }
 
   async deleteProduct(productId: number) {
@@ -150,9 +156,38 @@ export class ProductService {
     if (product == null) {
       throw new NotFoundException('Product not found');
     }
+    if (editProductDto.price <= 0) {
+      throw new BadRequestException('Price must be above 0');
+    }
+    if (editProductDto.number < 0) {
+      throw new BadRequestException(
+        'Product quantity must be above or equal to 0',
+      );
+    }
+    const old_price = Number(product.price);
     await prisma.product.update({
       where: { id: productId },
       data: editProductDto,
     });
+    if (Number(product.price) != editProductDto.price) {
+      const productsInOrder = await prisma.productsInOrder.findMany({
+        where: {
+          product_id: productId,
+          order: { status: 'COLLECTING' },
+        },
+        include: { order: true },
+      });
+
+      for (const productInOrder of productsInOrder) {
+        await prisma.order.update({
+          where: { id: productInOrder.order_id },
+          data: {
+            sum:
+              Number(productInOrder.order.sum) +
+              productInOrder.number * (editProductDto.price - old_price),
+          },
+        });
+      }
+    }
   }
 }

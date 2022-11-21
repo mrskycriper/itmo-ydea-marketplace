@@ -173,7 +173,7 @@ model Order {
   sum               Decimal           @default(0) @db.Money
   times_booked      Int               @default(0)
   timeslot_start    DateTime?
-  itmeslot_end      DateTime?
+  timeslot_end      DateTime?
   address           String?
   user              User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id           String            @db.Uuid
