@@ -48,7 +48,7 @@ export class CategoryService {
     }
 
     return {
-      title: 'Категории - OpenForum',
+      title: 'Категории - Ydea',
       categories: categories,
       pageCount: pageCount,
       page: page,

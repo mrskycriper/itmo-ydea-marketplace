@@ -42,10 +42,10 @@ export class UserService {
   }
 
   async getLogin() {
-    return { title: 'Авторизация - OpenForum' };
+    return { title: 'Авторизация - Ydea' };
   }
 
   async getRegister() {
-    return { title: 'Регистрация - OpenForum' };
+    return { title: 'Регистрация - Ydea' };
   }
 }
