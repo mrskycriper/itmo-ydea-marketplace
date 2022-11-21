@@ -29,7 +29,7 @@ export class ChatService {
       empty = false;
     }
     return {
-      title: 'Чаты - OpenForum',
+      title: 'Чаты - Ydea',
       chatData: chats,
       pageCount: pageCount,
       page: page,
@@ -80,7 +80,7 @@ export class ChatService {
       include: { author: true },
     });
     return {
-      title: chat.name + ' - OpenForum',
+      title: chat.name + ' - Ydea',
       chatName: chat.name,
       chatId: chatId,
       messages: messages,
@@ -156,7 +156,7 @@ export class ChatService {
       },
     });
     return {
-      title: chat.name + ' - OpenForum',
+      title: chat.name + ' - Ydea',
       chatName: chat.name,
       chatId: chat.id,
       chatDescription: chat.description,

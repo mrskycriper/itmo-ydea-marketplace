@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
   async getMain() {
     return {
-      title: 'Главная - OpenForum',
+      title: 'Ydea',
     };
   }
 }

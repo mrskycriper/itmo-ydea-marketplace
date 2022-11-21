@@ -60,7 +60,7 @@ export class TopicService {
     }
 
     return {
-      title: topic.name + ' - OpenForum',
+      title: topic.name + ' - Ydea',
       topicName: topic.name,
       topicId: topicId,
       posts: posts,
@@ -77,7 +77,7 @@ export class TopicService {
       where: { id: topicId },
     });
     return {
-      title: topic.name + ' - OpenForum',
+      title: topic.name + ' - Ydea',
       topicName: topic.name,
       topicId: topic.id,
       topicDescription: topic.description,

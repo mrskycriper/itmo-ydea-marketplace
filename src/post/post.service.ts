@@ -88,7 +88,7 @@ export class PostService {
       where: { id: post.user_id },
     });
     return {
-      title: post.title + ' - OpenForum',
+      title: post.title + ' - Ydea',
       postTitle: post.title,
       postContent: post.content,
       createdAt: post.created_at,
@@ -121,7 +121,7 @@ export class PostService {
       throw new NotFoundException('Post not found');
     }
     return {
-      title: post.title + ' - OpenForum',
+      title: post.title + ' - Ydea',
       postTitle: post.title,
       postContent: post.content,
       postId: postId,

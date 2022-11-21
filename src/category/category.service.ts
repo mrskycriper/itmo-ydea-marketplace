@@ -135,7 +135,7 @@ export class CategoryService {
     }
 
     return {
-      title: category.name + ' - OpenForum',
+      title: category.name + ' - Ydea',
       categoryName: category.name,
       categoryId: category.id,
       topics: topics,
@@ -152,7 +152,7 @@ export class CategoryService {
       where: { id: categoryId },
     });
     return {
-      title: category.name + ' - OpenForum',
+      title: category.name + ' - Ydea',
       categoryName: category.name,
       categoryId: category.id,
       categoryDescription: category.description,
