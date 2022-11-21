@@ -18,5 +18,5 @@ export class TopicEntity {
     example: '3421',
     description: 'Unique category id this topic is attached to',
   })
-  categoryId: number;
+  category_id: number;
 }

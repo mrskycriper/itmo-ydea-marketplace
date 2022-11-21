@@ -17,20 +17,20 @@ export class ChatGateway {
 
   @SubscribeMessage('messageFromClient')
   async handleEvent(@MessageBody() message: ReceiveMessageDto) {
-    if (message.userId == null) {
+    if (message.user_id == null) {
       throw new UnauthorizedException('Unauthorized');
     }
     const user = await prisma.user.findUnique({
-      where: { id: message.userId },
+      where: { id: message.user_id },
     });
-    await this.chatsService.postMessage(user.id, message.chatId, {
+    await this.chatsService.postMessage(user.id, message.chat_id, {
       content: message.content,
     });
     this.server.emit('messageFromServer', {
       content: message.content,
       createdAt: new Date(),
       author: user,
-      chatId: message.chatId,
+      chatId: message.chat_id,
     });
   }
 }

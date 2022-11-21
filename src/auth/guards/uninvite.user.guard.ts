@@ -48,14 +48,14 @@ export class UninviteUserGuard implements CanActivate {
 
     const userId = session.getUserId();
     const chatToUser = await prisma.chatToUser.findUnique({
-      where: { chatId_userId: { chatId: chatId, userId: userId } },
+      where: { chat_id_user_id: { chat_id: chatId, user_id: userId } },
     });
     if (chatToUser == null) {
       throw new ForbiddenException('Access forbidden');
     }
 
     const chatToUserUninvite = await prisma.chatToUser.findUnique({
-      where: { chatId_userId: { chatId: chatId, userId: user.id } },
+      where: { chat_id_user_id: { chat_id: chatId, user_id: userId } },
     });
     if (chatToUserUninvite == null) {
       throw new NotFoundException('No such user in chat');

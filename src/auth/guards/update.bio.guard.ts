@@ -33,7 +33,7 @@ export class UpdateBioGuard implements CanActivate {
 
     const userId = session.getUserId();
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user.isAdmin && userToUpdate.id != userId) {
+    if (!user.is_admin && userToUpdate.id != userId) {
       throw new ForbiddenException('Forbidden operation');
     }
 

@@ -8,9 +8,6 @@ import {
 
 export class CreateUserDto {
   @IsNotEmpty()
-  @IsAlphanumeric()
-  @MaxLength(32)
-  @MinLength(2)
   @ApiProperty({
     example: 'name',
     description: 'User name',

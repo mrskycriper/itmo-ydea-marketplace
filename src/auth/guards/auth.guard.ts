@@ -12,6 +12,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const httpContext = context.switchToHttp();
     let session: SessionContainer;
+    return true; // TODO Включить авторизацию
     try {
       session = await Session.getSession(
         httpContext.getRequest(),

@@ -11,51 +11,46 @@ datasource db {
 }
 
 model User {
-  id          String    @id
-  name        String    @unique
-  isModerator Boolean   @default(false)
-  isAdmin     Boolean   @default(false)
-  posts       Post[]
-  comments    Comment[]
-  messages    Message[]
-  chats       Chat[]
-  profile     Profile?
+  id               String       @id @db.Uuid
+  name             String       @unique
+  is_moderator     Boolean      @default(false)
+  is_admin         Boolean      @default(false)
+  is_support       Boolean      @default(false)
+  is_seller        Boolean      @default(false)
+  current_order_id Int          @default(0)
+  posts            Post[]
+  comments         Comment[]
+  messages         Message[]
+  seller           Seller[]
+  review           Review[]
+  order            Order[]
+  chat_to_user     ChatToUser[]
 
-  ChatToUser ChatToUser[]
   @@map("user")
 }
 
-model Profile {
-  id     Int    @id @default(autoincrement())
-  bio    String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique
-
-  @@map("profile")
-}
-
 model Post {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  title     String
-  content   String
-  author    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  topic     Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  comments  Comment[]
-  userId    String
-  topicId   Int
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  title      String
+  content    String
+  author     User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  topic      Topic     @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  comments   Comment[]
+  user_id    String    @db.Uuid
+  topic_id   Int
 
   @@map("post")
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-  author    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  userId    String
-  postId    Int
+  id         Int      @id @default(autoincrement())
+  content    String
+  created_at DateTime @default(now())
+  author     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user_id    String   @db.Uuid
+  post_id    Int
 
   @@map("comment")
 }
@@ -65,8 +60,8 @@ model Topic {
   name        String
   description String
   posts       Post[]
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId  Int
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id Int
 
   @@map("topic")
 }
@@ -81,33 +76,108 @@ model Category {
 }
 
 model Chat {
-  id          Int          @id @default(autoincrement())
-  name        String
-  description String
-  users       User[]
-  messages    Message[]
-  ChatToUser  ChatToUser[]
+  id           Int          @id @default(autoincrement())
+  name         String
+  description  String
+  messages     Message[]
+  chat_to_user ChatToUser[]
 
   @@map("chat")
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-  author    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  userId    String
-  chatId    Int
+  id         Int      @id @default(autoincrement())
+  content    String
+  created_at DateTime @default(now())
+  author     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  chat       Chat     @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  user_id    String   @db.Uuid
+  chat_id    Int
 
   @@map("message")
 }
 
 model ChatToUser {
-  chat   Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  chatId Int
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  chat    Chat   @relation(fields: [chat_id], references: [id], onDelete: Cascade)
+  chat_id Int
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String @db.Uuid
 
-  @@id([chatId, userId])
+  @@id([chat_id, user_id])
+  @@map("chat_to_user")
+}
+
+model Seller {
+  id          Int       @id @default(autoincrement())
+  description String
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     String    @db.Uuid
+  product     Product[]
+
+  @@map("seller")
+}
+
+model Product {
+  id                Int               @id @default(autoincrement())
+  name              String
+  description       String?
+  price             Decimal           @db.Money
+  number            Int
+  number_booked     Int               @default(0)
+  rating_average    Float             @default(0)
+  seller            Seller            @relation(fields: [seller_id], references: [id], onDelete: Cascade)
+  seller_id         Int
+  review            Review[]
+  photo             Photo[]
+  products_in_order ProductsInOrder[]
+
+  @@map("product")
+}
+
+model Review {
+  id         String  @id @default(uuid()) @db.Uuid
+  rating     Int
+  text       String
+  user       User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    String  @db.Uuid
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id Int
+
+  @@map("review")
+}
+
+model Photo {
+  id         String  @id @default(uuid()) @db.Uuid
+  photo_url  String
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id Int
+
+  @@map("photo")
+}
+
+model ProductsInOrder {
+  id         String  @id @default(uuid()) @db.Uuid
+  number     Int
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id Int
+  order      Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id   Int
+
+  @@map("products_in_order")
+}
+
+model Order {
+  id                Int               @id @default(autoincrement())
+  start_timestamp   DateTime
+  status            String            @default("COLLECTING")
+  sum               Decimal           @default(0) @db.Money
+  times_booked      Int               @default(0)
+  timeslot_start    DateTime?
+  timeslot_end      DateTime?
+  address           String?
+  user              User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id           String            @db.Uuid
+  products_in_order ProductsInOrder[]
+
+  @@map("order")
 }

@@ -29,7 +29,7 @@ export class ChatService {
       empty = false;
     }
     return {
-      title: 'Чаты - OpenForum',
+      title: 'Чаты - Ydea',
       chatData: chats,
       pageCount: pageCount,
       page: page,
@@ -40,9 +40,9 @@ export class ChatService {
   async _getChats(userId: string, page: number, take: number): Promise<object> {
     return await prisma.chat.findMany({
       where: {
-        ChatToUser: {
+        chat_to_user: {
           some: {
-            userId: userId,
+            user_id: userId,
           },
         },
       },
@@ -57,9 +57,9 @@ export class ChatService {
   async _getChatAmount(userId: string): Promise<number> {
     const chats = await prisma.chat.findMany({
       where: {
-        ChatToUser: {
+        chat_to_user: {
           some: {
-            userId: userId,
+            user_id: userId,
           },
         },
       },
@@ -73,14 +73,14 @@ export class ChatService {
       throw new NotFoundException('Chat not found');
     }
     const messages = await prisma.message.findMany({
-      where: { chatId: chat.id },
+      where: { chat_id: chat.id },
       orderBy: {
-        createdAt: 'asc',
+        created_at: 'asc',
       },
       include: { author: true },
     });
     return {
-      title: chat.name + ' - OpenForum',
+      title: chat.name + ' - Ydea',
       chatName: chat.name,
       chatId: chatId,
       messages: messages,
@@ -90,7 +90,7 @@ export class ChatService {
   async inviteUser(chatId: number, inviteName: string) {
     const user = await prisma.user.findUnique({ where: { name: inviteName } });
     await prisma.chatToUser.create({
-      data: { userId: user.id, chatId: chatId },
+      data: { user_id: user.id, chat_id: chatId },
     });
   }
 
@@ -100,9 +100,9 @@ export class ChatService {
     });
     await prisma.chatToUser.delete({
       where: {
-        chatId_userId: {
-          chatId: chatId,
-          userId: user.id,
+        chat_id_user_id: {
+          chat_id: chatId,
+          user_id: user.id,
         },
       },
     });
@@ -116,7 +116,7 @@ export class ChatService {
       data: createChatDto,
     });
     await prisma.chatToUser.create({
-      data: { userId: userId, chatId: chat.id },
+      data: { user_id: userId, chat_id: chat.id },
     });
     return { chatId: chat.id };
   }
@@ -136,10 +136,10 @@ export class ChatService {
   ) {
     await prisma.message.create({
       data: {
-        createdAt: new Date(),
+        created_at: new Date(),
         content: createMessageDto.content,
-        userId: userId,
-        chatId: chatId,
+        user_id: userId,
+        chat_id: chatId,
       },
     });
   }
@@ -148,15 +148,15 @@ export class ChatService {
     const chat = await prisma.chat.findUnique({ where: { id: chatId } });
     const users = await prisma.user.findMany({
       where: {
-        ChatToUser: {
+        chat_to_user: {
           some: {
-            chatId: chatId,
+            chat_id: chatId,
           },
         },
       },
     });
     return {
-      title: chat.name + ' - OpenForum',
+      title: chat.name + ' - Ydea',
       chatName: chat.name,
       chatId: chat.id,
       chatDescription: chat.description,

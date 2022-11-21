@@ -21,5 +21,5 @@ export class CreateTopicDto {
     example: '3421',
     description: 'Unique category id this topic is attached to',
   })
-  readonly categoryId: number;
+  readonly category_id: number;
 }

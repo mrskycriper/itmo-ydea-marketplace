@@ -48,7 +48,7 @@ export class CategoryService {
     }
 
     return {
-      title: 'Категории - OpenForum',
+      title: 'Категории - Ydea',
       categories: categories,
       pageCount: pageCount,
       page: page,
@@ -115,7 +115,7 @@ export class CategoryService {
     const topics = await prisma.topic.findMany({
       skip: (page - 1) * take,
       take: take,
-      where: { categoryId: categoryId },
+      where: { category_id: categoryId },
     });
     let empty = true;
     if (Object.keys(topics).length != 0) {
@@ -123,7 +123,7 @@ export class CategoryService {
     }
 
     const topicsAll = await prisma.topic.findMany({
-      where: { categoryId: categoryId },
+      where: { category_id: categoryId },
     });
 
     let pageCount = Math.ceil(topicsAll.length / take);
@@ -135,7 +135,7 @@ export class CategoryService {
     }
 
     return {
-      title: category.name + ' - OpenForum',
+      title: category.name + ' - Ydea',
       categoryName: category.name,
       categoryId: category.id,
       topics: topics,
@@ -152,7 +152,7 @@ export class CategoryService {
       where: { id: categoryId },
     });
     return {
-      title: category.name + ' - OpenForum',
+      title: category.name + ' - Ydea',
       categoryName: category.name,
       categoryId: category.id,
       categoryDescription: category.description,

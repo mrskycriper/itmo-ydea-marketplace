@@ -7,11 +7,11 @@ block body
     main
         div(class='login-main')
             div(class='login-container' id='register-container')
-                p(class='logo') OpenForum
+                p(class='logo') Ydea
                 form(class='login-form' id='signup-form')
                     div(class='login-form__input-group')
                         label(class='login-form__input-label' for='username') Имя пользователя
-                        input(class='login-form__input' id='username' type=text pattern="[0-9a-zA-Z]{2,32}" required=true)
+                        input(class='login-form__input' id='username' type=text required=true)
                     div(class='login-form__input-group')
                         label(class='login-form__input-label' for='email') E-mail
                         input(class='login-form__input' id='email' type='email' required=true)
@@ -20,6 +20,5 @@ block body
                         input(class='login-form__input' id='password' type="password" pattern="[0-9a-zA-Z]" minlength=8 required=true)
                     a(class='login-form__link' href="/login") Авторизация
                     button(class='register-form__submit-button' id='register-btn') Зарегистрироваться
-                    p(class='login-form__info-text') • Никнейм должен сдержать цифры и буквы латинского алфавита и состоять из 2-32 символов
                     p(class='login-form__info-text') • Пароль должен сдержать минимум одну цифру и букву латинского алфавита, а так же быть не менее 8 символов в длину
                 div(class='login-form__info-card' style='visibility: hidden' id='info-card')

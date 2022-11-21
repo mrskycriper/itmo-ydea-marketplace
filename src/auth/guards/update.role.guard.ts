@@ -33,7 +33,7 @@ export class UpdateRoleGuard implements CanActivate {
 
     const userId = session.getUserId();
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user.isAdmin) {
+    if (!user.is_admin) {
       throw new ForbiddenException('Forbidden operation');
     }
 

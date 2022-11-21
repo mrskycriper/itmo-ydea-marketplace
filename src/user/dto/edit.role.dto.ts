@@ -7,12 +7,26 @@ export class EditRoleDto {
     example: 'true',
     description: 'If user is Moderator',
   })
-  readonly isModerator: boolean;
+  readonly is_moderator: boolean;
 
   @IsBoolean()
   @ApiProperty({
     example: 'true',
     description: 'If user is Admin',
   })
-  readonly isAdmin: boolean;
+  readonly is_admin: boolean;
+
+  @IsBoolean()
+  @ApiProperty({
+    example: 'true',
+    description: 'If user is Support',
+  })
+  readonly is_support: boolean;
+
+  @IsBoolean()
+  @ApiProperty({
+    example: 'true',
+    description: 'If user is Seller',
+  })
+  readonly is_seller: boolean;
 }

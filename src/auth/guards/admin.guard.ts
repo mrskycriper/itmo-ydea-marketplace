@@ -23,7 +23,7 @@ export class AdminGuard implements CanActivate {
     }
     const userId = session.getUserId();
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user.isAdmin && !user.isModerator) {
+    if (!user.is_admin && !user.is_moderator) {
       throw new UnauthorizedException('Unauthorized');
     }
 

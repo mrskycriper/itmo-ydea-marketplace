@@ -40,7 +40,7 @@ export class AccessChatGuard implements CanActivate {
 
     const userId = session.getUserId();
     const chatToUser = await prisma.chatToUser.findUnique({
-      where: { chatId_userId: { chatId: chatId, userId: userId } },
+      where: { chat_id_user_id: { chat_id: chatId, user_id: userId } },
     });
     if (chatToUser == null) {
       throw new ForbiddenException('Access forbidden');

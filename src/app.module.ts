@@ -10,6 +10,9 @@ import { TopicModule } from './topic/topic.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './all.exception.filter';
 import { AuthModule } from './auth/auth.module';
+import { ProductModule } from './product/product.module';
+import { OrderModule } from './order/order.module';
+import { SellerModule } from './seller/seller.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { AuthModule } from './auth/auth.module';
     PostModule,
     TopicModule,
     CategoryModule,
+    ProductModule,
+    OrderModule,
+    SellerModule,
   ],
   controllers: [AppController],
   providers: [

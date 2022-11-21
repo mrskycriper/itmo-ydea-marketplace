@@ -53,7 +53,7 @@ export class PostController {
     @SessionDecorator() session: SessionContainer,
     @Body() createPostDto: CreatePostDto,
   ): Promise<object> {
-    if (session.getUserId() != createPostDto.userId) {
+    if (session.getUserId() != createPostDto.user_id) {
       throw new BadRequestException('userIds does not match');
     }
     return await this.postService.createPost(createPostDto);
@@ -128,7 +128,7 @@ export class PostController {
     @SessionDecorator() session: SessionContainer,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    if (session.getUserId() != createCommentDto.userId) {
+    if (session.getUserId() != createCommentDto.user_id) {
       throw new BadRequestException('userIds does not match');
     }
     return await this.postService.createComment(createCommentDto);

@@ -33,7 +33,7 @@ export class DeleteUserGuard implements CanActivate {
 
     const userId = session.getUserId();
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user.isAdmin && userToDelete.id != userId) {
+    if (!user.is_admin && userToDelete.id != userId) {
       throw new ForbiddenException('Forbidden operation');
     }
 
