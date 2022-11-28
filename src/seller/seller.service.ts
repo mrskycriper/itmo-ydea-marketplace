@@ -44,6 +44,13 @@ export class SellerService {
     };
   }
 
+  async getSellers() {
+    const sellers = await prisma.seller.findMany();
+    return {
+      sellers: sellers,
+    };
+  }
+
   async updateSeller(sellerId: number, updateSellerDto: UpdateSellerDto) {
     const seller = await prisma.seller.findUnique({
       where: { id: sellerId },
