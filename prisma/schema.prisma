@@ -120,6 +120,8 @@ model Seller {
 model Product {
   id                Int               @id @default(autoincrement())
   name              String
+  category          Product_category  @relation(fields: [category_id], references: [id])
+  category_id       String            @db.Uuid @default("1d98dc2b-3dc8-4a71-a2f0-9312bdf07317")
   description       String?
   price             Decimal           @db.Money
   number            Int
@@ -180,4 +182,11 @@ model Order {
   products_in_order ProductsInOrder[]
 
   @@map("order")
+}
+
+model Product_category{
+  id         String  @id @default(uuid()) @db.Uuid
+  category   String  @unique
+  products   Product[]
+ @@map("product_category")
 }
