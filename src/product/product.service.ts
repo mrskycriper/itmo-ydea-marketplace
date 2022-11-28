@@ -8,6 +8,7 @@ import { CreateReviewDto } from './dto/create.review.dto';
 import prisma from '../client';
 import { CreatePhotoDto } from './dto/create.photo.dto';
 import { EditProductDto } from './dto/edit.product.dto';
+import { CreateProductCategoryDto } from './dto/create.productcategory.dto';
 
 @Injectable()
 export class ProductService {
@@ -18,12 +19,16 @@ export class ProductService {
     if (seller == null) {
       throw new NotFoundException('Seller not found');
     }
+    if(createProductDto.price <= 0){
+      throw new BadRequestException('Price should be above zero')
+    }
+    if(createProductDto.number < 0){
+      throw new BadRequestException('Product quantity shold not be below zero')
+    }
     const product = await prisma.product.create({
       data: createProductDto,
     });
     return { productId: product.id };
-    // TODO цена должна быть > 0
-    // TODO количество должно быть >= 0
   }
 
   async deleteProduct(productId: number) {
@@ -164,6 +169,12 @@ export class ProductService {
         'Product quantity must be above or equal to 0',
       );
     }
+    const category = await prisma.product_category.findUnique({
+      where: { id: editProductDto.category_id },
+    });
+    if (category == null) {
+      throw new NotFoundException('Category not found');
+    }
     const old_price = Number(product.price);
     await prisma.product.update({
       where: { id: productId },
@@ -190,4 +201,52 @@ export class ProductService {
       }
     }
   }
+  async createProductCategory(createProductCategoryDto: CreateProductCategoryDto) {
+    const category = await prisma.product_category.findUnique({
+      where: { category : createProductCategoryDto.category },
+    });
+    if (category != null) {
+      throw new NotFoundException('Category name should be unique');
+    }
+    await prisma.product_category.create({ data: createProductCategoryDto });
+  }
+
+  async getProductCategory(categoryId: string) {
+    const category = await prisma.product_category.findUnique({
+      where: { id: categoryId },
+    });
+    if (category == null) {
+      throw new NotFoundException('Category not found');
+    }
+    const products = await prisma.product.findMany({
+      where: {category_id : categoryId}
+    })
+    return { category: category, products: products };
+  }
+
+  async getProductCategories() {
+    const categories = await prisma.product_category.findMany({
+    });
+    return { categories: categories};
+  }
+
+  async deleteProductCategory(categoryId: string) {
+    const category = await prisma.product_category.findUnique({
+      where: { id: categoryId },
+    });
+    if (category == null) {
+      throw new NotFoundException('Category not found');
+    }
+    const defaultCategory = await prisma.product_category.findUnique({
+      where: { category:  'без категории'},
+    });
+    await prisma.product.updateMany({
+      where: {category_id : categoryId},
+      data:{
+        category_id : defaultCategory.id,
+      }
+    })
+    await prisma.product_category.delete({ where: { id: categoryId } });
+  }
+
 }
