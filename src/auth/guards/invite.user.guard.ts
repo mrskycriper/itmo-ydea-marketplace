@@ -38,9 +38,9 @@ export class InviteUserGuard implements CanActivate {
       throw new NotFoundException('Chat not found');
     }
 
-    const userName = path.split('/')[4];
+    const userid = path.split('/')[4];
     const user = await prisma.user.findUnique({
-      where: { name: userName },
+      where: { id : userid },
     });
     if (user == null) {
       throw new NotFoundException('User not found');

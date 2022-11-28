@@ -35,17 +35,6 @@ import { UpdateRoleGuard } from '../auth/guards/update.role.guard';
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
-  @ApiOperation({ summary: 'Check if username is already taken' })
-  @ApiBody({ type: CheckUsernameDto })
-  @ApiCreatedResponse({ description: 'Created' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Post('checkName')
-  async isUsernameTaken(
-    @Body() checkUsernameDto: CheckUsernameDto,
-  ): Promise<object> {
-    return await this.usersService.isUsernameTaken(checkUsernameDto.name);
-  }
-
   @ApiOperation({ summary: 'Create new user' })
   @ApiBody({ type: CreateUserDto })
   @ApiCreatedResponse({ description: 'Created' })
@@ -58,9 +47,9 @@ export class UserController {
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Change user role flags' })
   @ApiParam({
-    name: 'userName',
+    name: 'userId',
     type: 'string',
-    description: 'Unique user name',
+    description: 'Unique user id',
   })
   @ApiBody({ type: EditRoleDto })
   @ApiOkResponse({ description: 'OK' })
@@ -69,29 +58,29 @@ export class UserController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(UpdateRoleGuard)
-  @Put('users/:userName/role')
+  @Put('users/:userId/role')
   async updateRole(
-    @Param('userName') userName: string,
+    @Param('userId') userId: string,
     @Body() editRoleDto: EditRoleDto,
   ) {
-    return await this.usersService.updateRole(userName, editRoleDto);
+    return await this.usersService.updateRole(userId, editRoleDto);
   }
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Delete user' })
   @ApiParam({
-    name: 'userName',
+    name: 'userId',
     type: 'string',
-    description: 'Unique user name',
+    description: 'Unique user id',
   })
   @ApiOkResponse({ description: 'OK' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(DeleteUserGuard)
-  @Delete('users/:userName')
-  async deleteUser(@Param('userName') userName: string) {
-    return await this.usersService.deleteUser(userName);
+  @Delete('users/:userId')
+  async deleteUser(@Param('userId') userId: string) {
+    return await this.usersService.deleteUser(userId);
   }
 
   @ApiOperation({ summary: 'Get login page' })
