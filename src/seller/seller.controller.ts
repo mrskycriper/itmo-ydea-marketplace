@@ -109,4 +109,16 @@ export class SellerController {
   ) {
     return await this.sellerService.updateSeller(sellerId, updateSellerDto);
   }
+
+  @ApiOperation({ summary: 'Get all sellers' })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @Get('sellers/')
+  // @Render('seller')
+  async getSellers(
+    @SessionDecorator() session: SessionContainer,
+  ): Promise<object> {
+    return await this.sellerService.getSellers();
+  }
 }
