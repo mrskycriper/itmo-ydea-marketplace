@@ -29,6 +29,7 @@ import { CheckUsernameDto } from './dto/check.username.dto';
 import { EditRoleDto } from './dto/edit.role.dto';
 import { DeleteUserGuard } from '../auth/guards/delete.user.guard';
 import { UpdateRoleGuard } from '../auth/guards/update.role.guard';
+import { EditUserDto } from './dto/edit.user.dto';
 
 @ApiTags('user')
 @Controller()
@@ -64,6 +65,29 @@ export class UserController {
     @Body() editRoleDto: EditRoleDto,
   ) {
     return await this.usersService.updateRole(userId, editRoleDto);
+  }
+
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'Change username' })
+  @ApiParam({
+    name: 'userId',
+    type: 'string',
+    description: 'Unique user id',
+  })
+  @ApiBody({ type: EditUserDto })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  //@UseGuards(UpdateRoleGuard)
+  //ToDo guard to check that it's the right user
+  @Put('users/:userId/')
+  async editUser(
+    @Param('userId') userId: string,
+    @Body() editUserDto: EditUserDto,
+  ) {
+    return await this.usersService.editUser(userId, editUserDto);
   }
 
   @ApiCookieAuth()
