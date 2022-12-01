@@ -9,7 +9,6 @@ import prisma from '../client';
 import { CreatePhotoDto } from './dto/create.photo.dto';
 import { EditProductDto } from './dto/edit.product.dto';
 import { CreateProductCategoryDto } from './dto/create.productcategory.dto';
-import { isNull } from 'util';
 
 @Injectable()
 export class ProductService {
