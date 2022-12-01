@@ -9,6 +9,7 @@ import prisma from '../client';
 import { CreatePhotoDto } from './dto/create.photo.dto';
 import { EditProductDto } from './dto/edit.product.dto';
 import { CreateProductCategoryDto } from './dto/create.productcategory.dto';
+import { isNull } from 'util';
 
 @Injectable()
 export class ProductService {
@@ -247,6 +248,421 @@ export class ProductService {
       }
     })
     await prisma.product_category.delete({ where: { id: categoryId } });
+  }
+
+  async getCatalogue(seller_id: number = -1, product_category_id : string = null, price_sort: number = -1, rating_sort: number = -1, page: number, perPage: number){
+    if(seller_id!= -1){
+      const seller = await prisma.seller.findUnique({where: {id: seller_id}});
+      if(seller==null){
+        throw new NotFoundException("Seller not found");
+      }
+    }
+    if(product_category_id!= null){
+      const category = await prisma.product_category.findUnique({where: {id: product_category_id}});
+      if(category==null){
+        throw new NotFoundException("Category not found");
+      }
+    }
+    if(price_sort!=-1 && price_sort!=0 && price_sort!= 1){
+      throw new BadRequestException("Price sorting parameter is invalid.");
+    }
+    if(rating_sort!=-1 && rating_sort!=0 && rating_sort!= 1){
+      throw new BadRequestException("Rating sorting parameter is invalid.");
+    }
+    if(page<=0){
+      throw new BadRequestException("Page number should be above zero.")
+    }
+    if(perPage<=0){
+      throw new BadRequestException("Number of product per page should be above zero.")
+    }
+      const filters = Number(price_sort!= -1)*8 + Number(product_category_id!=null)*4+Number(rating_sort!=-1)*2+Number(seller_id!=-1);
+      switch(filters){
+        case 0:
+          return await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+          });
+        case 1:
+          return await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            where: {seller_id: seller_id},
+          }); 
+        case 2:
+          if(rating_sort== 1){
+          return await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            orderBy:{
+              rating_average: 'asc',
+            }
+          });
+        }else{
+          return await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            orderBy:{
+              rating_average: 'desc',
+            }
+          });
+        }
+        case 3:
+          if(rating_sort== 1){
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                rating_average: 'asc',
+              },
+              where: {seller_id: seller_id}
+            });
+          }else{
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                rating_average: 'desc',
+              },
+              where: {seller_id: seller_id}
+            });
+          }
+        case 4:
+          return await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            where: {category_id: product_category_id},
+          }); 
+        case 5:
+          return await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            where: {
+              category_id: product_category_id,
+              seller_id: seller_id},
+          });
+        case 6:
+          if(rating_sort== 1){
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                rating_average: 'asc',
+              },
+              where: {category_id: product_category_id}
+            });
+          }else{
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                rating_average: 'desc',
+              },
+              where: {category_id: product_category_id}
+            });
+          }
+        case 7:
+          if(rating_sort== 1){
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                rating_average: 'asc',
+              },
+              where: {
+                category_id: product_category_id,
+                seller_id: seller_id},
+            });
+          }else{
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                rating_average: 'desc',
+              },
+              where: {
+                category_id: product_category_id,
+                seller_id: seller_id},
+            });
+          }
+        case 8:
+          if(price_sort== 1){
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                price: 'asc',
+              }
+            });
+          }else{
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                price: 'desc',
+              }
+            });
+          }
+        case 9:
+          if(price_sort== 1){
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                price: 'asc',
+              },
+              where: {seller_id: seller_id}
+            });
+          }else{
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                price: 'desc',
+              },
+              where: {seller_id: seller_id}
+            });
+          }
+        case 10:
+          var sorting = price_sort*2 + rating_sort;
+          switch(sorting){
+            case 0:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'desc'
+                },
+              {rating_average: 'asc'}
+            ]
+              });
+            case 1:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'desc'
+                },
+              {rating_average: 'asc'}
+            ]
+              });
+            case 2:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'asc'
+                },
+              {rating_average: 'desc'}
+            ]
+              });
+            case 3:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'asc'
+                },
+              {rating_average: 'asc'}
+            ]
+              });
+          }
+        case 11:
+          sorting = price_sort*2 + rating_sort;
+          switch(sorting){
+            case 0:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'desc'
+                },
+              {rating_average: 'desc'}
+            ],
+                where: {seller_id: seller_id}
+              });
+            case 1:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'desc'
+                },
+              {rating_average: 'asc'}
+            ],
+                where: {seller_id: seller_id}
+              });
+            case 2:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'asc'
+                },
+              {rating_average: 'desc'}
+            ],
+                where: {seller_id: seller_id}
+              });
+            case 3:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'asc'
+                },
+              {rating_average: 'asc'}
+            ],
+                where: {seller_id: seller_id}
+              });
+          }
+        case 12:
+          if(price_sort== 1){
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                price: 'asc',
+              },
+              where: {category_id: product_category_id},
+            });
+          }else{
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                price: 'desc',
+              },
+              where: {category_id: product_category_id},
+            });
+          }
+        case 13:
+          if(price_sort== 1){
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                price: 'asc',
+              },
+              where: {
+                category_id: product_category_id,
+                seller_id: seller_id},
+            });
+          }else{
+            return await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+            take: perPage,
+              orderBy:{
+                price: 'desc',
+              },
+              where: {
+                category_id: product_category_id,
+                seller_id: seller_id},
+            });
+          }
+        case 14:
+          sorting = price_sort*2 + rating_sort;
+          switch(sorting){
+            case 0:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'desc'
+                },
+              {rating_average: 'desc'}
+            ],
+                where: {category_id: product_category_id}
+              });
+            case 1:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'desc'
+                },
+              {rating_average: 'asc'}
+            ],
+                where: {category_id: product_category_id}
+              });
+            case 2:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'asc'
+                },
+              {rating_average: 'desc'}
+            ],
+                where: {category_id: product_category_id}
+              });
+            case 3:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'asc'
+                },
+              {rating_average: 'asc'}
+            ],
+                where: {category_id: product_category_id}
+              });
+          }
+        case 15:
+          sorting = price_sort*2 + rating_sort;
+          switch(sorting){
+            case 0:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'desc'
+                },
+              {rating_average: 'desc'}
+            ],
+                where: {
+                  category_id: product_category_id,
+                  seller_id: seller_id},
+              });
+            case 1:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'desc'
+                },
+              {rating_average: 'asc'}
+            ],
+                where: {
+                  category_id: product_category_id,
+                  seller_id: seller_id},
+              });
+            case 2:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'asc'
+                },
+              {rating_average: 'desc'}
+            ],
+                where: {
+                  category_id: product_category_id,
+                  seller_id: seller_id},
+              });
+            case 3:
+              return await prisma.product.findMany({
+                skip: (page - 1) * perPage,
+            take: perPage,
+                orderBy:[{
+                  price: 'asc'
+                },
+              {rating_average: 'asc'}
+            ],
+                where: {
+                  category_id: product_category_id,
+                  seller_id: seller_id},
+              });
+          }
+      }
   }
 
 }
