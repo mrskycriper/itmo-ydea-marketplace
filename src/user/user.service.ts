@@ -6,6 +6,7 @@ import { EditRoleDto } from './dto/edit.role.dto';
 import { NotFoundError } from '@prisma/client/runtime';
 import { CreateChatDto } from 'src/chat/dto/create.chat.dto';
 import { ChatService } from 'src/chat/chat.service';
+import { EditUserDto } from './dto/edit.user.dto';
 
 @Injectable()
 export class UserService {
@@ -34,6 +35,17 @@ export class UserService {
     await prisma.user.update({
       where: { id: userId },
       data: editRoleDto,
+    });
+  }
+
+  async editUser(userId: string, editUserDto: EditUserDto) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if(user == null){
+      throw new NotFoundException("User not found");
+    }
+    await prisma.user.update({
+      where: { id: userId },
+      data: editUserDto,
     });
   }
 
