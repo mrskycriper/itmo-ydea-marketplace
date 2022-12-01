@@ -8,18 +8,21 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Render,
   UseGuards,
 } from '@nestjs/common';
@@ -224,7 +227,9 @@ export class ProductController {
     @SessionDecorator() session: SessionContainer,
     @Body() createProductCategoryDto: CreateProductCategoryDto,
   ) {
-    return await this.productService.createProductCategory(createProductCategoryDto);
+    return await this.productService.createProductCategory(
+      createProductCategoryDto,
+    );
   }
 
   @ApiCookieAuth()
@@ -255,7 +260,7 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('productcategories/:categoryId')
-  //@Render('product category') 
+  //@Render('product category')
   async getProductCategory(
     @SessionDecorator() session: SessionContainer,
     @Param('categoryId') categoryId: string,
@@ -267,10 +272,73 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('productcategories/')
-  //@Render('product category') 
+  //@Render('product category')
   async getProductCategories(
     @SessionDecorator() session: SessionContainer,
   ): Promise<object> {
     return await this.productService.getProductCategories();
+  }
+
+  @ApiOperation({ summary: 'Get catalogue' })
+  @ApiQuery({
+    name: 'seller_id',
+    type: 'number',
+    description: 'Seller id',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'product_category_id',
+    type: 'string',
+    description: 'Product Category Id',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'price_sort',
+    type: 'number',
+    description: 'Sorting by price',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'rating_sort',
+    type: 'number',
+    description: 'Sorting by rating',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    description: 'Page number',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    type: 'number',
+    description: 'Number of products per page',
+    required: true,
+  })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @Get('products/')
+  async getCatalogue(
+    @Query('seller_id', new DefaultValuePipe(-1), ParseIntPipe)
+    seller_id: number,
+    @Query('product_category_id') product_category_id: string,
+    @Query('price_sort', new DefaultValuePipe(-1), ParseIntPipe)
+    price_sort: number,
+    @Query('rating_sort', new DefaultValuePipe(-1), ParseIntPipe)
+    rating_sort: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,
+  ) {
+    return await this.productService.getCatalogue(
+      seller_id,
+      product_category_id,
+      price_sort,
+      rating_sort,
+      page,
+      perPage,
+    );
   }
 }
