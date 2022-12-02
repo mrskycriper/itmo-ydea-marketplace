@@ -33,6 +33,7 @@ import { SessionDecorator } from '../auth/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateSellerDto } from './dto/update.seller.dto';
+import { SellerGuard } from 'src/auth/guards/seller.guard';
 
 @ApiTags('seller')
 @Controller()
@@ -67,6 +68,7 @@ export class SellerController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   // TODO Seller guard (c проверкой id)
+  @UseGuards(SellerGuard)
   @Delete('sellers/:sellerId')
   async deleteSeller(@Param('sellerId', ParseIntPipe) sellerId: number) {
     return await this.sellerService.deleteSeller(sellerId);
@@ -81,6 +83,7 @@ export class SellerController {
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   @Get('sellers/:sellerId')
   // @Render('seller')
   // TODO Рендер страницы продавца
@@ -102,6 +105,7 @@ export class SellerController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(SellerGuard)
   @Patch('sellers/:sellerId')
   async updateSeller(
     @Param('sellerId', ParseIntPipe) sellerId: number,
