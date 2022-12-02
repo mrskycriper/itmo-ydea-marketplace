@@ -42,7 +42,7 @@ export class CategoryService {
     let admin = false;
 
     if (user) {
-      if (user.isAdmin || user.isModerator) {
+      if (user.is_admin || user.is_moderator) {
         admin = true;
       }
     }
@@ -101,7 +101,7 @@ export class CategoryService {
     }
 
     if (user) {
-      if (user.isAdmin || user.isModerator) {
+      if (user.is_admin || user.is_moderator) {
         admin = true;
       }
     }
