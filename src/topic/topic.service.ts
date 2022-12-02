@@ -31,7 +31,7 @@ export class TopicService {
     let admin = false;
 
     if (user) {
-      if (user.isAdmin || user.isModerator) {
+      if (user.is_admin || user.is_moderator) {
         admin = true;
       }
     }
