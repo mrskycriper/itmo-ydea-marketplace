@@ -151,6 +151,9 @@ export class CategoryService {
     const category = await prisma.category.findUnique({
       where: { id: categoryId },
     });
+    if (category == null) {
+      throw new NotFoundException('Category not found');
+    }
     return {
       title: category.name + ' - Ydea',
       categoryName: category.name,
