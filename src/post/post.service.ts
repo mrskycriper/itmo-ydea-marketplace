@@ -17,6 +17,12 @@ export class PostService {
     if (topic == null) {
       throw new NotFoundException('Topic not found');
     }
+    const user = await prisma.user.findUnique({
+      where: { id: createPostDto.user_id },
+    });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
     const post = await prisma.post.create({
       data: createPostDto,
     });
@@ -24,6 +30,12 @@ export class PostService {
   }
 
   async deletePost(postId: number) {
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+    if (post == null) {
+      throw new NotFoundException('Post not found');
+    }
     await prisma.post.delete({ where: { id: postId } });
   }
 
@@ -109,6 +121,12 @@ export class PostService {
     });
     if (post == null) {
       throw new NotFoundException('Post not found');
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: createCommentDto.user_id },
+    });
+    if (user == null) {
+      throw new NotFoundException('User not found');
     }
     await prisma.comment.create({ data: createCommentDto });
   }
