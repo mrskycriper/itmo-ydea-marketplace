@@ -90,7 +90,7 @@ export class SellerController {
     @SessionDecorator() session: SessionContainer,
     @Param('sellerId', ParseIntPipe) sellerId: number,
   ): Promise<object> {
-    return await this.sellerService.getSeller(sellerId);
+    return await this.sellerService.getSeller(sellerId, session.getUserId());
   }
 
   @ApiOperation({ summary: 'Update seller' })
