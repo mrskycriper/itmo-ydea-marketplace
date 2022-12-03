@@ -47,7 +47,7 @@ export class SellerController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Post('/sellers')
   async createSeller(
     @Body() createSellerDto: CreateSellerDto,
@@ -67,7 +67,6 @@ export class SellerController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  // TODO Seller guard (c проверкой id)
   @UseGuards(SellerGuard)
   @Delete('sellers/:sellerId')
   async deleteSeller(@Param('sellerId', ParseIntPipe) sellerId: number) {

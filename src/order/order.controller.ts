@@ -107,12 +107,8 @@ export class OrderController {
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @Get('cart')
-  async getShoppingCart(
-    @SessionDecorator() session: SessionContainer,
-  ) {
-    return await this.orderService.getShoppingCart(
-      session.getUserId(),
-    );
+  async getShoppingCart(@SessionDecorator() session: SessionContainer) {
+    return await this.orderService.getShoppingCart(session.getUserId());
   }
 
   @ApiCookieAuth()
@@ -123,9 +119,7 @@ export class OrderController {
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @Get('orders')
-  async getOrders(
-    @SessionDecorator() session: SessionContainer,
-  ) {
+  async getOrders(@SessionDecorator() session: SessionContainer) {
     return await this.orderService.getOrders(session.getUserId());
   }
 
