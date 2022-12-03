@@ -77,9 +77,10 @@ export class ChatController {
   @Get('chats/:chatId')
   @Render('chat')
   async getChat(
+    @SessionDecorator() session: SessionContainer,
     @Param('chatId', ParseIntPipe) chatId: number,
   ): Promise<object> {
-    return this.chatsService.getChat(chatId);
+    return this.chatsService.getChat(chatId, session.getUserId());
   }
 
   @ApiOperation({ summary: 'Create new chat' })
