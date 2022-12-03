@@ -250,7 +250,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(EditProductsInOrderGuard)
-  @Patch('orders/:orderId/products/:productsInOrderId')
+  @Patch('productsInOrder/:productsInOrderId')
   async editProductInOrder(
     @Param('productsInOrderId') productsInOrderId: string,
     @Body() editProductsInOrderDto: EditProductsInOrderDto,

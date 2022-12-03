@@ -28,16 +28,20 @@ class Api {
 
   createUser = (name, id) => this.#api.post('/user', { name: name, id: id });
 
-  updateRole = (name, isModerator, isAdmin) =>
-    this.#api.put('/users/' + name + '/role', {
-      isModerator: isModerator,
-      isAdmin: isAdmin,
+  updateRole = (id, is_moderator, is_admin, is_support, is_seller) =>
+    this.#api.put('/users/' + id + '/role', {
+      is_moderator: is_moderator,
+      is_admin: is_admin,
+      is_support: is_support,
+      is_seller: is_seller,
     });
 
-  updateBio = (name, bio) =>
-    this.#api.put('/users/' + name + '/bio', { bio: bio });
+  //updateBio = (name, bio) =>
+  //  this.#api.put('/users/' + name + '/bio', { bio: bio });
 
-  deleteUser = (name) => this.#api.delete('/users/' + name);
+  deleteUser = (id) => this.#api.delete('/users/' + id);
+
+  editUser = (name, id) => this.#api.put('/users/' + id, { name: name });
 
   createChat = (name, description) =>
     this.#api.post('/chats', { name: name, description: description });
@@ -48,11 +52,11 @@ class Api {
   editChat = (chatId, name, description) =>
     this.#api.put('/chats/' + chatId, { name: name, description: description });
 
-  inviteUser = (chatId, userName) =>
-    this.#api.post('/chats/' + chatId + '/invite/' + userName);
+  inviteUser = (chatId, userId) =>
+    this.#api.post('/chats/' + chatId + '/invite/' + userId);
 
-  unInviteUser = (chatId, userName) =>
-    this.#api.delete('/chats/' + chatId + '/invite/' + userName);
+  unInviteUser = (chatId, userId) =>
+    this.#api.delete('/chats/' + chatId + '/invite/' + userId);
 
   deleteChat = (chatId) => this.#api.delete('/chats/' + chatId);
 
@@ -107,6 +111,121 @@ class Api {
     });
 
   deleteComment = (commentId) => this.#api.delete('/comments/' + commentId);
+
+  createOrder = (start_timestamp, user_id) =>
+    this.#api.post('/orders', {
+      start_timestamp: start_timestamp,
+      user_id: user_id,
+    });
+
+  createProductsInOrder = (number, product_id, order_id) =>
+    this.#api.post('/productsInOrder', {
+      number: number,
+      product_id: product_id,
+      order_id: order_id,
+    });
+
+  deleteProductsInOrder = (productsInOrderId) =>
+    this.#api.delete('/productsInOrder/' + productsInOrderId);
+
+  getShoppingCart = () => this.#api.get('/cart');
+
+  getOrders = () => this.#api.get('/orders');
+
+  getOrder = (orderId) => this.#api.get('/orders' + orderId);
+
+  getTimeslots = () => this.#api.get('/timeslots');
+
+  setTimeslots = (orderId, timeslot_start, timeslot_end) =>
+    this.#api.patch('order/' + orderId + '/timeslot', {
+      timeslot_start: timeslot_start,
+      timeslot_end: timeslot_end,
+    });
+
+  setAddress = (orderId, address) =>
+    this.#api.patch('order/' + orderId + '/address', {
+      address: address,
+    });
+
+  editProductsInOrder = (productsInOrderId, number) =>
+    this.#api.patch('/productsInOrder/' + productsInOrderId, {
+      number: number,
+    });
+
+  bookOrder = (orderId) => this.#api.patch('order/' + orderId + '/book');
+  unbookOrder = (orderId) => this.#api.patch('order/' + orderId + '/unbook');
+  payForOrder = (orderId) => this.#api.patch('order/' + orderId + '/pay');
+  refundOrder = (orderId) => this.#api.patch('order/' + orderId + '/refund');
+  completeOrder = (orderId) =>
+    this.#api.patch('order/' + orderId + '/complete');
+
+  createProduct = (name, price, number, seller_id) =>
+    this.#api.post('/products', {
+      name: name,
+      number: number,
+      price: price,
+      seller_id: seller_id,
+    });
+
+  deleteProduct = (productId) => this.#api.delete('/products/' + productId);
+
+  getProduct = (productId) => this.#api.get('/product:/' + productId);
+
+  createReview = (text, rating, user_id, product_id) =>
+    this.#api.post('/reviews', {
+      text: text,
+      rating: rating,
+      user_id: user_id,
+      product_id: product_id,
+    });
+
+  deleteReview = (reviewId) => this.#api.delete('/reviews/' + reviewId);
+  getReview = (reviewId) => this.#api.get('/reviews/' + reviewId);
+
+  createPhoto = (photo_url, product_id) =>
+    this.#api.post('/photos', {
+      photo_url: photo_url,
+      product_id: product_id,
+    });
+  deletePhoto = (photoId) => this.#api.delete('/photos/' + photoId);
+  getPhoto = (photoId) => this.#api.get('/photos/' + photoId);
+
+  editProduct = (name, description, price, number, category_id, productId) =>
+    this.#api.patch('products/' + productId, {
+      name: name,
+      description: description,
+      price: price,
+      number: number,
+      category_id: category_id,
+    });
+
+  createProductCategory = (category) =>
+    this.#api.post('/productcategories', {
+      category: category,
+    });
+
+  deleteProductCategory = (categoryId) =>
+    this.#api.delete('/productcategories/' + categoryId);
+  getProductCategory = (categoryId) =>
+    this.#api.get('/productcategories/' + categoryId);
+  getProductCategories = () => this.#api.get('/productcategories/');
+  getCatalogue = () => this.#api.get('/products/');
+
+  createSeller = (description, user_id) =>
+    this.#api.post('/sellers', {
+      description: description,
+      user_id: user_id,
+    });
+
+  deleteSeller = (sellerId) => this.#api.delete('/sellers/' + sellerId);
+  getSeller = (sellerId) => this.#api.get('/sellers/' + sellerId);
+
+  editSeller = (description, sellerId) =>
+    this.#api.patch('sellers/' + sellerId, {
+      description: description,
+    });
+
+  getSellers = () => this.#api.get('/sellers/');
 }
 
 const _api = new Api();
