@@ -25,11 +25,11 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { CheckUsernameDto } from './dto/check.username.dto';
 import { EditRoleDto } from './dto/edit.role.dto';
 import { DeleteUserGuard } from '../auth/guards/delete.user.guard';
 import { UpdateRoleGuard } from '../auth/guards/update.role.guard';
 import { EditUserDto } from './dto/edit.user.dto';
+import { AdminGuard } from 'src/auth/guards/admin.guard';
 
 @ApiTags('user')
 @Controller()
@@ -80,7 +80,7 @@ export class UserController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  //@UseGuards(UpdateRoleGuard)
+  @UseGuards(AdminGuard)
   //ToDo guard to check that it's the right user
   @Put('users/:userId/')
   async editUser(
