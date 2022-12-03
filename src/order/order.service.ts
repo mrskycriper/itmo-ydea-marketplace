@@ -41,8 +41,16 @@ export class OrderService {
       where: { order_id: orderId },
       include: { product: true },
     });
+    let title = 'Заказ ' + order.id;
+    if (order.status == 'COLLECTING') {
+      title = 'Корзина';
+    }
 
-    return { order: order, productsInOrder: productsInOrder };
+    return {
+      title: title,
+      order: order,
+      productsInOrder: productsInOrder,
+    };
   }
 
   async createProductsInOrder(
@@ -132,7 +140,8 @@ export class OrderService {
     if (user == null) {
       throw new NotFoundException('User not found');
     }
-    return await prisma.order.findMany({ where: { user_id: userId } });
+    const orders = await prisma.order.findMany({ where: { user_id: userId } });
+    return { title: 'Заказы', orders: orders };
   }
 
   async getTimeslots() {
@@ -456,7 +465,4 @@ export class OrderService {
       data: { status: 'COMPLETED' },
     });
   }
-
-  // TODO Перевод заказа в статус возврат
-  // TODO Перевод заказа в статус завершен
 }

@@ -132,7 +132,7 @@ export class OrderController {
   @UseGuards(AuthGuard)
   @UseGuards(EditGetOrderGuard)
   @Get('orders/:orderId')
-  // @Render('order') // TODO Рендер страницы заказа
+  // @Render('order')
   async getOrder(
     @Param('orderId', ParseIntPipe) orderId: number,
   ): Promise<object> {

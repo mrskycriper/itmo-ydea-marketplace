@@ -93,11 +93,12 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('products/:productId')
-  //@Render('product') // TODO Рендер страницы продукта
+  //@Render('product')
   async getProduct(
+    @SessionDecorator() session: SessionContainer,
     @Param('productId', ParseIntPipe) productId: number,
   ): Promise<object> {
-    return await this.productService.getProduct(productId);
+    return await this.productService.getProduct(productId, session.getUserId());
   }
 
   @ApiCookieAuth()
@@ -190,7 +191,7 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('photos/:photoId')
-  //@Render('photo') // TODO Рендер страницы с картинкой (?)
+  //@Render('photo')
   async getPhoto(
     @SessionDecorator() session: SessionContainer,
     @Param('photoId') photoId: string,
