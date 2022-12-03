@@ -35,6 +35,13 @@ import { CreateReviewDto } from './dto/create.review.dto';
 import { CreatePhotoDto } from './dto/create.photo.dto';
 import { EditProductDto } from './dto/edit.product.dto';
 import { CreateProductCategoryDto } from './dto/create.productcategory.dto';
+import { AdminGuard } from 'src/auth/guards/admin.guard';
+import { CreateProductGuard } from 'src/auth/guards/create.product.guard';
+import { EditDeleteProductGuard } from 'src/auth/guards/editdelete.product.guard';
+import { CreateReviewGuard } from 'src/auth/guards/create.review.gard';
+import { DeleteReviewGuard } from 'src/auth/guards/delete.review.guard';
+import { CreatePhotoGuard } from 'src/auth/guards/create.photo.guard';
+import { DeletePhotoGuard } from 'src/auth/guards/delete.photo.guard';
 
 @ApiTags('product')
 @Controller()
@@ -49,7 +56,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Seller Guard
+  @UseGuards(CreateProductGuard)
   @Post('/products')
   async createProduct(
     @SessionDecorator() session: SessionContainer,
@@ -70,7 +77,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  // TODO Seller Guard
+  @UseGuards(EditDeleteProductGuard)
   @Delete('products/:productId')
   async deleteProduct(@Param('productId', ParseIntPipe) productId: number) {
     return await this.productService.deleteProduct(productId);
@@ -101,7 +108,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO create review guard (что id из сессии и из дто совпадают)
+  @UseGuards(CreateReviewGuard)
   @Post('reviews')
   async createReview(
     @SessionDecorator() session: SessionContainer,
@@ -122,8 +129,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  //@UseGuards(DeleteProductGuard)
-  // TODO DeleteProductGuard дла автора отзыва, модератора или админа
+  @UseGuards(DeleteReviewGuard)
   @Delete('reviews/:reviewId')
   async deleteReview(@Param('reviewId') reviewId: string) {
     return await this.productService.deleteReview(reviewId);
@@ -155,7 +161,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Seller guard
+  @UseGuards(CreatePhotoGuard)
   @Post('photos')
   async createPhoto(
     @SessionDecorator() session: SessionContainer,
@@ -172,8 +178,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  //@UseGuards(DeleteProductGuard)
-  // TODO Seller guard
+  @UseGuards(DeletePhotoGuard)
   @Delete('photos/:photoId')
   async deletePhoto(@Param('photoId') photoId: string) {
     return await this.productService.deletePhoto(photoId);
@@ -204,7 +209,7 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  // TODO Edit product guard
+  @UseGuards(EditDeleteProductGuard)
   @Patch('products/:productId')
   async editProduct(
     @Param('productId', ParseIntPipe) productId: number,
@@ -220,8 +225,7 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(AuthGuard)
-  // TODO create category guard - admin only
+  @UseGuards(AdminGuard)
   @Post('productcategories')
   async createProductCategory(
     @SessionDecorator() session: SessionContainer,
@@ -244,7 +248,7 @@ export class ProductController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  // TODO category guard
+  @UseGuards(AdminGuard)
   @Delete('productcategories/:categoryId')
   async deleteProductCategory(@Param('categoryId') categoryId: string) {
     return await this.productService.deleteProductCategory(categoryId);
