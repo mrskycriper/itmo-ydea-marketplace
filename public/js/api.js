@@ -126,7 +126,7 @@ class Api {
     });
 
   deleteProductsInOrder = (productsInOrderId) =>
-    this.#api.delete('/productsInOrder/:' + productsInOrderId);
+    this.#api.delete('/productsInOrder/' + productsInOrderId);
 
   getShoppingCart = () => this.#api.get('/cart');
 
@@ -137,27 +137,27 @@ class Api {
   getTimeslots = () => this.#api.get('/timeslots');
 
   setTimeslots = (orderId, timeslot_start, timeslot_end) =>
-    this.#api.patch('order/:' + orderId + '/timeslot', {
+    this.#api.patch('order/' + orderId + '/timeslot', {
       timeslot_start: timeslot_start,
       timeslot_end: timeslot_end,
     });
 
   setAddress = (orderId, address) =>
-    this.#api.patch('order/:' + orderId + '/address', {
+    this.#api.patch('order/' + orderId + '/address', {
       address: address,
     });
 
   editProductsInOrder = (productsInOrderId, number) =>
-    this.#api.patch('/productsInOrder/:' + productsInOrderId, {
+    this.#api.patch('/productsInOrder/' + productsInOrderId, {
       number: number,
     });
 
-  bookOrder = (orderId) => this.#api.patch('order/:' + orderId + '/book');
-  unbookOrder = (orderId) => this.#api.patch('order/:' + orderId + '/unbook');
-  payForOrder = (orderId) => this.#api.patch('order/:' + orderId + '/pay');
-  refundOrder = (orderId) => this.#api.patch('order/:' + orderId + '/refund');
+  bookOrder = (orderId) => this.#api.patch('order/' + orderId + '/book');
+  unbookOrder = (orderId) => this.#api.patch('order/' + orderId + '/unbook');
+  payForOrder = (orderId) => this.#api.patch('order/' + orderId + '/pay');
+  refundOrder = (orderId) => this.#api.patch('order/' + orderId + '/refund');
   completeOrder = (orderId) =>
-    this.#api.patch('order/:' + orderId + '/complete');
+    this.#api.patch('order/' + orderId + '/complete');
 
   createProduct = (name, price, number, seller_id) =>
     this.#api.post('/products', {
@@ -167,7 +167,7 @@ class Api {
       seller_id: seller_id,
     });
 
-  deleteProduct = (productId) => this.#api.delete('/products/:' + productId);
+  deleteProduct = (productId) => this.#api.delete('/products/' + productId);
 
   getProduct = (productId) => this.#api.get('/product:/' + productId);
 
@@ -179,19 +179,19 @@ class Api {
       product_id: product_id,
     });
 
-  deleteReview = (reviewId) => this.#api.delete('/reviews/:' + reviewId);
-  getReview = (reviewId) => this.#api.get('/reviews/:' + reviewId);
+  deleteReview = (reviewId) => this.#api.delete('/reviews/' + reviewId);
+  getReview = (reviewId) => this.#api.get('/reviews/' + reviewId);
 
   createPhoto = (photo_url, product_id) =>
     this.#api.post('/photos', {
       photo_url: photo_url,
       product_id: product_id,
     });
-  deletePhoto = (photoId) => this.#api.delete('/photos/:' + photoId);
-  getPhoto = (photoId) => this.#api.get('/photos/:' + photoId);
+  deletePhoto = (photoId) => this.#api.delete('/photos/' + photoId);
+  getPhoto = (photoId) => this.#api.get('/photos/' + photoId);
 
   editProduct = (name, description, price, number, category_id, productId) =>
-    this.#api.patch('products/:' + productId, {
+    this.#api.patch('products/' + productId, {
       name: name,
       description: description,
       price: price,
@@ -205,9 +205,9 @@ class Api {
     });
 
   deleteProductCategory = (categoryId) =>
-    this.#api.delete('/productcategories/:' + categoryId);
+    this.#api.delete('/productcategories/' + categoryId);
   getProductCategory = (categoryId) =>
-    this.#api.get('/productcategories/:' + categoryId);
+    this.#api.get('/productcategories/' + categoryId);
   getProductCategories = () => this.#api.get('/productcategories/');
   getCatalogue = () => this.#api.get('/products/');
 
@@ -217,11 +217,11 @@ class Api {
       user_id: user_id,
     });
 
-  deleteSeller = (sellerId) => this.#api.delete('/sellers/:' + sellerId);
-  getSeller = (sellerId) => this.#api.get('/sellers/:' + sellerId);
+  deleteSeller = (sellerId) => this.#api.delete('/sellers/' + sellerId);
+  getSeller = (sellerId) => this.#api.get('/sellers/' + sellerId);
 
   editSeller = (description, sellerId) =>
-    this.#api.patch('sellers/:' + sellerId, {
+    this.#api.patch('sellers/' + sellerId, {
       description: description,
     });
 
