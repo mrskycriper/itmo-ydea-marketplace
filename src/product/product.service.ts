@@ -44,6 +44,7 @@ export class ProductService {
   async getProduct(productId: number, userId: string) {
     const product = await prisma.product.findUnique({
       where: { id: productId },
+      include: {category: true}
     });
     if (product == null) {
       throw new NotFoundException('Product not found');

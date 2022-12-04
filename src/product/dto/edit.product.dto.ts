@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNotEmpty,
+  IsNumberString,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -29,6 +30,7 @@ export class EditProductDto {
   readonly price: number;
 
   @IsNotEmpty()
+  @IsNumberString()
   @ApiProperty({
     example: '10',
     description: 'Product quantity',
