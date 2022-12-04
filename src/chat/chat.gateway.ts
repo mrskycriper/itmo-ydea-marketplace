@@ -30,7 +30,7 @@ export class ChatGateway {
       content: message.content,
       createdAt: new Date(),
       author: user,
-      chatId: message.chat_id,
+      chat_id: message.chat_id,
     });
   }
 }

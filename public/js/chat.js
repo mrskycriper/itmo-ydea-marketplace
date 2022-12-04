@@ -1,13 +1,13 @@
 function getMessageData() {
   return {
     message: document.querySelector("textarea[id='message']").value,
-    chatId: Number.parseInt(window.location.pathname.split('/')[2]),
+    chat_id: Number.parseInt(window.location.pathname.split('/')[2]),
   };
 }
 
 function handlePostMessage() {
   const formData = getMessageData();
-  _api.postMessage(formData.message, formData.chatId);
+  _api.postMessage(formData.message, formData.chat_id);
 }
 
 window.addEventListener('load', () => {
@@ -28,17 +28,17 @@ window.addEventListener('load', () => {
   form.onsubmit = async (event) => {
     event.preventDefault();
     if (input.value !== '') {
-      let chatId = Number.parseInt(window.location.pathname.split('/')[2]);
-      let userId = null;
+      let chat_id = Number.parseInt(window.location.pathname.split('/')[2]);
+      let user_id = null;
       try {
-        userId = await supertokens.getUserId();
+        user_id = await supertokens.getUserId();
       } catch (e) {}
 
-      if (userId) {
+      if (user_id) {
         socket.emit('messageFromClient', {
           content: input.value,
-          chatId: chatId,
-          userId: userId,
+          chat_id: chat_id,
+          user_id: user_id,
         });
       }
 
@@ -47,8 +47,8 @@ window.addEventListener('load', () => {
   };
 
   socket.on('messageFromServer', function (msg) {
-    let chatId = Number.parseInt(window.location.pathname.split('/')[2]);
-    if (chatId === msg.chatId) {
+    let chat_id = Number.parseInt(window.location.pathname.split('/')[2]);
+    if (chat_id === msg.chat_id) {
       let messageCard = document.createElement('div');
       messageCard.className = 'message-card';
 
@@ -130,9 +130,9 @@ function getChatData() {
   };
 }
 
-function handleEditChat(chatId) {
+function handleEditChat(chat_id) {
   const chatData = getChatData();
-  _api.editChat(chatId, chatData.name, chatData.description).then(() => {
+  _api.editChat(chat_id, chatData.name, chatData.description).then(() => {
     window.location.reload();
   });
 }
@@ -143,17 +143,17 @@ function getUserData() {
   };
 }
 
-function handleInviteUser(chatId) {
+function handleInviteUser(chat_id) {
   const userData = getUserData();
-  _api.inviteUser(chatId, userData.name).then(() => {
+  _api.inviteUser(chat_id, userData.name).then(() => {
     window.location.reload();
   });
 }
 
-function handleDeleteChat(chatId) {
+function handleDeleteChat(chat_id) {
   const result = confirm('Вы уверены? Это действие не обратимо.');
   if (result) {
-    _api.deleteChat(chatId).then(() => {
+    _api.deleteChat(chat_id).then(() => {
       window.location.href = '/';
       alert('Чат удален.');
     });
