@@ -58,6 +58,7 @@ export class ProductService {
 
     const reviews = await prisma.review.findMany({
       where: { product_id: productId },
+      include: {user: true}
     });
 
     const user = await prisma.user.findUnique({ where: { id: userId } });

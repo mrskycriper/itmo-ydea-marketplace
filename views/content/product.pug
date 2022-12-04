@@ -1,0 +1,25 @@
+extends ../template
+
+block content
+    div(class="product-main")
+        div(class="product-card")
+            div(class="product-picture")
+                if photos[0]
+                    img(src=photos[0].photo_url)
+                else 
+                    img(src="https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=")
+            div(class="product-info")
+                h1() #{product.name}
+                h3() #{product.description}
+                p() Рейтинг: #{product.rating_average}/5
+        h1() Отзывы о товаре
+        div(class="reviews-container")
+            if reviews[0]
+                each review in reviews
+                    div(class="review-card")
+                        h2() #{review.user.name}
+                        h3() Оценка: #{review.rating}/5
+                        p() #{review.text}
+            else 
+                p() Здесь пока нет ни одного отзыва
+

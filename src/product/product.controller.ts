@@ -92,6 +92,7 @@ export class ProductController {
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @Render('product')
   @Get('products/:productId')
   //@Render('product')
   async getProduct(
