@@ -68,4 +68,8 @@ export class SellerService {
       data: updateSellerDto,
     });
   }
+
+  async getRegister() {
+    return { title: 'Регистрация продавца - Ydea' };
+  }
 }
