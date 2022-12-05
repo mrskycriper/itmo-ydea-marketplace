@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsNumberString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsNumberString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateTopicDto {
   @IsNotEmpty()
@@ -16,7 +22,7 @@ export class CreateTopicDto {
   })
   readonly description: string;
 
-  @IsNumberString()
+  @IsNumber()
   @ApiProperty({
     example: '3421',
     description: 'Unique category id this topic is attached to',

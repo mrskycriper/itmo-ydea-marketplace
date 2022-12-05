@@ -14,7 +14,7 @@ block content
             p(class='post-card__content')= postContent
             div(class='post-card__footer')
                 a(class='post-card__author' href='/users/' + authorName)= authorName
-                p(class='post-card__date')= createdAt.toLocaleString('ru-RU', {hour: 'numeric',minute: 'numeric',year: 'numeric',month: 'numeric',day: 'numeric'})
+                //p(class='post-card__date')= createdAt.toLocaleString('ru-RU', {hour: 'numeric',minute: 'numeric',year: 'numeric',month: 'numeric',day: 'numeric'})
         div(class="category-navigation-container")
             if page === 1
                 a(href="#" class="category-navigation-container__navigation-button--disabled") ←
@@ -26,9 +26,9 @@ block content
                 a(href='/posts/' + postId + '?page=' + (page + 1) class="category-navigation-container__navigation-button") →
             p(class="category-navigation-container__page-count") Страница #{page} из #{pageCount}
             if(post)
-                button(class="category-navigation-container__create-chat-button" onclick='showCreateComment();') Добавить комментарий
+                button(class="category-navigation-container__create-chat-button" onclick='javascript:showCreateComment();') Добавить комментарий
         if(post)
-            form(class='create-category-form' id='create-comment' style='display: none;' onsubmit='handleCreateComment(' + postId + ');')
+            form(class='create-category-form' id='create-comment' style='display: none;' onsubmit='javascript:handleCreateComment(' + postId + ');')
                 div(class='create-category-from__input-group')
                     label(class='create-chat-from__label' for='content') Текст
                     textarea(class='create-category-from__input--textarea' id='content' required=true maxlength=300)
@@ -41,7 +41,7 @@ block content
                       div(class='comment-card__text')
                           div(class="comment-card__header")
                               a(class="comment-card__name" href='/users/' + comment.author.name)= comment.author.name
-                              p(class="comment-card__date")= comment.createdAt.toLocaleString('ru-RU', {hour: 'numeric',minute: 'numeric',year: 'numeric',month: 'numeric',day: 'numeric'})
+                              //p(class="comment-card__date")= comment.createdAt.toLocaleString('ru-RU', {hour: 'numeric',minute: 'numeric',year: 'numeric',month: 'numeric',day: 'numeric'})
                           p(class='comment-card__content')= comment.content
             else
                 p(class='empty-list') Нет комментариев

@@ -16,7 +16,7 @@ block content
                 a(href="/categories?page=" + (page + 1) class="category-navigation-container__navigation-button") →
             p(class="category-navigation-container__page-count") Страница #{page} из #{pageCount}
             if(admin)
-                button(class="category-navigation-container__create-chat-button" onclick='showCreateCategory();') Создать категорию
+                button(class="category-navigation-container__create-chat-button" onclick='javascript:showCreateCategory();') Создать категорию
         if(admin)
             form(class='create-category-form' id='create-category' style='display: none;')
                 div(class='create-category-from__input-group')
