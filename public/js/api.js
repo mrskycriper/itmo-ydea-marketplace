@@ -132,6 +132,7 @@ class Api {
     this.#api.delete('/productsInOrder/' + productsInOrderId);
 
   getShoppingCart = () => this.#api.get('/cart');
+  getShoppingCartId = () => this.#api.get('/cartId');
 
   getOrders = () => this.#api.get('/orders');
 
@@ -172,7 +173,7 @@ class Api {
 
   deleteProduct = (product_id) => this.#api.delete('/products/' + product_id);
 
-  getProduct = (product_id) => this.#api.get('/product/' + product_id);
+  getProduct = (productId) => this.#api.get('/product/' + productId);
 
   createReview = (text, rating, user_id, product_id) =>
     this.#api.post('/reviews', {
@@ -212,7 +213,7 @@ class Api {
   getProductCategory = (category_id) =>
     this.#api.get('/productcategories/' + category_id);
   getProductCategories = () => this.#api.get('/productcategories/');
-  getCatalogue = () => this.#api.get('/products/');
+  getCatalogue = () => this.#api.get('/products');
 
   createSeller = (description, user_id) =>
     this.#api.post('/sellers', {

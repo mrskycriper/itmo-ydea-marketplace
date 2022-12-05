@@ -313,19 +313,20 @@ export class ProductController {
     name: 'page',
     type: 'number',
     description: 'Page number',
-    required: true,
+    required: false,
   })
   @ApiQuery({
     name: 'perPage',
     type: 'number',
     description: 'Number of products per page',
-    required: true,
+    required: false,
   })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('products/')
+  @Render('products')
   async getCatalogue(
     @Query('seller_id', new DefaultValuePipe(-1), ParseIntPipe)
     seller_id: number,

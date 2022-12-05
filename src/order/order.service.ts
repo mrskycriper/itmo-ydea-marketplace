@@ -135,6 +135,22 @@ export class OrderService {
     }
   }
 
+  async getShoppingCartId(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    const orderId = user.current_order_id;
+    if (orderId == 0) {
+      const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId);
+      const order = await this.createOrder(createOrderDto);
+      const newUser = await prisma.user.findUnique({ where: { id: userId } });
+      return {id: newUser.current_order_id};
+    } else {
+      return {id: orderId};
+    }
+  }
+
   async getOrders(userId: string) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user == null) {

@@ -112,6 +112,18 @@ export class OrderController {
   }
 
   @ApiCookieAuth()
+  @ApiOperation({ summary: 'Get shopping cart id' })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  @Get('cartId')
+  async getShoppingCartId(@SessionDecorator() session: SessionContainer) {
+    return await this.orderService.getShoppingCartId(session.getUserId());
+  }
+
+  @ApiCookieAuth()
   @ApiOperation({ summary: 'Get orders' })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
