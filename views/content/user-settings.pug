@@ -1,0 +1,27 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/profile.js')
+
+block content
+    p(class='profile__header-text' id='name')= user.name
+    div(class='profile__container')
+        div(class='profile__card')
+            p(class='profile__card-name') Роль
+            p(class='profile__card-content')= role
+        if (!is_seller)
+            div(class='profile__card')
+                p(class='profile__card-name') Список заказов
+                a(href='/orders' class='profile__button')= 'Открыть'
+        else
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Описание
+                    button(class='profile__card-edit' onclick='javascript:showEditBio();') изменить
+                p(class='profile__card-content')= seller.description
+                form(id='bio-form' style='display: none' class='profile__card-from' onsubmit='javascript:editBio(' + seller.id + ');')
+                    div(class='profile__card-form-options')
+                        label(for='bio' class='profile__card-from-label') Описание
+                        textarea(id='bio' type='text' class='profile__card-from-input--text' maxlength=1000)= seller.description
+                    input(type='submit' value='Обновить' class='profile__card-from-submit')
+

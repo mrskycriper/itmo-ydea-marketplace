@@ -15,6 +15,7 @@ function getTopicData() {
 }
 
 function handleCreateTopic(categoryId) {
+  event.preventDefault();
   const formData = getTopicData();
   _api
     .createTopic(
@@ -41,6 +42,7 @@ function showEditTopic() {
 }
 
 function handleEditTopic(topicId) {
+  event.preventDefault();
   const formData = getTopicData();
   _api.editTopic(topicId, formData.name, formData.description).then(() => {
     window.location.reload();

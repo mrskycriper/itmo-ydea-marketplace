@@ -32,12 +32,12 @@ export class ChatService {
     if (Object.keys(chats).length != 0) {
       empty = false;
     }
-    let support = true;
+    let support = false;
     if (user.is_support) {
-      support = false;
+      support = true;
     }
     return {
-      title: 'Чаты - Ydea',
+      title: 'Техподдержка - Ydea',
       chatData: chats,
       pageCount: pageCount,
       page: page,
@@ -95,24 +95,16 @@ export class ChatService {
       },
       include: { author: true },
     });
-    let support = true;
+    let support = false;
     if (user.is_support) {
-      support = false;
+      support = true;
     }
     const users = await prisma.chatToUser.findMany({
       where: { chat_id: chatId },
       include: { user: true },
     });
-    console.log({
-      title: chat.name + ' - Ydea',
-      chatName: chat.name,
-      chatId: chatId,
-      messages: messages,
-      support: support,
-      users: users,
-    });
     return {
-      title: chat.name + ' - Ydea',
+      title: 'Техподдержка - Ydea',
       chatName: chat.name,
       chatId: chatId,
       messages: messages,
