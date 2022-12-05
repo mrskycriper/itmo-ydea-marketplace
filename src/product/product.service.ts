@@ -272,8 +272,8 @@ export class ProductService {
     product_category_id: string = null,
     price_sort = -1,
     rating_sort = -1,
-    page: number,
-    perPage: number,
+    page = 0,
+    perPage = 20,
   ) {
     if (seller_id != -1) {
       const seller = await prisma.seller.findUnique({
@@ -305,34 +305,45 @@ export class ProductService {
         'Number of product per page should be above zero.',
       );
     }
+    const categories = await prisma.product_category.findMany({});
+    const sellers = await prisma.seller.findMany({ include: { user: true } });
     const filters =
       Number(price_sort != -1) * 8 +
       Number(product_category_id != null) * 4 +
       Number(rating_sort != -1) * 2 +
       Number(seller_id != -1);
+    var products = [];
+    var sorting = 0;
     switch (filters) {
       case 0:
-        return await prisma.product.findMany({
+        products = await prisma.product.findMany({
           skip: (page - 1) * perPage,
           take: perPage,
         });
+        return { products: products, categories: categories, sellers: sellers };
       case 1:
-        return await prisma.product.findMany({
+        products = await prisma.product.findMany({
           skip: (page - 1) * perPage,
           take: perPage,
           where: { seller_id: seller_id },
         });
+        return { products: products, categories: categories, sellers: sellers };
       case 2:
         if (rating_sort == 1) {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
               rating_average: 'asc',
             },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         } else {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -340,9 +351,10 @@ export class ProductService {
             },
           });
         }
+        return { products: products, categories: categories, sellers: sellers };
       case 3:
         if (rating_sort == 1) {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -359,15 +371,21 @@ export class ProductService {
             },
             where: { seller_id: seller_id },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         }
       case 4:
-        return await prisma.product.findMany({
+        products = await prisma.product.findMany({
           skip: (page - 1) * perPage,
           take: perPage,
           where: { category_id: product_category_id },
         });
+        return { products: products, categories: categories, sellers: sellers };
       case 5:
-        return await prisma.product.findMany({
+        products = await prisma.product.findMany({
           skip: (page - 1) * perPage,
           take: perPage,
           where: {
@@ -375,9 +393,10 @@ export class ProductService {
             seller_id: seller_id,
           },
         });
+        return { products: products, categories: categories, sellers: sellers };
       case 6:
         if (rating_sort == 1) {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -385,8 +404,13 @@ export class ProductService {
             },
             where: { category_id: product_category_id },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         } else {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -394,10 +418,15 @@ export class ProductService {
             },
             where: { category_id: product_category_id },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         }
       case 7:
         if (rating_sort == 1) {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -408,8 +437,13 @@ export class ProductService {
               seller_id: seller_id,
             },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         } else {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -420,28 +454,43 @@ export class ProductService {
               seller_id: seller_id,
             },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         }
       case 8:
         if (price_sort == 1) {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
               price: 'asc',
             },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         } else {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
               price: 'desc',
             },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         }
       case 9:
         if (price_sort == 1) {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -449,8 +498,13 @@ export class ProductService {
             },
             where: { seller_id: seller_id },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         } else {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -458,12 +512,17 @@ export class ProductService {
             },
             where: { seller_id: seller_id },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         }
       case 10:
-        let sorting = price_sort * 2 + rating_sort;
+        sorting = price_sort * 2 + rating_sort;
         switch (sorting) {
           case 0:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -473,8 +532,13 @@ export class ProductService {
                 { rating_average: 'asc' },
               ],
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 1:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -484,8 +548,13 @@ export class ProductService {
                 { rating_average: 'asc' },
               ],
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 2:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -495,8 +564,13 @@ export class ProductService {
                 { rating_average: 'desc' },
               ],
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 3:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -506,12 +580,17 @@ export class ProductService {
                 { rating_average: 'asc' },
               ],
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
         }
       case 11:
         sorting = price_sort * 2 + rating_sort;
         switch (sorting) {
           case 0:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -522,8 +601,13 @@ export class ProductService {
               ],
               where: { seller_id: seller_id },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 1:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -534,8 +618,13 @@ export class ProductService {
               ],
               where: { seller_id: seller_id },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 2:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -546,8 +635,13 @@ export class ProductService {
               ],
               where: { seller_id: seller_id },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 3:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -558,10 +652,15 @@ export class ProductService {
               ],
               where: { seller_id: seller_id },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
         }
       case 12:
         if (price_sort == 1) {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -569,8 +668,13 @@ export class ProductService {
             },
             where: { category_id: product_category_id },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         } else {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -578,10 +682,15 @@ export class ProductService {
             },
             where: { category_id: product_category_id },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         }
       case 13:
         if (price_sort == 1) {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -592,8 +701,13 @@ export class ProductService {
               seller_id: seller_id,
             },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         } else {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
@@ -604,12 +718,17 @@ export class ProductService {
               seller_id: seller_id,
             },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         }
       case 14:
         sorting = price_sort * 2 + rating_sort;
         switch (sorting) {
           case 0:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -620,8 +739,13 @@ export class ProductService {
               ],
               where: { category_id: product_category_id },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 1:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -632,8 +756,13 @@ export class ProductService {
               ],
               where: { category_id: product_category_id },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 2:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -644,8 +773,13 @@ export class ProductService {
               ],
               where: { category_id: product_category_id },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 3:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -656,12 +790,17 @@ export class ProductService {
               ],
               where: { category_id: product_category_id },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
         }
       case 15:
         sorting = price_sort * 2 + rating_sort;
         switch (sorting) {
           case 0:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -675,8 +814,13 @@ export class ProductService {
                 seller_id: seller_id,
               },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 1:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -690,8 +834,13 @@ export class ProductService {
                 seller_id: seller_id,
               },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 2:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -705,8 +854,13 @@ export class ProductService {
                 seller_id: seller_id,
               },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
           case 3:
-            return await prisma.product.findMany({
+            products = await prisma.product.findMany({
               skip: (page - 1) * perPage,
               take: perPage,
               orderBy: [
@@ -720,6 +874,11 @@ export class ProductService {
                 seller_id: seller_id,
               },
             });
+            return {
+              products: products,
+              categories: categories,
+              sellers: sellers,
+            };
         }
     }
   }
