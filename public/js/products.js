@@ -6,10 +6,13 @@ function getNumber(productId) {
 
 async function handleCreateProductsInOrder(productId, userid) {
   const number = getNumber(productId);
-  if (userid) {
+  if (userid != "null") {
     let orderId = await _api.getShoppingCartId();
     await _api
       .createProductsInOrder(Number.parseInt(number.content), productId, orderId.data.id);
+  }else{
+    let url = window.location.search;
+    window.location = "/login";
   }
 }
 
@@ -42,7 +45,7 @@ async function handleSortSeller(sellerId) {
 }
 async function handleSortCategory(categoryId) {
   const urlParams = new URLSearchParams(window.location.search);
-  urlParams.set('category_id', categoryId);
+  urlParams.set('product_category_id', categoryId);
   window.location.search = urlParams;
 }
 
