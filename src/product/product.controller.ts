@@ -93,7 +93,7 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @Get('products/:productId')
-  //@Render('product')
+  @Render('product')
   async getProduct(
     @SessionDecorator() session: SessionContainer,
     @Param('productId', ParseIntPipe) productId: number,
