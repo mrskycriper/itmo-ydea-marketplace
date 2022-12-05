@@ -69,23 +69,23 @@ window.addEventListener('load', () => {
       name.className = 'message-card__name';
       name.textContent = msg.author.name;
 
-      let date = document.createElement('p');
-      date.className = 'message-card__date';
-      let dateNumber = new Date(msg.createdAt);
-      date.textContent = dateNumber.toLocaleString('ru-RU', {
-        hour: 'numeric',
-        minute: 'numeric',
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-      });
+      // let date = document.createElement('p');
+      // date.className = 'message-card__date';
+      // let dateNumber = new Date(msg.createdAt);
+      // date.textContent = dateNumber.toLocaleString('ru-RU', {
+      //   hour: 'numeric',
+      //   minute: 'numeric',
+      //   year: 'numeric',
+      //   month: 'numeric',
+      //   day: 'numeric',
+      // });
 
       let content = document.createElement('p');
       content.className = 'message-card__content';
       content.textContent = msg.content;
 
       header.append(name);
-      header.append(date);
+      //header.append(date);
       div.append(header);
       div.append(content);
       messageCard.append(avatar);

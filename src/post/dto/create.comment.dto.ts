@@ -17,7 +17,7 @@ export class CreateCommentDto {
   })
   readonly user_id: string;
 
-  @IsNumber()
+  @IsNotEmpty()
   @ApiProperty({
     example: '3421',
     description: 'Unique post id this comment is referring to',

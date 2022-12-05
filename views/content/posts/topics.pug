@@ -21,9 +21,9 @@ block content
                 a(href='/categories/' + categoryId + '?page=' + (page + 1) class="category-navigation-container__navigation-button") →
             p(class="category-navigation-container__page-count") Страница #{page} из #{pageCount}
             if(edit)
-                button(class="category-navigation-container__create-chat-button" onclick='showCreateTopic();') Создать топик
+                button(class="category-navigation-container__create-chat-button" onclick='javascript:showCreateTopic();') Создать топик
         if(edit)
-            form(class='create-category-form' id='create-topic' style='display: none;' onsubmit='handleCreateTopic(' + categoryId + ');')
+            form(class='create-category-form' id='create-topic' style='display: none;' onsubmit='javascript:handleCreateTopic(' + categoryId + ');')
                 div(class='create-category-from__input-group')
                     label(class='create-category-from__label' for='name') Название
                     input(class='create-category-from__input' id='name' type='text' required=true minlength=2 maxlength=32)

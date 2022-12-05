@@ -15,6 +15,7 @@ function getPostData() {
 }
 
 async function handleCreatePost(topicId) {
+  event.preventDefault();
   const formData = getPostData();
   let userId = null;
   try {
@@ -30,7 +31,8 @@ async function handleCreatePost(topicId) {
       )
       .then((response) => {
         if (response.data.postId !== null) {
-          window.location.href = '/posts/' + response.data.postId + '?page=1';
+          window.location.href =
+            '/posts/' + Number.parseInt(response.data.postId) + '?page=1';
         } else {
           window.location.href = window.location.pathname + '?page=1';
         }
@@ -53,17 +55,18 @@ function getCommentData() {
   };
 }
 
-async function handleCreateComment(postId) {
+async function handleCreateComment(post_id) {
+  event.preventDefault();
   const formData = getCommentData();
-  let userId = null;
+  let user_id = null;
   try {
-    userId = await supertokens.getUserId();
+    user_id = await supertokens.getUserId();
   } catch (e) {}
-  if (userId) {
+  if (user_id) {
     _api
-      .createComment(formData.content, Number.parseInt(postId), userId)
+      .createComment(formData.content, Number.parseInt(post_id), user_id)
       .then(() => {
-        window.location.href = '/posts/' + postId + '?page=1';
+        window.location.href = '/posts/' + post_id + '?page=1';
       });
   }
 }
@@ -87,6 +90,7 @@ function showDeletePost() {
 }
 
 function handleEditPost(postId) {
+  event.preventDefault();
   const formData = getPostData();
   _api
     .editPost(Number.parseInt(postId), formData.title, formData.content)
@@ -96,6 +100,7 @@ function handleEditPost(postId) {
 }
 
 function handleDeletePost(postId) {
+  event.preventDefault();
   const result = confirm('Вы уверены? Это действие не обратимо.');
   if (result) {
     _api.deletePost(postId).then(() => {
