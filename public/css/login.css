@@ -115,7 +115,7 @@
     color: white;
     font-size: 40px;
     flex-grow: 0;
-    font-family: "XO Verbena", sans-serif;
+    font-family: sans-serif;
 }
 
 .login-form__link:any-link {
