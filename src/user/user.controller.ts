@@ -30,6 +30,9 @@ import { DeleteUserGuard } from '../auth/guards/delete.user.guard';
 import { UpdateRoleGuard } from '../auth/guards/update.role.guard';
 import { EditUserDto } from './dto/edit.user.dto';
 import { AdminGuard } from 'src/auth/guards/admin.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { SessionDecorator } from '../auth/session.decorator';
+import { SessionContainer } from 'supertokens-node/recipe/session';
 
 @ApiTags('user')
 @Controller()
@@ -121,5 +124,16 @@ export class UserController {
   @Render('register')
   async login() {
     return await this.usersService.getRegister();
+  }
+
+  @ApiOperation({ summary: 'Get user settings' })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  @Get('user/settings')
+  @Render('user-settings')
+  async getSettings(@SessionDecorator() session: SessionContainer) {
+    return await this.usersService.getSettings(session.getUserId());
   }
 }

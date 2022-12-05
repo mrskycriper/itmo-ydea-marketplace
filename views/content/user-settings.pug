@@ -1,0 +1,20 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/profile.js')
+
+block content
+    p(class='profile__header-text' id='name')= user.name
+    div(class='profile__container')
+        div(class='profile__card')
+            p(class='profile__card-name') Роль
+            p(class='profile__card-content')= role
+        if (!is_seller)
+            div(class='profile__card')
+                p(class='profile__card-name') Список заказов
+                a(href='/orders' class='profile__button')= 'Открыть'
+        else
+            div(class='profile__card')
+                p(class='profile__card-name') Описание
+                p(class='profile__card-content')= seller.description
+

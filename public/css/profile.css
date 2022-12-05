@@ -146,3 +146,13 @@
 .profile__delete-button:hover {
     box-shadow: none;
 }
+
+.profile__button:any-link {
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+}
+
+.profile__button:hover {
+    text-decoration: underline;
+}

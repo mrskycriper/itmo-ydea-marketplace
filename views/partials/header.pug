@@ -14,7 +14,7 @@ div(class="nav-header")
         else
             img(src="https://ui-avatars.com/api/?name=" + username + "&rounded=true&size=48" class="nav-header__profile-picture")
             div(class='nav-header__profile-container')
-                a(href="/users/" + username class="nav-header__profile-name") #{username}
+                a(href="user/settings" class="nav-header__profile-name") #{username}
                 button(class='nav-header__logout' id='logout' onclick='logOut();') выйти
 
 
