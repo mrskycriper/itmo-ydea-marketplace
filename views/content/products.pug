@@ -8,11 +8,11 @@ block content
             div(class="products-card")
             div(class='product-card__text')
               p() Сортировка по цене
-              a(class="product__button" href="#" onclick='handlePriceSortUp();') ↑
-              a(class="product__button" href="#" onclick='handlePriceSortDown();') ↓
+              a(class="product__button" href="#" onclick='handlePriceSortUp();') По возрастанию
+              a(class="product__button" href="#" onclick='handlePriceSortDown();') По убыванию
               p() Сортировка по рейтингу
-              a(class="product__button"  href="#" onclick='handleRatingSortUp();') ↑
-              a(class="product__button" href="#" onclick='handleRatingSortDown();') ↓
+              a(class="product__button"  href="#" onclick='handleRatingSortUp();') По возрастанию
+              a(class="product__button" href="#" onclick='handleRatingSortDown();') По убыванию
 
             div(class="dropdown")
               button(class="dropbtn") Продавцы
@@ -29,10 +29,14 @@ block content
             if (!empty)
               each product in products
                   div(class="products-card")
-                      img(src=product.photo + "&rounded=true&size=48" class="product-card__photo")
+                      //if product.photos[0]
+                      //    img(src=product.photos[0].photo_url class="product-card__photo")
+                      //else
+                      //    img(src="https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=" class="product-card__photo")
+                      ////img(src=product.photo class="product-card__photo")
                       div(class='product-card__text')
                           div(class="product-card__header")
-                              a(class="product-card__name" href='/product/' + product.id)= product.name
+                              a(class="product-card__name" href='/products/' + product.id)= product.name
                           p(class='product-card__description')= product.description
                           p(class='product-card__description')= "Цена "+product.price
                           p(class='product-card__description')= "Рейтинг "+product.rating_average

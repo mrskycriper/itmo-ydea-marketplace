@@ -44,7 +44,7 @@ export class ProductService {
   async getProduct(productId: number, userId: string) {
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      include: {category: true}
+      include: { category: true },
     });
     if (product == null) {
       throw new NotFoundException('Product not found');
@@ -59,7 +59,7 @@ export class ProductService {
 
     const reviews = await prisma.review.findMany({
       where: { product_id: productId },
-      include: {user: true}
+      include: { user: true },
     });
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -314,8 +314,8 @@ export class ProductService {
       Number(product_category_id != null) * 4 +
       Number(rating_sort != -1) * 2 +
       Number(seller_id != -1);
-    var products = [];
-    var sorting = 0;
+    let products = [];
+    let sorting = 0;
     switch (filters) {
       case 0:
         products = await prisma.product.findMany({
@@ -352,8 +352,12 @@ export class ProductService {
               rating_average: 'desc',
             },
           });
+          return {
+            products: products,
+            categories: categories,
+            sellers: sellers,
+          };
         }
-        return { products: products, categories: categories, sellers: sellers };
       case 3:
         if (rating_sort == 1) {
           products = await prisma.product.findMany({
@@ -365,7 +369,7 @@ export class ProductService {
             where: { seller_id: seller_id },
           });
         } else {
-          return await prisma.product.findMany({
+          products = await prisma.product.findMany({
             skip: (page - 1) * perPage,
             take: perPage,
             orderBy: {
