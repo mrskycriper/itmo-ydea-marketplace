@@ -124,4 +124,12 @@ export class SellerController {
   ): Promise<object> {
     return await this.sellerService.getSellers();
   }
+
+  @ApiOperation({ summary: 'Get register page' })
+  @ApiOkResponse({ description: 'OK' })
+  @Get('registerseller')
+  @Render('register-seller')
+  async login() {
+    return await this.sellerService.getRegister();
+  }
 }
