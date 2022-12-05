@@ -23,7 +23,7 @@
             document.getElementById("newProductNameTextArea").value,
             productDescription,
             productPrice,
-            productNumber,
+            Number.parseInt(productNumber),
             productCategoryID,
             productID
         )

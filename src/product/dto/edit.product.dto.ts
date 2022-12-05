@@ -30,7 +30,6 @@ export class EditProductDto {
   readonly price: number;
 
   @IsNotEmpty()
-  @IsNumberString()
   @ApiProperty({
     example: '10',
     description: 'Product quantity',
