@@ -1,0 +1,30 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/cart.js')
+
+block content
+        div(class="catalogue-container")
+            div(class="products-card")
+                div(class='product-card__text')
+                    p(class="product-card__name")= "Сумма заказа " + order.sum 
+                    a(class="product__button" href="#" onclick='handleBooking('+order.id+');') Забронировать заказ
+            if (!empty)
+              each product in productsInOrder
+                  div(class="products-card")
+                      //if product.photos[0]
+                      //    img(src=product.photos[0].photo_url class="product-card__photo")
+                      //else
+                      //    img(src="https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=" class="product-card__photo")
+                      ////img(src=product.photo class="product-card__photo")
+                      div(class='product-card__text')
+                          div(class="product-card__header")
+                              a(class="product-card__name" href='/products/' + product.product.id)= product.product.name
+                          p(class='product-card__description')= "Цена "+product.product.price
+                          a(class="product__button" href="#" onclick='javascript:handleDeleteProductsInOrder(\''+product.id+'\');') Удалить из корзины
+                          a(class="product__button" href="#" onclick='javascript:handleEditProductsInOrder(\''+product.id+'\');') Изменить количество
+                          div(class='product__input-group')
+                              label(class='product__input-label' for='number') Количество
+                              input(class='product__input' id='number '+product.id required=true value=product.number)
+            else
+                p(class='empty-list') Корзина пуста

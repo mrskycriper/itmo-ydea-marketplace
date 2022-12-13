@@ -91,7 +91,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  @UseGuards(DeleteProductsInOrderGuard)
+  //@UseGuards(DeleteProductsInOrderGuard)
   @Delete('productsInOrder/:productsInOrderId')
   async removeProductFromOrder(
     @Param('productsInOrderId') productsInOrderId: string,
@@ -107,6 +107,7 @@ export class OrderController {
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @Get('cart')
+  @Render('cart')
   async getShoppingCart(@SessionDecorator() session: SessionContainer) {
     return await this.orderService.getShoppingCart(session.getUserId());
   }
@@ -261,7 +262,7 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(EditProductsInOrderGuard)
+  //@UseGuards(EditProductsInOrderGuard)
   @Patch('productsInOrder/:productsInOrderId')
   async editProductInOrder(
     @Param('productsInOrderId') productsInOrderId: string,
