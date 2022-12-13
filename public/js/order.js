@@ -55,14 +55,8 @@ async function handleAddress(orderId) {
 }
 
 async function handleTimeSlot(orderId, timeslot_start, timeslot_end) {
-  let text = '{' +
-'"timeslot_start": "' + timeslot_start +
-'" , "timeslot_end": "' +  timeslot_end + '"}'; 
-console.log(text);
-const timeslot = JSON.parse(text); 
-console.log(timeslot.timeslot_end);
   await _api.
-  setTimeslots(orderId, timeslot);
+  setTimeslots(orderId, timeslot_start, timeslot_end);
 }
 
 // window.addEventListener('load', () => {
