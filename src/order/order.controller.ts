@@ -145,7 +145,7 @@ export class OrderController {
   @UseGuards(AuthGuard)
   @UseGuards(EditGetOrderGuard)
   @Get('orders/:orderId')
-  // @Render('order')
+  @Render('order')
   async getOrder(
     @Param('orderId', ParseIntPipe) orderId: number,
   ): Promise<object> {
