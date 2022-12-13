@@ -1,18 +1,23 @@
 function getNumber(productId) {
   return {
-    content: document.querySelector("input[id='number "+productId+"']").value,
+    content: document.querySelector("input[id='number " + productId + "']")
+      .value,
   };
 }
 
+
 async function handleCreateProductsInOrder(productId, userid) {
   const number = getNumber(productId);
-  if (userid != "null") {
+  if (userid != 'null') {
     let orderId = await _api.getShoppingCartId();
-    await _api
-      .createProductsInOrder(Number.parseInt(number.content), productId, orderId.data.id);
-  }else{
+    await _api.createProductsInOrder(
+      Number.parseInt(number.content),
+      productId,
+      orderId.data.id,
+    );
+  } else {
     let url = window.location.search;
-    window.location = "/login";
+    window.location = '/login';
   }
 }
 
@@ -51,11 +56,35 @@ async function handleSortCategory(categoryId) {
 
 async function handleNoFilters() {
   let url = window.location.search;
-  window.location.search = url.split('?')[0] ;
+  window.location.search = url.split('?')[0];
+}
+
+async function handleNextPage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  let page = urlParams.get('page');
+  urlParams.set('page', Number.parseInt(page) + 1);
+  window.location.search = urlParams;
+}
+
+async function handlePreviousPage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  let page = urlParams.get('page');
+  if (page > 1) {
+    urlParams.set('page', Number.parseInt(page) - 1);
+    window.location.search = urlParams;
+  }
+}
+
+async function handlePerPage(perpage) {
+  if(perpage > 0){
+  const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('perPage', perpage);
+    window.location.search = urlParams;
+  }
 }
 
 window.addEventListener('load', () => {
-  let form = document.querySelector("input");
+  let form = document.querySelector('input');
   form.onsubmit = (event) => {
     event.preventDefault();
   };
