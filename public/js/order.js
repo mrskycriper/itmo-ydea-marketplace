@@ -20,6 +20,11 @@ async function handleBooking(orderId) {
   bookOrder(orderId);
   window.location='/orders/'+orderId;
 }
+async function handleDiscarding(orderId) {
+  await _api.
+  discardOrder(orderId);
+  window.location='/';
+}
 
 // window.addEventListener('load', () => {
 //   let form = document.querySelector("product__input");

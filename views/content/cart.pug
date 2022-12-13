@@ -1,7 +1,7 @@
 extends ../template
 
 block additionalScripts
-    script(src='/js/cart.js')
+    script(src='/js/order.js')
 
 block content
         div(class="catalogue-container")
@@ -9,6 +9,7 @@ block content
                 div(class='product-card__text')
                     p(class="product-card__name")= "Сумма заказа " + order.sum 
                     a(class="product__button" href="#" onclick='handleBooking('+order.id+');') Забронировать заказ
+                    a(class="product__button" href="#" onclick='handleDiscarding('+order.id+');') Сбросить корзину/отменить заказ
             if (!empty)
               each product in productsInOrder
                   div(class="products-card")
