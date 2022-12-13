@@ -77,9 +77,10 @@ export class ChatController {
   @Get('chats/:chatId')
   @Render('chat')
   async getChat(
+    @SessionDecorator() session: SessionContainer,
     @Param('chatId', ParseIntPipe) chatId: number,
   ): Promise<object> {
-    return this.chatsService.getChat(chatId);
+    return this.chatsService.getChat(chatId, session.getUserId());
   }
 
   @ApiOperation({ summary: 'Create new chat' })
@@ -165,9 +166,9 @@ export class ChatController {
     description: 'Unique chat identifier',
   })
   @ApiParam({
-    name: 'inviteName',
+    name: 'userId',
     type: 'string',
-    description: 'Invited user name',
+    description: 'Invited user id',
   })
   @ApiCreatedResponse({ description: 'Created' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
@@ -175,12 +176,12 @@ export class ChatController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(InviteUserGuard)
-  @Post('chats/:chatId/invite/:inviteName')
+  @Post('chats/:chatId/invite/:userId')
   async inviteUser(
     @Param('chatId', ParseIntPipe) chatId: number,
-    @Param('inviteName') inviteName: string,
+    @Param('userId') userId: string,
   ) {
-    return this.chatsService.inviteUser(chatId, inviteName);
+    return this.chatsService.inviteUser(chatId, userId);
   }
 
   @ApiOperation({ summary: 'Remove user from chat' })
@@ -190,9 +191,9 @@ export class ChatController {
     description: 'Unique chat identifier',
   })
   @ApiParam({
-    name: 'unInviteName',
+    name: 'userId',
     type: 'string',
-    description: 'Uninvited user name',
+    description: 'Uninvited user id',
   })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
@@ -200,12 +201,12 @@ export class ChatController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(UninviteUserGuard)
-  @Delete('chats/:chatId/invite/:unInviteName')
+  @Delete('chats/:chatId/invite/:userId')
   async removeUser(
     @Param('chatId', ParseIntPipe) chatId: number,
-    @Param('unInviteName') unInviteName: string,
+    @Param('userId') userId: string,
   ) {
-    return this.chatsService.removeUser(chatId, unInviteName);
+    return this.chatsService.removeUser(chatId, userId);
   }
 
   @ApiOperation({ summary: 'Edit chat name and description' })

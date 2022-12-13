@@ -25,26 +25,19 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { CheckUsernameDto } from './dto/check.username.dto';
 import { EditRoleDto } from './dto/edit.role.dto';
 import { DeleteUserGuard } from '../auth/guards/delete.user.guard';
 import { UpdateRoleGuard } from '../auth/guards/update.role.guard';
+import { EditUserDto } from './dto/edit.user.dto';
+import { AdminGuard } from 'src/auth/guards/admin.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+import { SessionDecorator } from '../auth/session.decorator';
+import { SessionContainer } from 'supertokens-node/recipe/session';
 
 @ApiTags('user')
 @Controller()
 export class UserController {
   constructor(private readonly usersService: UserService) {}
-
-  @ApiOperation({ summary: 'Check if username is already taken' })
-  @ApiBody({ type: CheckUsernameDto })
-  @ApiCreatedResponse({ description: 'Created' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Post('checkName')
-  async isUsernameTaken(
-    @Body() checkUsernameDto: CheckUsernameDto,
-  ): Promise<object> {
-    return await this.usersService.isUsernameTaken(checkUsernameDto.name);
-  }
 
   @ApiOperation({ summary: 'Create new user' })
   @ApiBody({ type: CreateUserDto })
@@ -58,9 +51,9 @@ export class UserController {
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Change user role flags' })
   @ApiParam({
-    name: 'userName',
+    name: 'userId',
     type: 'string',
-    description: 'Unique user name',
+    description: 'Unique user id',
   })
   @ApiBody({ type: EditRoleDto })
   @ApiOkResponse({ description: 'OK' })
@@ -69,29 +62,52 @@ export class UserController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(UpdateRoleGuard)
-  @Put('users/:userName/role')
+  @Put('users/:userId/role')
   async updateRole(
-    @Param('userName') userName: string,
+    @Param('userId') userId: string,
     @Body() editRoleDto: EditRoleDto,
   ) {
-    return await this.usersService.updateRole(userName, editRoleDto);
+    return await this.usersService.updateRole(userId, editRoleDto);
+  }
+
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'Change username' })
+  @ApiParam({
+    name: 'userId',
+    type: 'string',
+    description: 'Unique user id',
+  })
+  @ApiBody({ type: EditUserDto })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AdminGuard)
+  //ToDo guard to check that it's the right user
+  @Put('users/:userId/')
+  async editUser(
+    @Param('userId') userId: string,
+    @Body() editUserDto: EditUserDto,
+  ) {
+    return await this.usersService.editUser(userId, editUserDto);
   }
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Delete user' })
   @ApiParam({
-    name: 'userName',
+    name: 'userId',
     type: 'string',
-    description: 'Unique user name',
+    description: 'Unique user id',
   })
   @ApiOkResponse({ description: 'OK' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(DeleteUserGuard)
-  @Delete('users/:userName')
-  async deleteUser(@Param('userName') userName: string) {
-    return await this.usersService.deleteUser(userName);
+  @Delete('users/:userId')
+  async deleteUser(@Param('userId') userId: string) {
+    return await this.usersService.deleteUser(userId);
   }
 
   @ApiOperation({ summary: 'Get login page' })
@@ -108,5 +124,16 @@ export class UserController {
   @Render('register')
   async login() {
     return await this.usersService.getRegister();
+  }
+
+  @ApiOperation({ summary: 'Get user settings' })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  @Get('user/settings')
+  @Render('user-settings')
+  async getSettings(@SessionDecorator() session: SessionContainer) {
+    return await this.usersService.getSettings(session.getUserId());
   }
 }

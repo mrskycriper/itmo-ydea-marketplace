@@ -23,15 +23,15 @@ export class UpdateRoleGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
     const path = httpContext.getRequest().path;
-    const userName = path.split('/')[2];
+    var userId = path.split('/')[2];
     const userToUpdate = await prisma.user.findUnique({
-      where: { name: userName },
+      where: { id: userId },
     });
     if (userToUpdate == null) {
-      throw new NotFoundException('User ' + userName + ' not found');
+      throw new NotFoundException('User ' + userId + ' not found');
     }
 
-    const userId = session.getUserId();
+    userId = session.getUserId();
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user.is_admin) {
       throw new ForbiddenException('Forbidden operation');

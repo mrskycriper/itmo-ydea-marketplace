@@ -35,6 +35,12 @@ import { CreateProductsInOrderDto } from './dto/create.productsinorder.dto';
 import { SetTimeSlotDto } from './dto/set.timeslot.dto';
 import { SetAddressDto } from './dto/set.address.dto';
 import { EditProductsInOrderDto } from './dto/edit.productsinorder.dto';
+import { CreateOrderGuard } from 'src/auth/guards/create.order.guard';
+import { CreateProductsInOrderGuard } from 'src/auth/guards/create.productsinorder.guard';
+import { DeleteProductsInOrderGuard } from 'src/auth/guards/delete.productsinorder.guard';
+import { EditGetOrderGuard } from 'src/auth/guards/editget.order.guard';
+import { AdminGuard } from 'src/auth/guards/admin.guard';
+import { EditProductsInOrderGuard } from 'src/auth/guards/edit.productsinorder.guard';
 
 @ApiTags('order')
 @Controller()
@@ -49,7 +55,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO create order guard (сравнить id юзера из сессии и дто)
+  @UseGuards(CreateOrderGuard)
   @Post('/orders')
   async createOrder(@Body() createOrderDto: CreateOrderDto): Promise<object> {
     return await this.orderService.createOrder(createOrderDto);
@@ -63,7 +69,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(CreateProductsInOrderGuard)
   @Post('productsInOrder')
   async createProductsInOrder(
     @Body() createProductsInOrderDto: CreateProductsInOrderDto,
@@ -85,7 +91,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(DeleteProductsInOrderGuard)
   @Delete('productsInOrder/:productsInOrderId')
   async removeProductFromOrder(
     @Param('productsInOrderId') productsInOrderId: string,
@@ -95,44 +101,38 @@ export class OrderController {
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Get shopping cart' })
-  @ApiQuery({ name: 'userId', type: 'string', description: 'Unique user id' })
-  // TODO Временное решение, потом удалить
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @Get('cart')
-  // @Render('cart') // TODO Рендер корзины
-  async getShoppingCart(
-    @SessionDecorator() session: SessionContainer,
-    @Query('userId') userId: string,
-    // TODO Временное решение, потом удалить
-  ) {
-    return await this.orderService.getShoppingCart(
-      userId /*session.getUserId()*/,
-    );
-    // TODO Временное решение, потом удалить
+  async getShoppingCart(@SessionDecorator() session: SessionContainer) {
+    return await this.orderService.getShoppingCart(session.getUserId());
+  }
+
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'Get shopping cart id' })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  @Get('cartId')
+  async getShoppingCartId(@SessionDecorator() session: SessionContainer) {
+    return await this.orderService.getShoppingCartId(session.getUserId());
   }
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Get orders' })
-  @ApiQuery({ name: 'userId', type: 'string', description: 'Unique user id' })
-  // TODO Временное решение, потом удалить
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @Get('orders')
-  //@Render('orders') // TODO Рендер вида списка заказов пользователя
-  async getOrders(
-    @SessionDecorator() session: SessionContainer,
-    @Query('userId') userId: string,
-    // TODO Временное решение, потом удалить
-  ) {
-    return await this.orderService.getOrders(userId /*session.getUserId()*/);
-    // TODO Временное решение, потом удалить
+  async getOrders(@SessionDecorator() session: SessionContainer) {
+    return await this.orderService.getOrders(session.getUserId());
   }
 
   @ApiCookieAuth()
@@ -142,9 +142,9 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(EditGetOrderGuard)
   @Get('orders/:orderId')
-  // @Render('order') // TODO Рендер страницы заказа
+  // @Render('order')
   async getOrder(
     @Param('orderId', ParseIntPipe) orderId: number,
   ): Promise<object> {
@@ -167,7 +167,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(EditGetOrderGuard)
   @Patch('order/:orderId/timeslot')
   async setTimeslot(
     @Body() setTimeSlotDto: SetTimeSlotDto,
@@ -185,7 +185,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(EditGetOrderGuard)
   @Patch('order/:orderId/address')
   async setAddress(
     @Body() setAddressDto: SetAddressDto,
@@ -202,7 +202,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(EditGetOrderGuard)
   @Patch('order/:orderId/book')
   async bookOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.bookOrder(orderId);
@@ -216,7 +216,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(EditGetOrderGuard)
   @Patch('order/:orderId/unbook')
   async unBookOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.unBookOrder(orderId);
@@ -230,7 +230,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(EditGetOrderGuard)
   @Patch('order/:orderId/discard')
   async discardOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.discardOrder(orderId);
@@ -244,7 +244,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(EditGetOrderGuard)
   @Patch('order/:orderId/pay')
   async payForOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.payForOrder(orderId);
@@ -261,8 +261,8 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  // TODO Edit order guard
-  @Patch('orders/:orderId/products/:productsInOrderId')
+  @UseGuards(EditProductsInOrderGuard)
+  @Patch('productsInOrder/:productsInOrderId')
   async editProductInOrder(
     @Param('productsInOrderId') productsInOrderId: string,
     @Body() editProductsInOrderDto: EditProductsInOrderDto,
@@ -281,7 +281,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(AdminGuard)
   @Patch('order/:orderId/refund')
   async refundOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.refundOrder(orderId);
@@ -295,7 +295,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  // TODO Edit order guard (сравнить id юзера из сессии и заказа указанного в пути)
+  @UseGuards(AdminGuard)
   @Patch('order/:orderId/complete')
   async completeOrder(@Param('orderId', ParseIntPipe) orderId: number) {
     return await this.orderService.completeOrder(orderId);

@@ -11,6 +11,10 @@ import prisma from '../client';
 @Injectable()
 export class ChatService {
   async getSomeChats(userId: string, page: number): Promise<object> {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
     if (page < 1) {
       throw new BadRequestException('Invalid page number');
     }
@@ -28,12 +32,17 @@ export class ChatService {
     if (Object.keys(chats).length != 0) {
       empty = false;
     }
+    let support = false;
+    if (user.is_support) {
+      support = true;
+    }
     return {
-      title: 'Чаты - Ydea',
+      title: 'Техподдержка - Ydea',
       chatData: chats,
       pageCount: pageCount,
       page: page,
       empty: empty,
+      support: support,
     };
   }
 
@@ -45,6 +54,9 @@ export class ChatService {
             user_id: userId,
           },
         },
+      },
+      include: {
+        chat_to_user: { include: { user: true } },
       },
       take: take,
       skip: (page - 1) * take,
@@ -67,7 +79,11 @@ export class ChatService {
     return chats.length;
   }
 
-  async getChat(chatId: number): Promise<object> {
+  async getChat(chatId: number, userId: string): Promise<object> {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
     const chat = await prisma.chat.findUnique({ where: { id: chatId } });
     if (chat == null) {
       throw new NotFoundException('Chat not found');
@@ -79,30 +95,54 @@ export class ChatService {
       },
       include: { author: true },
     });
+    let support = false;
+    if (user.is_support) {
+      support = true;
+    }
+    const users = await prisma.chatToUser.findMany({
+      where: { chat_id: chatId },
+      include: { user: true },
+    });
     return {
-      title: chat.name + ' - Ydea',
+      title: 'Техподдержка - Ydea',
       chatName: chat.name,
       chatId: chatId,
       messages: messages,
+      support: support,
+      users: users,
     };
   }
 
-  async inviteUser(chatId: number, inviteName: string) {
-    const user = await prisma.user.findUnique({ where: { name: inviteName } });
+  async inviteUser(chatId: number, userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    const chat = await prisma.chat.findUnique({ where: { id: chatId } });
+    if (chat == null) {
+      throw new NotFoundException('Chat not found');
+    }
     await prisma.chatToUser.create({
-      data: { user_id: user.id, chat_id: chatId },
+      data: { user_id: userId, chat_id: chatId },
     });
   }
 
-  async removeUser(chatId: number, unInviteName: string) {
+  async removeUser(chatId: number, userId: string) {
     const user = await prisma.user.findUnique({
-      where: { name: unInviteName },
+      where: { id: userId },
     });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    const chat = await prisma.chat.findUnique({ where: { id: chatId } });
+    if (chat == null) {
+      throw new NotFoundException('Chat not found');
+    }
     await prisma.chatToUser.delete({
       where: {
         chat_id_user_id: {
           chat_id: chatId,
-          user_id: user.id,
+          user_id: userId,
         },
       },
     });
@@ -112,6 +152,12 @@ export class ChatService {
     userId: string,
     createChatDto: CreateChatDto,
   ): Promise<object> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
     const chat = await prisma.chat.create({
       data: createChatDto,
     });

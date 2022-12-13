@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsNumberString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateTopicDto {
   @IsNotEmpty()

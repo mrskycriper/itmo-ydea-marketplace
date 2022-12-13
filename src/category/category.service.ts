@@ -42,7 +42,7 @@ export class CategoryService {
     let admin = false;
 
     if (user) {
-      if (user.isAdmin || user.isModerator) {
+      if (user.is_admin || user.is_moderator) {
         admin = true;
       }
     }
@@ -101,7 +101,7 @@ export class CategoryService {
     }
 
     if (user) {
-      if (user.isAdmin || user.isModerator) {
+      if (user.is_admin || user.is_moderator) {
         admin = true;
       }
     }
@@ -151,6 +151,9 @@ export class CategoryService {
     const category = await prisma.category.findUnique({
       where: { id: categoryId },
     });
+    if (category == null) {
+      throw new NotFoundException('Category not found');
+    }
     return {
       title: category.name + ' - Ydea',
       categoryName: category.name,

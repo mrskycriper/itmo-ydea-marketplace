@@ -41,8 +41,16 @@ export class OrderService {
       where: { order_id: orderId },
       include: { product: true },
     });
+    let title = 'Заказ ' + order.id;
+    if (order.status == 'COLLECTING') {
+      title = 'Корзина';
+    }
 
-    return { order: order, productsInOrder: productsInOrder };
+    return {
+      title: title,
+      order: order,
+      productsInOrder: productsInOrder,
+    };
   }
 
   async createProductsInOrder(
@@ -127,12 +135,29 @@ export class OrderService {
     }
   }
 
+  async getShoppingCartId(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    const orderId = user.current_order_id;
+    if (orderId == 0) {
+      const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId);
+      const order = await this.createOrder(createOrderDto);
+      const newUser = await prisma.user.findUnique({ where: { id: userId } });
+      return {id: newUser.current_order_id};
+    } else {
+      return {id: orderId};
+    }
+  }
+
   async getOrders(userId: string) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user == null) {
       throw new NotFoundException('User not found');
     }
-    return await prisma.order.findMany({ where: { user_id: userId } });
+    const orders = await prisma.order.findMany({ where: { user_id: userId } });
+    return { title: 'Заказы', orders: orders };
   }
 
   async getTimeslots() {
@@ -456,7 +481,4 @@ export class OrderService {
       data: { status: 'COMPLETED' },
     });
   }
-
-  // TODO Перевод заказа в статус возврат
-  // TODO Перевод заказа в статус завершен
 }

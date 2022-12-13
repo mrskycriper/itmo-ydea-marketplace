@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlphanumeric,
   IsNotEmpty,
+  IsNumberString,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -34,4 +35,11 @@ export class EditProductDto {
     description: 'Product quantity',
   })
   readonly number: number;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    example: '1d98dc2b-3dc8-4a71-a2f0-9312bdf07317',
+    description: 'Product category id',
+  })
+  readonly category_id: string;
 }

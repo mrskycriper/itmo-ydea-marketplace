@@ -1,12 +1,12 @@
 div(class="nav-header")
     p(class="nav-header__logo") Ydea
     nav(class="nav-header__container")
-        a(href="/" class="nav-header__button") Каталог
+        a(href="/products" class="nav-header__button") Каталог
         a(href="/categories?page=1" class="nav-header__button") Форум
         if !authorised
             a(href="/login" class="nav-header__button") Чаты
         else
-            a(href="/chats?page=1" class="nav-header__button") Чаты
+            a(href="/chats?page=1" class="nav-header__button") Техподдержка
     div(class="nav-header__profile")
         if !authorised
             img(src="/images/profile.png" class="nav-header__profile-picture")
@@ -14,7 +14,7 @@ div(class="nav-header")
         else
             img(src="https://ui-avatars.com/api/?name=" + username + "&rounded=true&size=48" class="nav-header__profile-picture")
             div(class='nav-header__profile-container')
-                a(href="/users/" + username class="nav-header__profile-name") #{username}
+                a(href="/user/settings" class="nav-header__profile-name") #{username}
                 button(class='nav-header__logout' id='logout' onclick='logOut();') выйти
 
 

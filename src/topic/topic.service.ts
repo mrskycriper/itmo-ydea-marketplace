@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { EditTopicDto } from './dto/edit.topic.dto';
 import { CreateTopicDto } from './dto/create.topic.dto';
 import prisma from '../client';
@@ -11,10 +15,22 @@ export class TopicService {
   }
 
   async deleteTopic(topicId: number) {
+    const topic = await prisma.topic.findUnique({
+      where: { id: topicId },
+    });
+    if (topic == null) {
+      throw new NotFoundException('Topic not found');
+    }
     await prisma.topic.delete({ where: { id: topicId } });
   }
 
   async editTopic(topicId: number, editTopicDto: EditTopicDto) {
+    const topic = await prisma.topic.findUnique({
+      where: { id: topicId },
+    });
+    if (topic == null) {
+      throw new NotFoundException('Topic not found');
+    }
     await prisma.topic.update({ where: { id: topicId }, data: editTopicDto });
   }
 
@@ -31,12 +47,15 @@ export class TopicService {
     let admin = false;
 
     if (user) {
-      if (user.isAdmin || user.isModerator) {
+      if (user.is_admin || user.is_moderator) {
         admin = true;
       }
     }
     const take = 5;
     const topic = await prisma.topic.findUnique({ where: { id: topicId } });
+    if (topic == null) {
+      throw new NotFoundException('Topic not found');
+    }
 
     const posts = await prisma.post.findMany({
       skip: (page - 1) * take,
@@ -76,6 +95,9 @@ export class TopicService {
     const topic = await prisma.topic.findUnique({
       where: { id: topicId },
     });
+    if (topic == null) {
+      throw new NotFoundException('Topic not found');
+    }
     return {
       title: topic.name + ' - Ydea',
       topicName: topic.name,

@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -24,7 +25,7 @@ export class AdminGuard implements CanActivate {
     const userId = session.getUserId();
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user.is_admin && !user.is_moderator) {
-      throw new UnauthorizedException('Unauthorized');
+      throw new ForbiddenException('Forbidden');
     }
 
     return true;

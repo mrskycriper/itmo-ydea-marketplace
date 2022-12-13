@@ -15,8 +15,8 @@ block content
             else
                 a(href="/chats?page=" + (page + 1) class="chat-navigation-container__navigation-button") →
             p(class="chat-navigation-container__page-count") Страница #{page} из #{pageCount}
-            button(class="chat-navigation-container__create-chat-button" onclick='showCreateChat();') Создать чат
-        form(class='create-chat-form' id='create-chat' style='display: none;')
+            //button(class="chat-navigation-container__create-chat-button" onclick='showCreateChat();') Создать чат
+        //form(class='create-chat-form' id='create-chat' style='display: none;')
             div(class='create-chat-from__input-group')
                 label(class='create-chat-from__label' for='name') Название
                 input(class='create-chat-from__input' id='name' type='text' required=true minlength=2 maxlength=32)
@@ -26,9 +26,23 @@ block content
             input(class='create-chat-from__submit-button' type='submit' value='Создать')
         div(class="chat-container")
             if (!empty)
-              each val in chatData
-                  div(class="chat-card")
-                      a(href="/chats/" + val.id class="chat-card__header" )= val.name
-                      p(class="chat-card__description")= val.description
+                if (!support)
+                    each chat in chatData
+                        div(class="chat-card")
+                            a(href="/chats/" + chat.id class="chat-card__header" )= chat.name
+                            p(class="chat-card__description")= chat.description
+                else
+                    each chat in chatData
+                        each user in chat.chat_to_user
+                            if (user.user_id !== userid)
+                                div(class="chat-card")
+                                    a(href="/chats/" + chat.id class="chat-card__header" )= user.user.name
+                                    p(class="chat-card__description")= "Активный пользователь"
+                            else
+                                if chat.chat_to_user.length === 1
+                                    div(class="chat-card")
+                                        a(href="/chats/" + chat.id class="chat-card__header" )= "Чат id" + chat.id
+                                        p(class="chat-card__description")= "Пользователь был удален"
+
             else
                 p(class='empty-list') Вы не состоите ни в одном чате

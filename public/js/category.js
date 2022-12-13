@@ -43,13 +43,15 @@ function showEditCategory() {
   }
 }
 
-function handleEditCategory(categoryId) {
+async function handleEditCategory(categoryId) {
+  event.preventDefault();
   const categoryData = getCategoryData();
-  _api
-    .editCategory(categoryId, categoryData.name, categoryData.description)
-    .then(() => {
-      window.location.reload();
-    });
+  await _api.editCategory(
+    categoryId,
+    categoryData.name,
+    categoryData.description,
+  );
+  window.location.reload();
 }
 
 function showDeleteCategory() {
@@ -61,12 +63,11 @@ function showDeleteCategory() {
   }
 }
 
-function handleDeleteCategory(categoryId) {
+async function handleDeleteCategory(categoryId) {
   const result = confirm('Вы уверены? Это действие не обратимо.');
   if (result) {
-    _api.deleteCategory(categoryId).then(() => {
-      window.location.href = '/';
-      alert('Категория удалена.');
-    });
+    await _api.deleteCategory(categoryId);
+    window.location.href = '/';
+    alert('Категория удалена.');
   }
 }

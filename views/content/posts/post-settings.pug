@@ -11,12 +11,12 @@ block content
             div(class='settings-card')
                 div(class='settings-card__header')
                     p(class='settings-card__name') Заголовок поста
-                    button(class='settings-card__edit' onclick='showEditPost();') изменить
+                    button(class='settings-card__edit' onclick='javascript:showEditPost();') изменить
                 p(class='settings-card__content')= postTitle
                 div(class='settings-card__header')
                     p(class='settings-card__name') Текст поста
                 p(class='settings-card__content')= postContent
-                form(id='post-form' style='display: none' class='settings-card__form' onsubmit='handleEditPost(' + postId + ');')
+                form(id='post-form' style='display: none' class='settings-card__form' onsubmit='javascript:handleEditPost(' + postId + ');')
                     div(class='settings-card__form-options')
                         div(class='settings-card__from-group')
                             label(for='title' class='settings-card__from-label') Заголовок
@@ -28,6 +28,6 @@ block content
             div(class='settings-card--danger')
                 div(class='settings-card__header')
                     p(class='settings-card__name') Опасная зона
-                    button(class='settings-card__edit' onclick='showDeletePost();') развернуть
+                    button(class='settings-card__edit' onclick='javascript:showDeletePost();') развернуть
                 div(class='profile__card--danger-container' id='danger-container' style='display: none')
-                    button(class='profile__delete-button' onclick='handleDeletePost(' + postId + ');') Удалить пост
+                    button(class='profile__delete-button' onclick='javascript:handleDeletePost(' + postId + ');') Удалить пост

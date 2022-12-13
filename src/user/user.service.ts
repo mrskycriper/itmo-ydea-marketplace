@@ -1,44 +1,60 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create.user.dto';
-import { deleteUser } from 'supertokens-node';
 import prisma from '../client';
 import { EditRoleDto } from './dto/edit.role.dto';
+import { CreateChatDto } from 'src/chat/dto/create.chat.dto';
+import { EditUserDto } from './dto/edit.user.dto';
 
 @Injectable()
 export class UserService {
-  async isUsernameTaken(username: string): Promise<object> {
-    const nameTaken = await prisma.user.findUnique({
-      where: { name: username },
-    });
-    let isNameTaken = true;
-    if (nameTaken == null) {
-      isNameTaken = false;
-    }
-    return { isNameTaken: isNameTaken };
-  }
-
   async createUser(createUserDto: CreateUserDto) {
-    const nameTaken = await prisma.user.findUnique({
-      where: { name: createUserDto.name },
-    });
-    if (nameTaken) {
-      throw new BadRequestException('Username already taken');
-    }
-
     await prisma.user.create({ data: createUserDto });
+    const createChatDto = new CreateChatDto(
+      'Чат с тех-подержкй',
+      'Можете задавать сдесь любые вопросы, наш специалист с вами свяжется.',
+    );
+    const chat = await prisma.chat.create({
+      data: createChatDto,
+    });
+    await prisma.chatToUser.create({
+      data: { user_id: createUserDto.id, chat_id: chat.id },
+    });
+    const support = await prisma.user.findFirst({
+      where: { is_support: true },
+    });
+    await prisma.chatToUser.create({
+      data: { user_id: support.id, chat_id: chat.id },
+    });
   }
 
-  async updateRole(userName: string, editRoleDto: EditRoleDto) {
+  async updateRole(userId: string, editRoleDto: EditRoleDto) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
     await prisma.user.update({
-      where: { name: userName },
+      where: { id: userId },
       data: editRoleDto,
     });
   }
 
-  async deleteUser(userName: string) {
-    const user = await prisma.user.findUnique({ where: { name: userName } });
-    await deleteUser(user.id);
-    await prisma.user.delete({ where: { id: user.id } });
+  async editUser(userId: string, editUserDto: EditUserDto) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    await prisma.user.update({
+      where: { id: userId },
+      data: editUserDto,
+    });
+  }
+
+  async deleteUser(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    await prisma.user.delete({ where: { id: userId } });
   }
 
   async getLogin() {
@@ -47,5 +63,47 @@ export class UserService {
 
   async getRegister() {
     return { title: 'Регистрация - Ydea' };
+  }
+
+  async getSettings(userId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user == null) {
+      throw new NotFoundException('User not found');
+    }
+    let role = 'Покупатель';
+    if (user.is_seller) {
+      role = 'Продавец';
+    }
+    if (user.is_support) {
+      role = 'Техподдержка';
+    }
+    if (user.is_moderator) {
+      role = 'Модератор';
+    }
+    if (user.is_admin) {
+      role = 'Администратор';
+    }
+
+    let seller = false;
+    if (user.is_seller) {
+      seller = true;
+    }
+    if (seller) {
+      const seller = await prisma.seller.findMany({
+        where: { user_id: user.id },
+      });
+      return {
+        user: user,
+        is_seller: seller,
+        seller: seller[0],
+        role: role,
+      };
+    } else {
+      return {
+        user: user,
+        is_seller: seller,
+        role: role,
+      };
+    }
   }
 }

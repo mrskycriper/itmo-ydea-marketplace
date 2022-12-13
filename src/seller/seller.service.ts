@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSellerDto } from './dto/create.seller.dto';
 import prisma from '../client';
 import { UpdateSellerDto } from './dto/update.seller.dto';
@@ -32,15 +28,30 @@ export class SellerService {
     await prisma.seller.delete({ where: { id: sellerId } });
   }
 
-  async getSeller(sellerId: number) {
+  async getSeller(sellerId: number, userId: string) {
     const seller = await prisma.seller.findUnique({
       where: { id: sellerId },
     });
     if (seller == null) {
       throw new NotFoundException('Seller not found');
     }
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    let edit = false;
+    if (user != null) {
+      if (user.id == seller.user_id || user.is_admin || user.is_moderator) {
+        edit = true;
+      }
+    }
     return {
       seller: seller,
+      edit: edit,
+    };
+  }
+
+  async getSellers() {
+    const sellers = await prisma.seller.findMany();
+    return {
+      sellers: sellers,
     };
   }
 
@@ -56,5 +67,9 @@ export class SellerService {
       where: { id: sellerId },
       data: updateSellerDto,
     });
+  }
+
+  async getRegister() {
+    return { title: 'Регистрация продавца - Ydea' };
   }
 }

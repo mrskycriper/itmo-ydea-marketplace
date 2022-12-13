@@ -11,12 +11,12 @@ block content
             div(class='settings-card')
                 div(class='settings-card__header')
                     p(class='settings-card__name') Название топика
-                    button(class='settings-card__edit' onclick='showEditTopic();') изменить
+                    button(class='settings-card__edit' onclick='javascript:showEditTopic();') изменить
                 p(class='settings-card__content') #{topicName}
                 div(class='settings-card__header')
                     p(class='settings-card__name') Описание топика
                 p(class='settings-card__content') #{topicDescription}
-                form(id='topic-form' style='display: none' class='settings-card__form' onsubmit='handleEditTopic(' + topicId + ');')
+                form(id='topic-form' style='display: none' class='settings-card__form' onsubmit='javascript:handleEditTopic(' + topicId + ');')
                     div(class='settings-card__form-options')
                         div(class='settings-card__from-group')
                             label(for='name' class='settings-card__from-label') Название
@@ -28,6 +28,6 @@ block content
             div(class='settings-card--danger')
                 div(class='settings-card__header')
                     p(class='settings-card__name') Опасная зона
-                    button(class='settings-card__edit' onclick='showDeleteTopic();') развернуть
+                    button(class='settings-card__edit' onclick='javascript:showDeleteTopic();') развернуть
                 div(class='profile__card--danger-container' id='danger-container' style='display: none')
-                    button(class='profile__delete-button' id='delete-profile' onclick='handleDeleteTopic(' + topicId + ');') Удалить топик
+                    button(class='profile__delete-button' id='delete-profile' onclick='javascript:handleDeleteTopic(' + topicId + ');') Удалить топик

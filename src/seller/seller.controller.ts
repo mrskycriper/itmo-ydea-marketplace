@@ -33,6 +33,7 @@ import { SessionDecorator } from '../auth/session.decorator';
 import { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { UpdateSellerDto } from './dto/update.seller.dto';
+import { SellerGuard } from 'src/auth/guards/seller.guard';
 
 @ApiTags('seller')
 @Controller()
@@ -46,7 +47,7 @@ export class SellerController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Post('/sellers')
   async createSeller(
     @Body() createSellerDto: CreateSellerDto,
@@ -66,7 +67,7 @@ export class SellerController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  // TODO Seller guard (c проверкой id)
+  @UseGuards(SellerGuard)
   @Delete('sellers/:sellerId')
   async deleteSeller(@Param('sellerId', ParseIntPipe) sellerId: number) {
     return await this.sellerService.deleteSeller(sellerId);
@@ -81,6 +82,7 @@ export class SellerController {
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   @Get('sellers/:sellerId')
   // @Render('seller')
   // TODO Рендер страницы продавца
@@ -88,7 +90,7 @@ export class SellerController {
     @SessionDecorator() session: SessionContainer,
     @Param('sellerId', ParseIntPipe) sellerId: number,
   ): Promise<object> {
-    return await this.sellerService.getSeller(sellerId);
+    return await this.sellerService.getSeller(sellerId, session.getUserId());
   }
 
   @ApiOperation({ summary: 'Update seller' })
@@ -102,11 +104,32 @@ export class SellerController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(SellerGuard)
   @Patch('sellers/:sellerId')
   async updateSeller(
     @Param('sellerId', ParseIntPipe) sellerId: number,
     @Body() updateSellerDto: UpdateSellerDto,
   ) {
     return await this.sellerService.updateSeller(sellerId, updateSellerDto);
+  }
+
+  @ApiOperation({ summary: 'Get all sellers' })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @Get('sellers/')
+  // @Render('seller')
+  async getSellers(
+    @SessionDecorator() session: SessionContainer,
+  ): Promise<object> {
+    return await this.sellerService.getSellers();
+  }
+
+  @ApiOperation({ summary: 'Get register page' })
+  @ApiOkResponse({ description: 'OK' })
+  @Get('registerseller')
+  @Render('register-seller')
+  async login() {
+    return await this.sellerService.getRegister();
   }
 }
