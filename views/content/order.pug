@@ -18,12 +18,12 @@ block content
                           a(class="product__button" href="#" id="delivery button" onclick='handleAddress('+order.id+');') Добавить адрес
                           div(class='product__input-group')
                               label(class='product__input-label' for='address') Адрес
-                              input(class='product__input' id='address' required=true)
+                              input(class='product__input' id='address' required=true value=order.address)
                           div(class="dropdown")
                             button(class="dropbtn") Временные слоты доставки
                             div(class="dropdown-content")
                               each timeslot in timeslots.timeslots
-                                 a(href="#" onclick='handleTimeSlot('+order.id+", \'"+timeslot.timeslot_start+'\', \''+timeslot.timeslot_end+'\');')= timeslot.timeslot_start+"     "+timeslot.timeslot_end
+                                 a(href="#" onclick='handleTimeSlot('+order.id+", \'"+timeslot.timeslot_start+'\', \''+timeslot.timeslot_end+'\');')= (new Date(Date.parse(timeslot.timeslot_start))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})+"     "+(new Date(Date.parse(timeslot.timeslot_end))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
                         else
                            if(order.status=="SHIPPING")
                                p(class="product-card__name") Заказ в доставке

@@ -55,8 +55,11 @@ async function handleAddress(orderId) {
 }
 
 async function handleTimeSlot(orderId, timeslot_start, timeslot_end) {
+  let start = new Date(Date.parse(timeslot_start));
+  let end = new Date(Date.parse(timeslot_end));
   await _api.
-  setTimeslots(orderId, timeslot_start, timeslot_end);
+  setTimeslots(orderId, start.toISOString(), end.toISOString());
+  window.location.reload();
 }
 
 // window.addEventListener('load', () => {
