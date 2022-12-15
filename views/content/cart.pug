@@ -8,7 +8,8 @@ block content
             div(class="products-card")
                 div(class='product-card__text')
                     p(class="product-card__name")= "Сумма заказа " + order.sum 
-                    a(class="product__button" href="#" onclick='handleBooking('+order.id+');') Забронировать заказ
+                    p(class="product-card__name")= "Заказ можно забронировать до " + (new Date((new Date(Date.parse(order.start_timestamp))).setDate((new Date(Date.parse(order.start_timestamp))).getDate()+2))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
+                    a(class="product__button" href="#" onclick='handleBooking('+order.id+", \'"+order.start_timestamp+'\');') Забронировать заказ
                     a(class="product__button" href="#" onclick='handleDiscarding('+order.id+');') Сбросить корзину/отменить заказ
             if (!empty)
               each product in productsInOrder

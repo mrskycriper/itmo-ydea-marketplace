@@ -9,9 +9,11 @@ block content
                 div(class='product-card__text')
                     p(class="product-card__name")= "Сумма заказа " + order.sum 
                     if(order.status=="BOOKED")
-                      a(class="product__button" href="#" id="rebooking button" onclick='handleReBooking('+order.id+');') Перебронировать заказ
-                      a(class="product__button" href="#" id="payment button" onclick='handlePaying('+order.id+');') Оплатить заказ
-                      a(class="product__button" href="#" id="unbooking button" onclick='handleUnBooking('+order.id+');') Разбронировать заказ
+                      p(class="product-card__name")= "Заказ забронирован до " + (new Date((new Date(Date.parse(order.start_timestamp))).setDate((new Date(Date.parse(order.start_timestamp))).getDate()+2))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
+                      p(class="product-card__name")= "Заказ забронирован " + order.times_booked + " раз(а)"
+                      a(class="product__button" href="#" id="rebooking button" onclick='handleReBooking('+order.id+", "+order.times_booked+", \'"+order.start_timestamp+'\');') Перебронировать заказ
+                      a(class="product__button" href="#" id="payment button" onclick='handlePaying('+order.id+", \'"+order.start_timestamp+'\');') Оплатить заказ
+                      a(class="product__button" href="#" id="unbooking button" onclick='handleUnBooking('+order.id+", \'"+order.start_timestamp+'\');') Разбронировать заказ
                       a(class="product__button" href="#" id="discarding button" onclick='handleDiscarding('+order.id+');') Отменить заказ
                     else
                         if(order.status=="PAID")
