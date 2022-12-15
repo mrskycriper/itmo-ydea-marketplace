@@ -5,29 +5,23 @@ block additionalScripts
 
 block content
     div(class="product-main")
-        div(class="product-card")
+        div(class="product-card" id="productData")
             div(class="product-picture")
                 if photos[0]
                     img(src=photos[0].photo_url)
                 else 
                     img(src="https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=")
-                if edit
-                    a(id="changeImage" href="javascript:changeProductImage();") Изменить изображение
             div(class="product-info")
                 h1(id="productNameField") #{product.name}
-                if edit
-                    a(id="changeName" href="javascript:changeProductName();") Изменить название
                 h3(id="productDescriptionField") #{product.description}
-                if edit
-                    a(id="changeDescription" href="javascript:changeProductDescription();") Изменить описание
                 p() Рейтинг: #{product.rating_average}/5
                 h3(id="productPrice") Цена: #{product.price}$
-                if edit
-                    a(id="changePrice" href="javascript:changeProductPrice();") Изменить цену
                 p(id="numberOfProduct") Единиц товара: #{product.number}
-                if edit
-                    a(id="changeNumber" href="javascript:changeProductNumber();") Изменить цену
                 p(id="categoryOfProduct") КАТЕГОРИЯ: #{product.category.category}
+            div(class="break")
+        if edit
+            div(class="editRow")
+                a( href="javascript:editProduct();") Изменить товар
         h1() Отзывы о товаре
         div(class="reviews-container")
             if reviews[0]
@@ -47,6 +41,8 @@ block content
         productDescription="#{product.description}";
     script.
         productCategoryID="#{product.category_id}";
+    script. 
+        productCategory="#{product.category.category}";
     script.
         productNumber="#{product.number}";
     script.

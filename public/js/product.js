@@ -30,3 +30,24 @@ async function changeProductNameSubmit() {
   );
   window.location.reload();
 }
+
+
+async function editProduct() {
+  var nameFieldElement = document.getElementById('productNameField');
+  var productDescriptionFieldElement = document.getElementById('productDescriptionField');
+  var productPriceElement = document.getElementById('productPrice');
+  var numberOfProductElement = document.getElementById('numberOfProduct');
+  var categoryOfProductElement = document.getElementById('categoryOfProduct');
+  nameFieldElement.innerHTML =
+    '<form action="javascript:editSubmit();"><input type=text id="newProductNameTextArea" value="' + productName +'"></input></form>';
+  productDescriptionFieldElement.innerHTML = 
+  '<form action="javascript:editSubmit();"><textarea type=text id="newProductNameTextArea" rows="10" cols="40">' + productDescription +'</textarea></form>';
+  productPriceElement.innerHTML =
+  'Цена: <form action="javascript:editSubmit();"><input type=text id="newProductNameTextArea" value="' + productPrice +'"></input></form>';
+  numberOfProductElement.innerHTML =
+  'Единиц товара: <form action="javascript:editSubmit();"><input type=text id="newProductNameTextArea" value="' + productNumber +'"></input></form>';
+}
+
+async function editSubmit() {
+  alert('A')
+}
