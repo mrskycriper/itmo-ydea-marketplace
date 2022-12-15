@@ -30,9 +30,10 @@ async function handleBooking(orderId, timestamp) {
   ) {
     await _api.discardOrder(orderId);
     window.location = '/orders/' + orderId;
+  } else {
+    await _api.bookOrder(orderId);
+    window.location = '/orders/' + orderId;
   }
-  await _api.bookOrder(orderId);
-  window.location = '/orders/' + orderId;
 }
 async function handleUnBooking(orderId, timestamp) {
   var today = new Date();
@@ -44,9 +45,10 @@ async function handleUnBooking(orderId, timestamp) {
   ) {
     await _api.discardOrder(orderId);
     window.location.reload();
+  } else {
+    await _api.unbookOrder(orderId);
+    window.location = '/cart';
   }
-  await _api.unbookOrder(orderId);
-  window.location = '/cart';
 }
 async function handleDiscarding(orderId) {
   await _api.discardOrder(orderId);
@@ -67,9 +69,10 @@ async function handleReBooking(orderId, times_booked, timestamp) {
   if (times_booked == 3) {
     await _api.discardOrder(orderId);
     window.location.reload();
+  } else {                                                             
+    await _api.bookOrder(orderId);
+    window.location.reload();
   }
-  await _api.bookOrder(orderId);
-  window.location.reload();
 }
 
 async function handlePaying(orderId, timestamp) {

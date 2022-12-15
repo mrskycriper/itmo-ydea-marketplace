@@ -179,7 +179,7 @@ export class OrderService {
       new Date(date.setHours(19, 0, 0, 0)),
     );
     let timeslots = [timeSlotMorning, timeSlotDay, timeSlotEvening];
-    return {timeslots: timeslots};
+    return { timeslots: timeslots };
   }
 
   async setTimeslot(orderId: number, setTimeSlotDto: SetTimeSlotDto) {
@@ -300,6 +300,12 @@ export class OrderService {
         sum: sum,
       },
     });
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        current_order_id: orderId,
+      },
+    });
   }
 
   async discardOrder(orderId: number) {
@@ -319,6 +325,19 @@ export class OrderService {
         status: 'DISCARDED',
       },
     });
+
+    if (status == 'BOOKED') {
+      const productsInOrder = await prisma.productsInOrder.findMany({
+        where: { order_id: orderId },
+        include: { product: true },
+      });
+      let sum = 0;
+      for (const i of productsInOrder) {
+        sum += i.number * Number(i.product.price);
+        await this.unBookProduct(i.id);
+      }
+    }
+
     if (status == 'COLLECTING') {
       const userId = order.user_id;
       await prisma.user.update({
@@ -402,7 +421,7 @@ export class OrderService {
       throw new NotFoundException('Product not found');
     }
 
-    if (product.number_booked > productInOrder.number) {
+    if (product.number_booked < productInOrder.number) {
       throw new BadRequestException('Booked products exceeded total quantity');
     }
     await prisma.product.update({
