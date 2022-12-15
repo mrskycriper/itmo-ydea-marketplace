@@ -1,0 +1,30 @@
+extends ../template
+
+block additionalScripts
+
+block content
+            if (!empty)
+              each order in orders
+                  if(order.status != "COLLECTING")
+                    div(class="order-card")
+                        div(class='order-card__text')
+                            div(class="order-card__header")
+                                a(class="order-card__name" href='/orders/' + order.id)= "Заказ номер "+order.id
+                            p(class='product-card__description')= "Сумма заказа "+order.sum
+                            p(class='product-card__description')= "Дата заказа "+(new Date(Date.parse(order.start_timestamp))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
+                            if(order.status == "BOOKING")
+                              p(class='product-card__description') Заказ забронирован
+                            if(order.status == "PAID")
+                              p(class='product-card__description') Заказ оплачен
+                            if(order.status == "SHIPPING")
+                              p(class='product-card__description') Заказ в доставке
+                            if(order.status == "COMPLETED")
+                              p(class='product-card__description') Заказ успешно завершён
+                            if(order.status == "REFUND")
+                              p(class='product-card__description') Заказ возмещён
+                            if(order.status == "DISCARDED")
+                              p(class='product-card__description') Заказ отменён
+                            
+                            
+            else
+                p(class='empty-list') Список заказов пуст

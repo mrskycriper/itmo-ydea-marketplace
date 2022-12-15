@@ -130,6 +130,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  @Render('orders')
   @Get('orders')
   async getOrders(@SessionDecorator() session: SessionContainer) {
     return await this.orderService.getOrders(session.getUserId());
