@@ -50,10 +50,13 @@ block content
                           p(class='product-card__description')= product.description
                           p(class='product-card__description')= "Цена "+product.price
                           p(class='product-card__description')= "Рейтинг "+product.rating_average
-                          a(class="product__button" href="#" onclick='javascript:handleCreateProductsInOrder('+product.id+', \''+userid+'\');') Добавить в корзину
-                          div(class='product__input-group')
-                              label(class='product__input-label' for='number') Количество
-                              input(class='product__input' id='number '+product.id required=true value="1")
+                          if(product.number > 0 && product.number > product.number_booked)
+                           a(class="product__button" href="#" onclick='javascript:handleCreateProductsInOrder('+product.id+', \''+userid+'\');') Добавить в корзину
+                           div(class='product__input-group')
+                               label(class='product__input-label' for='number') Количество
+                               input(class='product__input' id='number '+product.id required=true value="1")
+                          else
+                           p(class='product-card__description') Нет в наличии
             else
                 p(class='empty-list') Каталог пуст
             a(class="product__button" href="#" onclick='handlePreviousPage();') Предыдущая страница
