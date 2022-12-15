@@ -133,6 +133,10 @@
     text-decoration: none;
 }
 
+product__button_hide{
+    display: hidden;
+}
+
 .product__input-group {
     display: block;
     margin-bottom: 15px;

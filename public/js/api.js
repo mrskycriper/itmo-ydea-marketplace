@@ -158,6 +158,7 @@ class Api {
 
   bookOrder = (order_id) => this.#api.patch('/order/' + order_id + '/book');
   unbookOrder = (order_id) => this.#api.patch('/order/' + order_id + '/unbook');
+  discardOrder = (order_id) => this.#api.patch('/order/' + order_id + '/discard');
   payForOrder = (order_id) => this.#api.patch('/order/' + order_id + '/pay');
   refundOrder = (order_id) => this.#api.patch('/order/' + order_id + '/refund');
   completeOrder = (order_id) =>

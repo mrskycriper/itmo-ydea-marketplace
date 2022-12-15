@@ -1,0 +1,53 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/order.js')
+
+block content
+        div(class="catalogue-container")
+            div(class="products-card")
+                div(class='product-card__text')
+                    p(class="product-card__name")= "Сумма заказа " + order.sum 
+                    if(order.status=="BOOKED")
+                      p(class="product-card__name")= "Заказ забронирован до " + (new Date((new Date(Date.parse(order.start_timestamp))).setDate((new Date(Date.parse(order.start_timestamp))).getDate()+2))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
+                      p(class="product-card__name")= "Заказ забронирован " + order.times_booked + " раз(а)"
+                      a(class="product__button" href="#" id="rebooking button" onclick='handleReBooking('+order.id+", "+order.times_booked+", \'"+order.start_timestamp+'\');') Перебронировать заказ
+                      a(class="product__button" href="#" id="payment button" onclick='handlePaying('+order.id+", \'"+order.start_timestamp+'\');') Оплатить заказ
+                      a(class="product__button" href="#" id="unbooking button" onclick='handleUnBooking('+order.id+", \'"+order.start_timestamp+'\');') Разбронировать заказ
+                      a(class="product__button" href="#" id="discarding button" onclick='handleDiscarding('+order.id+');') Отменить заказ
+                    else
+                        if(order.status=="PAID")
+                          a(class="product__button" href="#" id="delivery button" onclick='handleAddress('+order.id+');') Добавить адрес
+                          div(class='product__input-group')
+                              label(class='product__input-label' for='address') Адрес
+                              input(class='product__input' id='address' required=true value=order.address)
+                          div(class="dropdown")
+                            button(class="dropbtn") Временные слоты доставки
+                            div(class="dropdown-content")
+                              each timeslot in timeslots.timeslots
+                                 a(href="#" onclick='handleTimeSlot('+order.id+", \'"+timeslot.timeslot_start+'\', \''+timeslot.timeslot_end+'\');')= (new Date(Date.parse(timeslot.timeslot_start))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})+"     "+(new Date(Date.parse(timeslot.timeslot_end))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
+                        else
+                           if(order.status=="SHIPPING")
+                               p(class="product-card__name") Заказ в доставке
+                           if(order.status=="COMPLETED")
+                               p(class="product-card__name") Заказ успешно завершён
+                           if(order.status=="REFUND")
+                               p(class="product-card__name") Заказ возмещён
+                           if(order.status=="DISCARDED")
+                               p(class="product-card__name") Заказ отменён
+            if (!empty)
+              each product in productsInOrder
+                  div(class="products-card")
+                      //if product.photos[0]
+                      //    img(src=product.photos[0].photo_url class="product-card__photo")
+                      //else
+                      //    img(src="https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=" class="product-card__photo")
+                      ////img(src=product.photo class="product-card__photo")
+                      div(class='product-card__text')
+                          div(class="product-card__header")
+                              a(class="product-card__name" href='/products/' + product.product.id)= product.product.name
+                          p(class='product-card__description')= "Цена "+product.product.price
+                          p(class='product-card__description')= "Количество "+product.number
+                          
+            else
+                p(class='empty-list') Заказ пуст
