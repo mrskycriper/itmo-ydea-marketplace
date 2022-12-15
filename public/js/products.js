@@ -5,7 +5,6 @@ function getNumber(productId) {
   };
 }
 
-
 async function handleCreateProductsInOrder(productId, userid) {
   const number = getNumber(productId);
   if (userid != 'null') {
@@ -62,22 +61,32 @@ async function handleNoFilters() {
 async function handleNextPage() {
   const urlParams = new URLSearchParams(window.location.search);
   let page = urlParams.get('page');
-  urlParams.set('page', Number.parseInt(page) + 1);
+  if (page == null) {
+    urlParams.set('page', 1);
+  } else {
+    if (document.getElementById('products-card')) {
+      urlParams.set('page', Number.parseInt(page) + 1);
+    }
+  }
   window.location.search = urlParams;
 }
 
 async function handlePreviousPage() {
   const urlParams = new URLSearchParams(window.location.search);
   let page = urlParams.get('page');
-  if (page > 1) {
-    urlParams.set('page', Number.parseInt(page) - 1);
-    window.location.search = urlParams;
+  if (page == null) {
+    urlParams.set('page', 1);
+  } else {
+    if (page > 1) {
+      urlParams.set('page', Number.parseInt(page) - 1);
+      window.location.search = urlParams;
+    }
   }
 }
 
 async function handlePerPage(perpage) {
-  if(perpage > 0){
-  const urlParams = new URLSearchParams(window.location.search);
+  if (perpage > 0) {
+    const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('perPage', perpage);
     window.location.search = urlParams;
   }
