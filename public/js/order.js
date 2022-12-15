@@ -69,6 +69,7 @@ async function handleReBooking(orderId, times_booked, timestamp) {
     window.location.reload();
   }
   await _api.bookOrder(orderId);
+  window.location.reload();
 }
 
 async function handlePaying(orderId, timestamp) {
