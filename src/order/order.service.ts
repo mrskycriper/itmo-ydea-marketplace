@@ -46,10 +46,13 @@ export class OrderService {
       title = 'Корзина';
     }
 
+    const timeslots = await this.getTimeslots();
+
     return {
       title: title,
       order: order,
       productsInOrder: productsInOrder,
+      timeslots: timeslots,
     };
   }
 
@@ -145,9 +148,9 @@ export class OrderService {
       const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId);
       const order = await this.createOrder(createOrderDto);
       const newUser = await prisma.user.findUnique({ where: { id: userId } });
-      return {id: newUser.current_order_id};
+      return { id: newUser.current_order_id };
     } else {
-      return {id: orderId};
+      return { id: orderId };
     }
   }
 
@@ -175,7 +178,8 @@ export class OrderService {
       new Date(date.setHours(17, 0, 0, 0)),
       new Date(date.setHours(19, 0, 0, 0)),
     );
-    return [timeSlotMorning, timeSlotDay, timeSlotEvening];
+    let timeslots = [timeSlotMorning, timeSlotDay, timeSlotEvening];
+    return { timeslots: timeslots };
   }
 
   async setTimeslot(orderId: number, setTimeSlotDto: SetTimeSlotDto) {
@@ -296,6 +300,12 @@ export class OrderService {
         sum: sum,
       },
     });
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        current_order_id: orderId,
+      },
+    });
   }
 
   async discardOrder(orderId: number) {
@@ -315,6 +325,28 @@ export class OrderService {
         status: 'DISCARDED',
       },
     });
+
+    if (status == 'BOOKED') {
+      const productsInOrder = await prisma.productsInOrder.findMany({
+        where: { order_id: orderId },
+        include: { product: true },
+      });
+      let sum = 0;
+      for (const i of productsInOrder) {
+        sum += i.number * Number(i.product.price);
+        await this.unBookProduct(i.id);
+      }
+    }
+
+    if (status == 'COLLECTING') {
+      const userId = order.user_id;
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          current_order_id: 0,
+        },
+      });
+    }
   }
 
   async payForOrder(orderId: number) {
@@ -389,7 +421,7 @@ export class OrderService {
       throw new NotFoundException('Product not found');
     }
 
-    if (product.number_booked > productInOrder.number) {
+    if (product.number_booked < productInOrder.number) {
       throw new BadRequestException('Booked products exceeded total quantity');
     }
     await prisma.product.update({
