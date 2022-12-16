@@ -12,7 +12,7 @@
     box-sizing: border-box;
 }
 
-.nav-header__logo {
+.nav-header__logo:any-link {
     font-family: sans-serif;
     display: inline-block;
     padding: 15px;
@@ -22,6 +22,11 @@
     font-size: 40px;
     flex-grow: 0;
     cursor: default;
+    text-decoration: none;
+}
+
+.nav-header__logo:hover {
+    cursor: pointer;
 }
 
 .nav-header__container {

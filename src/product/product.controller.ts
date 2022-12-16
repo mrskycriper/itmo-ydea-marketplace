@@ -98,7 +98,11 @@ export class ProductController {
     @SessionDecorator() session: SessionContainer,
     @Param('productId', ParseIntPipe) productId: number,
   ): Promise<object> {
-    return await this.productService.getProduct(productId, session.getUserId());
+    let userId = null;
+    try {
+      userId = session.getUserId();
+    } catch (e) {}
+    return await this.productService.getProduct(productId, userId);
   }
 
   @ApiCookieAuth()

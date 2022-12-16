@@ -12,6 +12,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     console.log(exception);
 
     if (exception instanceof HttpException) {
+      if (exception.getStatus() == 401) {
+        return response.redirect('/login');
+      }
       return response.render('error', exception);
     } else {
       return response.render('error', {

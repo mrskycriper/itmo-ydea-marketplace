@@ -1,13 +1,12 @@
 div(class="nav-header")
-    p(class="nav-header__logo") Ydea
+    a(href="/" class="nav-header__logo") Ydea
     nav(class="nav-header__container")
         a(href="/products?page=1" class="nav-header__button") Каталог
-        a(href="/cart" class="nav-header__button") Корзина
-        a(href="/orders" class="nav-header__button") Заказы
+        if authorised
+            a(href="/cart" class="nav-header__button") Корзина
+            a(href="/orders" class="nav-header__button") Заказы
         a(href="/categories?page=1" class="nav-header__button") Форум
-        if !authorised
-            a(href="/login" class="nav-header__button") Чаты
-        else
+        if authorised
             a(href="/chats?page=1" class="nav-header__button") Техподдержка
     div(class="nav-header__profile")
         if !authorised
