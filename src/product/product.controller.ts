@@ -59,7 +59,6 @@ export class ProductController {
   @UseGuards(CreateProductGuard)
   @Post('/products')
   async createProduct(
-    @SessionDecorator() session: SessionContainer,
     @Body() createProductDto: CreateProductDto,
   ): Promise<object> {
     return await this.productService.createProduct(createProductDto);

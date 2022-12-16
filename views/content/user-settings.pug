@@ -17,11 +17,36 @@ block content
             div(class='profile__card')
                 div(class='profile__card-header')
                     p(class='profile__card-name') Описание
-                    button(class='profile__card-edit' onclick='javascript:showEditBio();') изменить
+                    button(id='seller-description-form-toggle' class='profile__card-edit' onclick='javascript:showEditDescription();') изменить
                 p(class='profile__card-content')= seller.description
-                form(id='bio-form' style='display: none' class='profile__card-from' onsubmit='javascript:editBio(' + seller.id + ');')
+                form(id='edit-description-form' style='display: none' class='profile__card-from' onsubmit='javascript:editDescription(' + seller.id + ');')
                     div(class='profile__card-form-options')
-                        label(for='bio' class='profile__card-from-label') Описание
-                        textarea(id='bio' type='text' class='profile__card-from-input--text' maxlength=1000)= seller.description
+                        label(for='description' class='profile__card-from-label') Описание
+                        textarea(id='description' type='text' class='profile__card-from-input--textarea' maxlength=1000)= seller.description
                     input(type='submit' value='Обновить' class='profile__card-from-submit')
+            div(class='profile__card')
+                a(class='profile__card-link' href="/products?page=1&seller_id=" + seller.id) Перейти к моим товарам
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Добавление товаров
+                    button(id='product-form-toggle' class='profile__card-edit' onclick='javascript:showAddProduct();') развернуть
+                form(id='add-product-form' style='display: none' class='profile__card-from' onsubmit='javascript:addProduct(' + seller.id + ');')
+                    div(class='profile__card-form-options')
+                        label(for='name' class='profile__card-from-label' ) Название товара
+                        input(id='name' class='profile__card-form-input--text' type='text' required=true)
+                    div(class='profile__card-form-options')
+                        label(for='category' class='profile__card-from-label') Категория
+                        select(id='category' class='profile__card-from-input--select' required=true)
+                          each category in categories
+                              option(value=category.id)= category.category
+                    div(class='profile__card-form-options')
+                        label(for='product-description' class='profile__card-from-label') Описание товара
+                        textarea(id='product-description' class='profile__card-from-input--textarea' required=true maxlength=1000)
+                    div(class='profile__card-form-options')
+                        label(for='price' class='profile__card-from-label' ) Цена товара
+                        input(id='price' class='profile__card-form-input--number' type='number' min=1 required=true)
+                    div(class='profile__card-form-options')
+                        label(for='quantity' class='profile__card-from-label' ) Количество товара
+                        input(id='quantity' class='profile__card-form-input--number' type='number' min=1 required=true)
+                    input(type='submit' value='Добавить' class='profile__card-from-submit')
 

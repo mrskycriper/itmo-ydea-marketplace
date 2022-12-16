@@ -92,11 +92,13 @@ export class UserService {
       const seller = await prisma.seller.findMany({
         where: { user_id: user.id },
       });
+      const categories = await prisma.product_category.findMany({});
       return {
         user: user,
         is_seller: seller,
         seller: seller[0],
         role: role,
+        categories: categories,
       };
     } else {
       return {

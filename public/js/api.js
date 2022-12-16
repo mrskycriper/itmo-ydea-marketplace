@@ -158,18 +158,21 @@ class Api {
 
   bookOrder = (order_id) => this.#api.patch('/order/' + order_id + '/book');
   unbookOrder = (order_id) => this.#api.patch('/order/' + order_id + '/unbook');
-  discardOrder = (order_id) => this.#api.patch('/order/' + order_id + '/discard');
+  discardOrder = (order_id) =>
+    this.#api.patch('/order/' + order_id + '/discard');
   payForOrder = (order_id) => this.#api.patch('/order/' + order_id + '/pay');
   refundOrder = (order_id) => this.#api.patch('/order/' + order_id + '/refund');
   completeOrder = (order_id) =>
     this.#api.patch('/order/' + order_id + '/complete');
 
-  createProduct = (name, price, number, seller_id) =>
+  createProduct = (name, description, category_id, price, number, seller_id) =>
     this.#api.post('/products', {
       name: name,
       number: number,
       price: price,
       seller_id: seller_id,
+      category_id: category_id,
+      description: description,
     });
 
   deleteProduct = (product_id) => this.#api.delete('/products/' + product_id);
