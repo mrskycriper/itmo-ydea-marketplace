@@ -18,9 +18,11 @@ block content
                 h3(id="productPrice") Цена: #{product.price}$
                 p(id="numberOfProduct") Единиц товара: #{product.number}
                 p(id="categoryOfProduct") КАТЕГОРИЯ: #{product.category.category}
+                p()
+                    a(href='/sellers/' + product.seller_id) ПРОДАВЕЦ
             div(class="break")
         if edit
-            div(class="editRow")
+            div(class="editRow" id="editRow")
                 a( href="javascript:editProduct();") Изменить товар
         h1() Отзывы о товаре
         div(class="reviews-container")
