@@ -23,7 +23,9 @@ export class ProductService {
       throw new BadRequestException('Price should be above zero');
     }
     if (createProductDto.number < 0) {
-      throw new BadRequestException('Product quantity shold not be below zero');
+      throw new BadRequestException(
+        'Product quantity should not be below zero',
+      );
     }
     const product = await prisma.product.create({
       data: createProductDto,
@@ -62,7 +64,10 @@ export class ProductService {
       include: { user: true },
     });
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    let user = null;
+    if (userId != null) {
+      user = await prisma.user.findUnique({ where: { id: userId } });
+    }
     let edit = false;
     if (user != null) {
       if (user.id == seller.user_id || user.is_admin || user.is_moderator) {
