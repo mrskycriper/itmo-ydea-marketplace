@@ -14,7 +14,7 @@ block content
             div(class="product-info")
                 h1(id="productNameField") #{product.name}
                 h3(id="productDescriptionField") #{product.description}
-                p() Рейтинг: #{product.rating_average}/5
+                p()= 'Рейтинг: ' +  (Number.parseFloat(product.rating_average).toFixed(2)) + '/5'
                 h3(id="productPrice") Цена: #{product.price}$
                 p(id="numberOfProduct") Единиц товара: #{product.number}
                 p(id="categoryOfProduct") КАТЕГОРИЯ: #{product.category.category}
@@ -34,6 +34,29 @@ block content
                         p() #{review.text}
             else 
                 p() Здесь пока нет ни одного отзыва
+        div(class="review-form")
+            form()
+                textarea(rows="10" id="reviewText") 
+                div(class="buttons")
+                    form()
+                        fieldset(id="reviewRating")
+                            div()
+                                label() Оценка
+                                input(type="radio" name="rating" id="ratingChoice0" value="0")
+                                label(for="ratingChoice0") 0
+                                input(type="radio" name="rating" id="ratingChoice1" value="1")
+                                label(for="ratingChoice1") 1
+                                input(type="radio" name="rating" id="ratingChoice2" value="2")
+                                label(for="ratingChoice2") 2
+                                input(type="radio" name="rating" id="ratingChoice3" value="3")
+                                label(for="ratingChoice3") 3
+                                input(type="radio" name="rating" id="ratingChoice4" value="4")
+                                label(for="ratingChoice4") 4
+                                input(type="radio" name="rating" id="ratingChoice5" value="5")
+                                label(for="ratingChoice5") 5
+                                p(id="sendResponseReview") 
+                        button(type="button" onclick="javascript:sendReview();") Отправить
+
 
     script. 
         productID=#{product.id};
@@ -49,4 +72,6 @@ block content
         productNumber="#{product.number}";
     script.
         productPrice="#{product.price}";
+    script. 
+        currentUserId="#{userid}"
 
