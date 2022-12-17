@@ -3,17 +3,16 @@ extends ../template
 block additionalScripts
     script(src='/js/profile.js')
 
+block title
+    title= user.name
+
 block content
     p(class='profile__header-text' id='name')= user.name
     div(class='profile__container')
         div(class='profile__card')
             p(class='profile__card-name') Роль
             p(class='profile__card-content')= role
-        if (!is_seller)
-            div(class='profile__card')
-                p(class='profile__card-name') Список заказов
-                a(href='/orders' class='profile__button')= 'Открыть'
-        else
+        if (is_seller)
             div(class='profile__card')
                 div(class='profile__card-header')
                     p(class='profile__card-name') Описание
@@ -49,4 +48,26 @@ block content
                         label(for='quantity' class='profile__card-from-label' ) Количество товара
                         input(id='quantity' class='profile__card-form-input--number' type='number' min=1 required=true)
                     input(type='submit' value='Добавить' class='profile__card-from-submit')
+        if (is_admin)
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Редактор ролей
+                    button(id='edit-role-form-toggle' class='profile__card-edit' onclick='javascript:showEditRole();') развернуть
+                form(id='edit-role-form' style='display: none' class='profile__card-from' onsubmit='javascript:editRole();')
+                    div(class='profile__card-form-options')
+                        label(for='edit-role-userid' class='profile__card-from-label' ) UUID пользователя
+                        input(id='edit-role-userid' class='profile__card-form-input--text' type='text' required=true)
+                    div(class='profile__card-form-options')
+                        label(for='edit-role-selector' class='profile__card-from-label') Новая роль
+                        select(id='edit-role-selector' class='profile__card-from-input--select' required=true)
+                            option(value='1') Администратор
+                            option(value='2') Модератор
+                            option(value='3') Техподдержка
+                            option(value='4') Продавец
+                            option(value='5') Пользователь
+                    input(type='submit' value='Изменить' class='profile__card-from-submit')
+            div(class='profile__card')
+                p(class='profile__card-name') Редактор категорий
+                a(class='profile__card-link' href="/category-editor") Открыть
+
 

@@ -42,6 +42,7 @@ import { CreateReviewGuard } from 'src/auth/guards/create.review.gard';
 import { DeleteReviewGuard } from 'src/auth/guards/delete.review.guard';
 import { CreatePhotoGuard } from 'src/auth/guards/create.photo.guard';
 import { DeletePhotoGuard } from 'src/auth/guards/delete.photo.guard';
+import { EditProductCategoryDto } from './dto/edit.productcategory.dto';
 
 @ApiTags('product')
 @Controller()
@@ -222,71 +223,6 @@ export class ProductController {
     return await this.productService.editProduct(productId, editProductDto);
   }
 
-  @ApiCookieAuth()
-  @ApiOperation({ summary: 'Create new product category' })
-  @ApiBody({ type: CreateProductCategoryDto })
-  @ApiCreatedResponse({ description: 'Created' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(AdminGuard)
-  @Post('productcategories')
-  async createProductCategory(
-    @SessionDecorator() session: SessionContainer,
-    @Body() createProductCategoryDto: CreateProductCategoryDto,
-  ) {
-    return await this.productService.createProductCategory(
-      createProductCategoryDto,
-    );
-  }
-
-  @ApiCookieAuth()
-  @ApiOperation({ summary: 'Delete product category' })
-  @ApiParam({
-    name: 'categoryId',
-    type: 'string',
-    description: 'Unique product category id',
-  })
-  @ApiOkResponse({ description: 'OK' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiForbiddenResponse({ description: 'Forbidden' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(AdminGuard)
-  @Delete('productcategories/:categoryId')
-  async deleteProductCategory(@Param('categoryId') categoryId: string) {
-    return await this.productService.deleteProductCategory(categoryId);
-  }
-
-  @ApiOperation({ summary: 'Get product category' })
-  @ApiParam({
-    name: 'categoryId',
-    type: 'string',
-    description: 'Unique product category id',
-  })
-  @ApiOkResponse({ description: 'OK' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  @Get('productcategories/:categoryId')
-  //@Render('product category')
-  async getProductCategory(
-    @SessionDecorator() session: SessionContainer,
-    @Param('categoryId') categoryId: string,
-  ): Promise<object> {
-    return await this.productService.getProductCategory(categoryId);
-  }
-  @ApiOperation({ summary: 'Get all product categories' })
-  @ApiOkResponse({ description: 'OK' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiNotFoundResponse({ description: 'Not Found' })
-  @Get('productcategories/')
-  //@Render('product category')
-  async getProductCategories(
-    @SessionDecorator() session: SessionContainer,
-  ): Promise<object> {
-    return await this.productService.getProductCategories();
-  }
-
   @ApiOperation({ summary: 'Get catalogue' })
   @ApiQuery({
     name: 'seller_id',
@@ -349,5 +285,70 @@ export class ProductController {
       page,
       perPage,
     );
+  }
+
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'Create new product category' })
+  @ApiBody({ type: CreateProductCategoryDto })
+  @ApiCreatedResponse({ description: 'Created' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AdminGuard)
+  @Post('product-categories')
+  async createProductCategory(
+    @Body() createProductCategoryDto: CreateProductCategoryDto,
+  ) {
+    return await this.productService.createProductCategory(
+      createProductCategoryDto,
+    );
+  }
+
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'Edit product category' })
+  @ApiParam({
+    name: 'categoryId',
+    type: 'string',
+    description: 'Unique product category id',
+  })
+  @ApiBody({ type: EditProductCategoryDto })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AdminGuard)
+  @Patch('product-categories/:categoryId')
+  async editProductCategory(
+    @Param('categoryId') categoryId: string,
+    @Body() editProductCategoryDto: EditProductCategoryDto,
+  ) {
+    return await this.productService.editProductCategory(
+      categoryId,
+      editProductCategoryDto,
+    );
+  }
+
+  @ApiCookieAuth()
+  @ApiOperation({ summary: 'Delete product category' })
+  @ApiParam({
+    name: 'categoryId',
+    type: 'string',
+    description: 'Unique product category id',
+  })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AdminGuard)
+  @Delete('product-categories/:categoryId')
+  async deleteProductCategory(@Param('categoryId') categoryId: string) {
+    return await this.productService.deleteProductCategory(categoryId);
+  }
+
+  @ApiOperation({ summary: 'Get all product categories' })
+  @ApiOkResponse({ description: 'OK' })
+  @Get('product-categories')
+  async getProductCategories(): Promise<object> {
+    return await this.productService.getProductCategories();
   }
 }
