@@ -109,3 +109,21 @@ function handleDeletePost(postId) {
     });
   }
 }
+
+function togglePostNameId(username, userid) {
+  let text = document.getElementById('post-author-string');
+  if (text.innerText === username) {
+    text.innerText = userid;
+  } else {
+    text.innerText = username;
+  }
+}
+
+function toggleCommentNameId(username, userid) {
+  let text = document.getElementById('comment-author-string');
+  if (text.innerText === username) {
+    text.innerText = userid;
+  } else {
+    text.innerText = username;
+  }
+}
