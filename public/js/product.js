@@ -78,3 +78,20 @@ async function editSubmit() {
   )
   window.location.reload();
 }
+
+async function sendReview() {
+  var reviewText = document.getElementById('reviewText').value
+  var reviewRating = document.querySelector('input[name="rating"]:checked')
+  if (reviewRating == null)
+  {
+    document.getElementById('sendResponseReview').innerText = 'To create review rating must not be empty!'
+    return 
+  }
+  await _api.createReview(
+    reviewText,
+    Number.parseInt(reviewRating.value),
+    currentUserId,
+    productID
+  )
+  window.location.reload();
+}

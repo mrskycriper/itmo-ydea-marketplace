@@ -49,7 +49,7 @@ block content
                               a(class="product-card__name" href='/products/' + product.id)= product.name
                           p(class='product-card__description')= product.description
                           p(class='product-card__description')= "Цена "+product.price
-                          p(class='product-card__description')= "Рейтинг "+product.rating_average
+                          p(class='product-card__description')= "Рейтинг "+  (Number.parseFloat(product.rating_average).toFixed(2))
                           if(product.number > 0 && product.number > product.number_booked)
                            a(class="product__button" href="#" onclick='javascript:handleCreateProductsInOrder('+product.id+', \''+userid+'\');') Добавить в корзину
                            div(class='product__input-group')
