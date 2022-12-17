@@ -1,0 +1,45 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/product-category-editor.js')
+
+block title
+    title Редактор категорий
+
+block content
+    p(class='profile__header-text') Редактор категорий
+    div(class='profile__container')
+        div(class='profile__card')
+            div(class='profile__card-header')
+                p(class='profile__card-name') Создать категорию
+                button(id='create-product-category-form-toggle' class='profile__card-edit' onclick='javascript:showCreateProductCategory();') развернуть
+            form(id='create-product-category-form' style='display: none' class='profile__card-from' onsubmit='javascript:createProductCategory();')
+                div(class='profile__card-form-options')
+                    label(for='create-category-name' class='profile__card-from-label' ) Название категории
+                    input(id='create-category-name' class='profile__card-form-input--text' type='text' required=true)
+                input(type='submit' value='Создать' class='profile__card-from-submit')
+        div(class='profile__card')
+            div(class='profile__card-header')
+                p(class='profile__card-name') Изменить категорию
+                button(id='edit-product-category-form-toggle' class='profile__card-edit' onclick='javascript:showEditProductCategory();') развернуть
+            form(id='edit-product-category-form' style='display: none' class='profile__card-from' onsubmit='javascript:editProductCategory();')
+                div(class='profile__card-form-options')
+                    label(for='edit-category-id' class='profile__card-from-label') Категория
+                    select(id='edit-category-id' class='profile__card-from-input--select' required=true)
+                      each category in categories
+                          option(value=category.id)= category.category
+                div(class='profile__card-form-options')
+                    label(for='edit-category-name' class='profile__card-from-label' ) Новое название
+                    input(id='edit-category-name' class='profile__card-form-input--text' type='text' required=true)
+                input(type='submit' value='Изменить' class='profile__card-from-submit')
+        div(class='profile__card--danger')
+            div(class='profile__card-header')
+                p(class='profile__card-name') Удалить категорию
+                button(id='delete-product-category-form-toggle' class='profile__card-edit' onclick='javascript:showDeleteProductCategory();') развернуть
+            form(id='delete-product-category-form' style='display: none' class='profile__card-from' onsubmit='javascript:deleteProductCategory();')
+                div(class='profile__card-form-options')
+                    label(for='delete-category-id' class='profile__card-from-label') Категория
+                    select(id='delete-category-id' class='profile__card-from-input--select' required=true)
+                      each category in categories
+                          option(value=category.id)= category.category
+                input(type='submit' value='Удалить' class='profile__delete-button')

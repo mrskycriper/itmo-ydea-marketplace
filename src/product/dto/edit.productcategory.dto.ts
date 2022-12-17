@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class CreateProductCategoryDto {
+export class EditProductCategoryDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 'Chairs',

@@ -136,4 +136,15 @@ export class UserController {
   async getSettings(@SessionDecorator() session: SessionContainer) {
     return await this.usersService.getSettings(session.getUserId());
   }
+
+  @ApiOperation({ summary: 'Get product category editor page' })
+  @ApiOkResponse({ description: 'OK' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Not Found' })
+  @UseGuards(AuthGuard)
+  @Get('category-editor')
+  @Render('category-editor')
+  async getCategoryEditor() {
+    return await this.usersService.getCategoryEditor();
+  }
 }

@@ -208,15 +208,20 @@ class Api {
     });
 
   createProductCategory = (category) =>
-    this.#api.post('/productcategories', {
+    this.#api.post('/product-categories', {
+      category: category,
+    });
+
+  editProductCategory = (category_id, category) =>
+    this.#api.patch('/product-categories/' + category_id, {
       category: category,
     });
 
   deleteProductCategory = (category_id) =>
-    this.#api.delete('/productcategories/' + category_id);
-  getProductCategory = (category_id) =>
-    this.#api.get('/productcategories/' + category_id);
-  getProductCategories = () => this.#api.get('/productcategories/');
+    this.#api.delete('/product-categories/' + category_id);
+
+  getProductCategories = () => this.#api.get('/product-categories');
+
   getCatalogue = () => this.#api.get('/products');
 
   createSeller = (description, user_id) =>

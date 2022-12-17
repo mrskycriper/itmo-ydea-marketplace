@@ -9,6 +9,7 @@ import prisma from '../client';
 import { CreatePhotoDto } from './dto/create.photo.dto';
 import { EditProductDto } from './dto/edit.product.dto';
 import { CreateProductCategoryDto } from './dto/create.productcategory.dto';
+import { EditProductCategoryDto } from './dto/edit.productcategory.dto';
 
 @Injectable()
 export class ProductService {
@@ -232,27 +233,25 @@ export class ProductService {
       where: { category: createProductCategoryDto.category },
     });
     if (category != null) {
-      throw new NotFoundException('Category name should be unique');
+      throw new BadRequestException('Product category name should be unique');
     }
     await prisma.product_category.create({ data: createProductCategoryDto });
   }
 
-  async getProductCategory(categoryId: string) {
+  async editProductCategory(
+    categoryId: string,
+    editProductCategoryDto: EditProductCategoryDto,
+  ) {
     const category = await prisma.product_category.findUnique({
-      where: { id: categoryId },
+      where: { category: editProductCategoryDto.category },
     });
-    if (category == null) {
-      throw new NotFoundException('Category not found');
+    if (category != null) {
+      throw new BadRequestException('Product category name should be unique');
     }
-    const products = await prisma.product.findMany({
-      where: { category_id: categoryId },
+    await prisma.product_category.update({
+      where: { id: categoryId },
+      data: editProductCategoryDto,
     });
-    return { category: category, products: products };
-  }
-
-  async getProductCategories() {
-    const categories = await prisma.product_category.findMany({});
-    return { categories: categories };
   }
 
   async deleteProductCategory(categoryId: string) {
@@ -260,11 +259,16 @@ export class ProductService {
       where: { id: categoryId },
     });
     if (category == null) {
-      throw new NotFoundException('Category not found');
+      throw new NotFoundException('Product category not found');
     }
     const defaultCategory = await prisma.product_category.findUnique({
-      where: { category: 'без категории' },
+      where: { category: 'Без категории' },
     });
+    if (category.id == defaultCategory.id) {
+      throw new BadRequestException(
+        'Unable to delete default product category',
+      );
+    }
     await prisma.product.updateMany({
       where: { category_id: categoryId },
       data: {
@@ -892,5 +896,10 @@ export class ProductService {
             };
         }
     }
+  }
+
+  async getProductCategories() {
+    const categories = await prisma.product_category.findMany({});
+    return { categories: categories };
   }
 }
