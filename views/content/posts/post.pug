@@ -24,7 +24,8 @@ block content
                 a(href="#" class="category-navigation-container__navigation-button--disabled") →
             else
                 a(href='/posts/' + postId + '?page=' + (page + 1) class="category-navigation-container__navigation-button") →
-            p(class="category-navigation-container__page-count") Страница #{page} из #{pageCount}
+            div(class='category-navigation-container__page-count--container')
+                p(class='category-navigation-container__page-count--text') Страница #{page} из #{pageCount}
             if(post)
                 button(class="category-navigation-container__create-chat-button" onclick='javascript:showCreateComment();') Добавить комментарий
         if(post)

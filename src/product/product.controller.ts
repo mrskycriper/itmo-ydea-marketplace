@@ -264,8 +264,8 @@ export class ProductController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @Get('products/')
-  @Render('products')
+  @Get('catalogue')
+  @Render('catalogue')
   async getCatalogue(
     @Query('seller_id', new DefaultValuePipe(-1), ParseIntPipe)
     seller_id: number,

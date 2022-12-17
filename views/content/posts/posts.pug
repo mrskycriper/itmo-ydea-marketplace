@@ -19,7 +19,8 @@ block content
                 a(href="#" class="category-navigation-container__navigation-button--disabled") →
             else
                 a(href='/topics/' + topicId + '?page=' + (page + 1) class="category-navigation-container__navigation-button") →
-            p(class="category-navigation-container__page-count") Страница #{page} из #{pageCount}
+            div(class='category-navigation-container__page-count--container')
+                p(class='category-navigation-container__page-count--text') Страница #{page} из #{pageCount}
             if(edit)
                 button(class="category-navigation-container__create-chat-button" onclick='javascript:showCreatePost();') Создать пост
         if(edit)

@@ -316,590 +316,412 @@ export class ProductService {
         'Number of product per page should be above zero.',
       );
     }
+
     const categories = await prisma.product_category.findMany({});
     const sellers = await prisma.seller.findMany({ include: { user: true } });
-    const filters =
-      Number(price_sort != -1) * 8 +
-      Number(product_category_id != null) * 4 +
-      Number(rating_sort != -1) * 2 +
-      Number(seller_id != -1);
-    let products = [];
-    let sorting = 0;
-    switch (filters) {
-      case 0:
-        products = await prisma.product.findMany({
-          skip: (page - 1) * perPage,
-          take: perPage,
-        });
-        return { products: products, categories: categories, sellers: sellers };
-      case 1:
-        products = await prisma.product.findMany({
-          skip: (page - 1) * perPage,
-          take: perPage,
-          where: { seller_id: seller_id },
-        });
-        return { products: products, categories: categories, sellers: sellers };
-      case 2:
-        if (rating_sort == 1) {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              rating_average: 'asc',
-            },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        } else {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              rating_average: 'desc',
-            },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        }
-      case 3:
-        if (rating_sort == 1) {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              rating_average: 'asc',
-            },
-            where: { seller_id: seller_id },
-          });
-        } else {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              rating_average: 'desc',
-            },
-            where: { seller_id: seller_id },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        }
-      case 4:
-        products = await prisma.product.findMany({
-          skip: (page - 1) * perPage,
-          take: perPage,
-          where: { category_id: product_category_id },
-        });
-        return { products: products, categories: categories, sellers: sellers };
-      case 5:
-        products = await prisma.product.findMany({
-          skip: (page - 1) * perPage,
-          take: perPage,
-          where: {
-            category_id: product_category_id,
-            seller_id: seller_id,
-          },
-        });
-        return { products: products, categories: categories, sellers: sellers };
-      case 6:
-        if (rating_sort == 1) {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              rating_average: 'asc',
-            },
-            where: { category_id: product_category_id },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        } else {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              rating_average: 'desc',
-            },
-            where: { category_id: product_category_id },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        }
-      case 7:
-        if (rating_sort == 1) {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              rating_average: 'asc',
-            },
-            where: {
-              category_id: product_category_id,
-              seller_id: seller_id,
-            },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        } else {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              rating_average: 'desc',
-            },
-            where: {
-              category_id: product_category_id,
-              seller_id: seller_id,
-            },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        }
-      case 8:
-        if (price_sort == 1) {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              price: 'asc',
-            },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        } else {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              price: 'desc',
-            },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        }
-      case 9:
-        if (price_sort == 1) {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              price: 'asc',
-            },
-            where: { seller_id: seller_id },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        } else {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              price: 'desc',
-            },
-            where: { seller_id: seller_id },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        }
-      case 10:
-        sorting = price_sort * 2 + rating_sort;
-        switch (sorting) {
-          case 0:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'desc',
-                },
-                { rating_average: 'asc' },
-              ],
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 1:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'desc',
-                },
-                { rating_average: 'asc' },
-              ],
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 2:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'asc',
-                },
-                { rating_average: 'desc' },
-              ],
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 3:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'asc',
-                },
-                { rating_average: 'asc' },
-              ],
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-        }
-      case 11:
-        sorting = price_sort * 2 + rating_sort;
-        switch (sorting) {
-          case 0:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'desc',
-                },
-                { rating_average: 'desc' },
-              ],
-              where: { seller_id: seller_id },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 1:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'desc',
-                },
-                { rating_average: 'asc' },
-              ],
-              where: { seller_id: seller_id },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 2:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'asc',
-                },
-                { rating_average: 'desc' },
-              ],
-              where: { seller_id: seller_id },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 3:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'asc',
-                },
-                { rating_average: 'asc' },
-              ],
-              where: { seller_id: seller_id },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-        }
-      case 12:
-        if (price_sort == 1) {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              price: 'asc',
-            },
-            where: { category_id: product_category_id },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        } else {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              price: 'desc',
-            },
-            where: { category_id: product_category_id },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        }
-      case 13:
-        if (price_sort == 1) {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              price: 'asc',
-            },
-            where: {
-              category_id: product_category_id,
-              seller_id: seller_id,
-            },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        } else {
-          products = await prisma.product.findMany({
-            skip: (page - 1) * perPage,
-            take: perPage,
-            orderBy: {
-              price: 'desc',
-            },
-            where: {
-              category_id: product_category_id,
-              seller_id: seller_id,
-            },
-          });
-          return {
-            products: products,
-            categories: categories,
-            sellers: sellers,
-          };
-        }
-      case 14:
-        sorting = price_sort * 2 + rating_sort;
-        switch (sorting) {
-          case 0:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'desc',
-                },
-                { rating_average: 'desc' },
-              ],
-              where: { category_id: product_category_id },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 1:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'desc',
-                },
-                { rating_average: 'asc' },
-              ],
-              where: { category_id: product_category_id },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 2:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'asc',
-                },
-                { rating_average: 'desc' },
-              ],
-              where: { category_id: product_category_id },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 3:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'asc',
-                },
-                { rating_average: 'asc' },
-              ],
-              where: { category_id: product_category_id },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-        }
-      case 15:
-        sorting = price_sort * 2 + rating_sort;
-        switch (sorting) {
-          case 0:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'desc',
-                },
-                { rating_average: 'desc' },
-              ],
-              where: {
-                category_id: product_category_id,
-                seller_id: seller_id,
-              },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 1:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'desc',
-                },
-                { rating_average: 'asc' },
-              ],
-              where: {
-                category_id: product_category_id,
-                seller_id: seller_id,
-              },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 2:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'asc',
-                },
-                { rating_average: 'desc' },
-              ],
-              where: {
-                category_id: product_category_id,
-                seller_id: seller_id,
-              },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-          case 3:
-            products = await prisma.product.findMany({
-              skip: (page - 1) * perPage,
-              take: perPage,
-              orderBy: [
-                {
-                  price: 'asc',
-                },
-                { rating_average: 'asc' },
-              ],
-              where: {
-                category_id: product_category_id,
-                seller_id: seller_id,
-              },
-            });
-            return {
-              products: products,
-              categories: categories,
-              sellers: sellers,
-            };
-        }
+
+    let price = 'no';
+    if (price_sort == 1) {
+      price = 'asc';
+    } else if (price_sort == -1) {
+      price = 'desc';
     }
+    let rating = 'no';
+    if (rating_sort == 1) {
+      rating = 'asc';
+    } else if (rating_sort == -1) {
+      rating = 'desc';
+    }
+
+    const product_search = await this.getProducts(
+      price,
+      rating,
+      seller_id,
+      product_category_id,
+      page,
+      perPage,
+    );
+
+    return {
+      products: product_search.products,
+      categories: categories,
+      sellers: sellers,
+      empty: product_search.empty,
+      pageCount: product_search.pageCount,
+      page: page,
+    };
   }
 
   async getProductCategories() {
     const categories = await prisma.product_category.findMany({});
     return { categories: categories };
+  }
+
+  async getProducts(
+    price_sort = 'no',
+    rating_sort = 'no',
+    seller_id = -1,
+    category_id: string = null,
+    page,
+    perPage,
+  ) {
+    let products: any[];
+    let productCount: number;
+
+    if (seller_id != -1) {
+      if (category_id == null) {
+        if (price_sort == 'no' && rating_sort == 'no') {
+          products = await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            where: { seller_id: seller_id },
+            include: { photo: true },
+          });
+        } else if (price_sort != 'no' && rating_sort == 'no') {
+          if (price_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id },
+              orderBy: { price: 'asc' },
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id },
+              orderBy: { price: 'desc' },
+              include: { photo: true },
+            });
+          }
+        } else if (price_sort == 'no' && rating_sort != 'no') {
+          if (rating_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id },
+              orderBy: { rating_average: 'asc' },
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id },
+              orderBy: { rating_average: 'desc' },
+              include: { photo: true },
+            });
+          }
+        } else {
+          if (price_sort == 'asc' && rating_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id },
+              orderBy: [{ price: 'asc' }, { rating_average: 'asc' }],
+              include: { photo: true },
+            });
+          } else if (price_sort == 'desc' && rating_sort == 'desc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id },
+              orderBy: [{ price: 'desc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          } else if (price_sort == 'asc' && rating_sort == 'desc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id },
+              orderBy: [{ price: 'asc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id },
+              orderBy: [{ price: 'desc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          }
+        }
+      } else {
+        if (price_sort == 'no' && rating_sort == 'no') {
+          products = await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            where: { seller_id: seller_id, category_id: category_id },
+            include: { photo: true },
+          });
+        } else if (price_sort != 'no' && rating_sort == 'no') {
+          if (price_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id, category_id: category_id },
+              orderBy: { price: 'asc' },
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id, category_id: category_id },
+              orderBy: { price: 'desc' },
+              include: { photo: true },
+            });
+          }
+        } else if (price_sort == 'no' && rating_sort != 'no') {
+          if (rating_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id, category_id: category_id },
+              orderBy: { rating_average: 'asc' },
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id, category_id: category_id },
+              orderBy: { rating_average: 'desc' },
+              include: { photo: true },
+            });
+          }
+        } else {
+          if (price_sort == 'asc' && rating_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id, category_id: category_id },
+              orderBy: [{ price: 'asc' }, { rating_average: 'asc' }],
+              include: { photo: true },
+            });
+          } else if (price_sort == 'desc' && rating_sort == 'desc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id, category_id: category_id },
+              orderBy: [{ price: 'desc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          } else if (price_sort == 'asc' && rating_sort == 'desc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id, category_id: category_id },
+              orderBy: [{ price: 'asc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { seller_id: seller_id, category_id: category_id },
+              orderBy: [{ price: 'desc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          }
+        }
+      }
+    } else {
+      if (category_id == null) {
+        if (price_sort == 'no' && rating_sort == 'no') {
+          products = await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            include: { photo: true },
+          });
+        } else if (price_sort != 'no' && rating_sort == 'no') {
+          if (price_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              orderBy: { price: 'asc' },
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              orderBy: { price: 'desc' },
+              include: { photo: true },
+            });
+          }
+        } else if (price_sort == 'no' && rating_sort != 'no') {
+          if (rating_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              orderBy: { rating_average: 'asc' },
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              orderBy: { rating_average: 'desc' },
+              include: { photo: true },
+            });
+          }
+        } else {
+          if (price_sort == 'asc' && rating_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              orderBy: [{ price: 'asc' }, { rating_average: 'asc' }],
+              include: { photo: true },
+            });
+          } else if (price_sort == 'desc' && rating_sort == 'desc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              orderBy: [{ price: 'desc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          } else if (price_sort == 'asc' && rating_sort == 'desc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              orderBy: [{ price: 'asc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              orderBy: [{ price: 'desc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          }
+        }
+      } else {
+        if (price_sort == 'no' && rating_sort == 'no') {
+          products = await prisma.product.findMany({
+            skip: (page - 1) * perPage,
+            take: perPage,
+            where: { category_id: category_id },
+            include: { photo: true },
+          });
+        } else if (price_sort != 'no' && rating_sort == 'no') {
+          if (price_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { category_id: category_id },
+              orderBy: { price: 'asc' },
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { category_id: category_id },
+              orderBy: { price: 'desc' },
+              include: { photo: true },
+            });
+          }
+        } else if (price_sort == 'no' && rating_sort != 'no') {
+          if (rating_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { category_id: category_id },
+              orderBy: { rating_average: 'asc' },
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { category_id: category_id },
+              orderBy: { rating_average: 'desc' },
+              include: { photo: true },
+            });
+          }
+        } else {
+          if (price_sort == 'asc' && rating_sort == 'asc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { category_id: category_id },
+              orderBy: [{ price: 'asc' }, { rating_average: 'asc' }],
+              include: { photo: true },
+            });
+          } else if (price_sort == 'desc' && rating_sort == 'desc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { category_id: category_id },
+              orderBy: [{ price: 'desc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          } else if (price_sort == 'asc' && rating_sort == 'desc') {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { category_id: category_id },
+              orderBy: [{ price: 'asc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          } else {
+            products = await prisma.product.findMany({
+              skip: (page - 1) * perPage,
+              take: perPage,
+              where: { category_id: category_id },
+              orderBy: [{ price: 'desc' }, { rating_average: 'desc' }],
+              include: { photo: true },
+            });
+          }
+        }
+      }
+    }
+
+    if (seller_id != -1) {
+      if (category_id != null) {
+        const allProducts = await prisma.product.findMany({
+          where: { seller_id: seller_id, category_id: category_id },
+        });
+        productCount = allProducts.length;
+      } else {
+        const allProducts = await prisma.product.findMany({
+          where: { seller_id: seller_id },
+        });
+        productCount = allProducts.length;
+      }
+    } else {
+      if (category_id != null) {
+        const allProducts = await prisma.product.findMany({
+          where: { category_id: category_id },
+        });
+        productCount = allProducts.length;
+      } else {
+        const allProducts = await prisma.product.findMany({});
+        productCount = allProducts.length;
+      }
+    }
+
+    let empty = true;
+    if (Object.keys(products).length != 0) {
+      empty = false;
+    }
+    let pageCount = Math.ceil(productCount / perPage);
+    if (pageCount == 0) {
+      pageCount = 1;
+    }
+    if (page > pageCount) {
+      throw new BadRequestException('Invalid page number');
+    }
+
+    return {
+      products: products,
+      empty: empty,
+      page: page,
+      pageCount: pageCount,
+    };
   }
 }

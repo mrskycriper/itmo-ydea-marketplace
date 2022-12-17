@@ -24,7 +24,7 @@ block content
                         textarea(id='description' type='text' class='profile__card-from-input--textarea' maxlength=1000)= seller.description
                     input(type='submit' value='Обновить' class='profile__card-from-submit')
             div(class='profile__card')
-                a(class='profile__card-link' href="/products?page=1&seller_id=" + seller.id) Перейти к моим товарам
+                a(class='profile__card-link' href="/catalogue?page=1&seller_id=" + seller.id) Перейти к моим товарам
             div(class='profile__card')
                 div(class='profile__card-header')
                     p(class='profile__card-name') Добавление товаров
