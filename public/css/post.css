@@ -29,13 +29,14 @@
     margin-top: 30px;
 }
 
-.post-card__author:any-link {
-    text-decoration: none;
+.post-card__author {
+    margin: 0;
     color: white;
+    display: inline;
 }
 
 .post-card__author:hover {
-    text-decoration: underline;
+    cursor: pointer;
 }
 
 .post-card__date {
@@ -73,7 +74,7 @@
     justify-content: space-between;
 }
 
-.comment-card__name:any-link {
+.comment-card__name {
     display: inline-block;
     margin: 0;
     font-size: 18px;
@@ -83,7 +84,7 @@
 }
 
 .comment-card__name:hover {
-    text-decoration: underline;
+    cursor: pointer;
 }
 
 .comment-card__date {
