@@ -69,7 +69,7 @@ block content
                             label(for='timeslot' class='profile__card-from-label') Слот доставки
                             select(id='timeslot' class='profile__card-from-input--select' required=true)
                                 each timeslot in timeslots.timeslots
-                                    option(value='' + timeslot.timeslot_start + ',' + timeslot.timeslot_end + '')= (new Date(Date.parse(timeslot.timeslot_start))).toLocaleDateString("ru-RU", {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'}) + " → " + (new Date(Date.parse(timeslot.timeslot_end))).toLocaleDateString("ru-RU", {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'})
+                                    option(value='' + timeslot.timeslot_start + '&' + timeslot.timeslot_end + '')= (new Date(Date.parse(timeslot.timeslot_start))).toLocaleDateString("ru-RU", {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'}) + " → " + (new Date(Date.parse(timeslot.timeslot_end))).toLocaleDateString("ru-RU", {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'})
                         input(type='submit' value='Продолжить' class='profile__card-from-submit')
             //a(class='product__button' href='#' id='delivery button' onclick='handleAddress(' + order.id + ');') Добавить адрес
             //div(class='product__input-group')

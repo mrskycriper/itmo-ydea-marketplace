@@ -177,8 +177,8 @@ async function validateData(orderId) {
   await _api.setAddress(orderId, orderData.address);
   let start = '';
   let end = '';
-  start = orderData.timeslot.split(',')[0];
-  end = orderData.timeslot.split(',')[1];
+  start = orderData.timeslot.split('&')[0];
+  end = orderData.timeslot.split('&')[1];
   await handleTimeSlot(orderId, start, end);
   window.location.reload();
 }
