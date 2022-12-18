@@ -8,7 +8,7 @@ block title
 
 block content
     div(class='order-container')
-        div(class="catalogue-filter-container")
+        div(class='catalogue-filter-container')
             div(class='profile__card')
                 div(class='profile__card-header')
                     p(class='profile__card-name') Фильтры
@@ -18,7 +18,7 @@ block content
                         label(for='filter-items-per-page' class='profile__card-from-label') Элементов на странице
                         input(id='filter-items-per-page' class='profile__card-form-input--text' type='number' min=1 max=100 required=true value=20)
                     input(type='submit' value='Применить' class='profile__card-from-submit')
-        div(class="catalogue-navigation-container")
+        div(class='catalogue-navigation-container')
             if page === 1
                 a(href="#" class="category-navigation-container__navigation-button--disabled") ←
             else
@@ -36,10 +36,10 @@ block content
                             div(class='order-card')
                                 div(class='order-card__text')
                                     div(class='order-card__header')
-                                        a(class='order-card__name' href='/orders/' + order.id)= 'Заказ № ' + order.id
+                                        a(class='order-card__name' href='/orders/' + order.id + '?page=1')= 'Заказ № ' + order.id
                                     p(class='order-card__description')= 'Сумма заказа: ' + order.sum + ' ₽'
                                     p(class='order-card__description')= 'Дата заказа: ' + (new Date(Date.parse(order.start_timestamp))).toLocaleDateString('ru-RU', {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})
-                                    if(order.status === 'BOOKING')
+                                    if(order.status === 'BOOKED')
                                         p(class='order-card__description') Статус заказа: Забронирован
                                     if(order.status === 'PAID')
                                         p(class='order-card__description') Статус заказа: Оплачен
