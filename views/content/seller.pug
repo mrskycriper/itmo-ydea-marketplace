@@ -2,6 +2,8 @@ extends ../template
 
 block additionalScripts
 
+block title
+    title= seller.user.name
 
 block content
     div(class='profile__container')
@@ -12,4 +14,4 @@ block content
             p(class='profile__card-name') Описание продавца
             p(class='profile__card-content')= seller.description
         div(class='profile__card')
-            a(class='profile__card-link' href="/products?page=1&seller_id=" + seller.id) Перейти к товарам продавца
+            a(class='profile__card-link' href="/catalogue?page=1&seller_id=" + seller.id) Перейти к товарам продавца

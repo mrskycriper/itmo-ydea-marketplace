@@ -44,13 +44,26 @@ export class ProductService {
     await prisma.product.delete({ where: { id: productId } });
   }
 
-  async getProduct(productId: number, userId: string) {
+  async getProduct(
+    productId: number,
+    userId: string,
+    page: number,
+    perPage: number,
+  ) {
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      include: { category: true },
+      include: { category: true, seller: { include: { user: true } } },
     });
     if (product == null) {
       throw new NotFoundException('Product not found');
+    }
+    if (page <= 0) {
+      throw new BadRequestException('Page number should be above zero.');
+    }
+    if (perPage <= 0) {
+      throw new BadRequestException(
+        'Number of product per page should be above zero.',
+      );
     }
     const seller = await prisma.seller.findUnique({
       where: { id: product.seller_id },
@@ -62,8 +75,25 @@ export class ProductService {
 
     const reviews = await prisma.review.findMany({
       where: { product_id: productId },
+      skip: (page - 1) * perPage,
+      take: perPage,
       include: { user: true },
     });
+    const allReviews = await prisma.review.findMany({
+      where: { product_id: productId },
+    });
+
+    let empty = true;
+    if (Object.keys(reviews).length != 0) {
+      empty = false;
+    }
+    let pageCount = Math.ceil(allReviews.length / perPage);
+    if (pageCount == 0) {
+      pageCount = 1;
+    }
+    if (page > pageCount) {
+      throw new BadRequestException('Invalid page number');
+    }
 
     let user = null;
     if (userId != null) {
@@ -75,12 +105,17 @@ export class ProductService {
         edit = true;
       }
     }
+    const categories = await prisma.product_category.findMany({});
     return {
       title: product.name,
       product: product,
       photos: photos,
       reviews: reviews,
       edit: edit,
+      categories: categories,
+      empty: empty,
+      page: page,
+      pageCount: pageCount,
     };
   }
 

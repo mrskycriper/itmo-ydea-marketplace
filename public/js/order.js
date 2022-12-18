@@ -161,6 +161,7 @@ async function applyFilters() {
   const filterData = getFilterData();
   const urlParams = new URLSearchParams(window.location.search);
   urlParams.set('perPage', filterData.per_page);
+  urlParams.set('page', '1');
   window.location.search = urlParams;
 }
 
