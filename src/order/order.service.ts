@@ -27,32 +27,56 @@ export class OrderService {
       where: { id: user.id },
       data: { current_order_id: order.id },
     });
-    return await this.getOrder(order.id);
+    return await this.getOrder(order.id, 1, 20);
   }
 
-  async getOrder(orderId: number) {
+  async getOrder(orderId: number, page: number, perPage: number) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     });
     if (order == null) {
       throw new NotFoundException('Order not found');
     }
+    if (page <= 0) {
+      throw new BadRequestException('Page number should be above zero.');
+    }
+    if (perPage <= 0) {
+      throw new BadRequestException(
+        'Number of product per page should be above zero.',
+      );
+    }
     const productsInOrder = await prisma.productsInOrder.findMany({
       where: { order_id: orderId },
-      include: { product: true },
+      skip: (page - 1) * perPage,
+      take: perPage,
+      include: { product: { include: { photo: true } } },
     });
-    let title = 'Заказ ' + order.id;
-    if (order.status == 'COLLECTING') {
-      title = 'Корзина';
+    const allProductsInOrder = await prisma.productsInOrder.findMany({
+      where: { order_id: orderId },
+      include: { product: { include: { photo: true } } },
+    });
+
+    let empty = true;
+    if (Object.keys(productsInOrder).length != 0) {
+      empty = false;
+    }
+    let pageCount = Math.ceil(allProductsInOrder.length / perPage);
+    if (pageCount == 0) {
+      pageCount = 1;
+    }
+    if (page > pageCount) {
+      throw new BadRequestException('Invalid page number');
     }
 
     const timeslots = await this.getTimeslots();
 
     return {
-      title: title,
       order: order,
       productsInOrder: productsInOrder,
       timeslots: timeslots,
+      empty: empty,
+      page: page,
+      pageCount: pageCount,
     };
   }
 
@@ -124,17 +148,25 @@ export class OrderService {
     });
   }
 
-  async getShoppingCart(userId: string) {
+  async getShoppingCart(userId: string, page: number, perPage: number) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user == null) {
       throw new NotFoundException('User not found');
+    }
+    if (page <= 0) {
+      throw new BadRequestException('Page number should be above zero.');
+    }
+    if (perPage <= 0) {
+      throw new BadRequestException(
+        'Number of product per page should be above zero.',
+      );
     }
     const orderId = user.current_order_id;
     if (orderId == 0) {
       const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId);
       return this.createOrder(createOrderDto);
     } else {
-      return await this.getOrder(orderId);
+      return await this.getOrder(orderId, page, perPage);
     }
   }
 
@@ -171,6 +203,7 @@ export class OrderService {
       where: { user_id: userId },
       skip: (page - 1) * perPage,
       take: perPage,
+      orderBy: { start_timestamp: 'desc' },
     });
     const allOrders = await prisma.order.findMany({
       where: { user_id: userId },

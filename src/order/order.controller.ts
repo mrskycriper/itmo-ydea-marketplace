@@ -98,6 +98,18 @@ export class OrderController {
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Get shopping cart' })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    description: 'Page number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    type: 'number',
+    description: 'Number of products per page',
+    required: false,
+  })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -105,8 +117,16 @@ export class OrderController {
   @UseGuards(AuthGuard)
   @Get('cart')
   @Render('cart')
-  async getShoppingCart(@SessionDecorator() session: SessionContainer) {
-    return await this.orderService.getShoppingCart(session.getUserId());
+  async getShoppingCart(
+    @SessionDecorator() session: SessionContainer,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,
+  ) {
+    return await this.orderService.getShoppingCart(
+      session.getUserId(),
+      page,
+      perPage,
+    );
   }
 
   @ApiCookieAuth()
@@ -157,8 +177,21 @@ export class OrderController {
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Get order' })
   @ApiParam({ name: 'orderId', type: 'string', description: 'Unique order id' })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    description: 'Page number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    type: 'number',
+    description: 'Number of products per page',
+    required: false,
+  })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @UseGuards(EditGetOrderGuard)
@@ -166,8 +199,10 @@ export class OrderController {
   @Render('order')
   async getOrder(
     @Param('orderId', ParseIntPipe) orderId: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,
   ): Promise<object> {
-    return await this.orderService.getOrder(orderId);
+    return await this.orderService.getOrder(orderId, page, perPage);
   }
 
   @ApiOperation({ summary: 'Get timeslots' })

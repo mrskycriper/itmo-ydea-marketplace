@@ -3,51 +3,96 @@ extends ../template
 block additionalScripts
     script(src='/js/order.js')
 
+block title
+    title= 'Заказ №' + order.id
+
 block content
-        div(class="catalogue-container")
-            div(class="products-card")
-                div(class='product-card__text')
-                    p(class="product-card__name")= "Сумма заказа " + order.sum 
-                    if(order.status=="BOOKED")
-                      p(class="product-card__name")= "Заказ забронирован до " + (new Date((new Date(Date.parse(order.start_timestamp))).setDate((new Date(Date.parse(order.start_timestamp))).getDate()+2))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
-                      p(class="product-card__name")= "Заказ забронирован " + order.times_booked + " раз(а)"
-                      a(class="product__button" href="#" id="rebooking button" onclick='handleReBooking('+order.id+", "+order.times_booked+", \'"+order.start_timestamp+'\');') Перебронировать заказ
-                      a(class="product__button" href="#" id="payment button" onclick='handlePaying('+order.id+", \'"+order.start_timestamp+'\');') Оплатить заказ
-                      a(class="product__button" href="#" id="unbooking button" onclick='handleUnBooking('+order.id+", \'"+order.start_timestamp+'\');') Разбронировать заказ
-                      a(class="product__button" href="#" id="discarding button" onclick='handleDiscarding('+order.id+');') Отменить заказ
-                    else
-                        if(order.status=="PAID")
-                          a(class="product__button" href="#" id="delivery button" onclick='handleAddress('+order.id+');') Добавить адрес
-                          div(class='product__input-group')
-                              label(class='product__input-label' for='address') Адрес
-                              input(class='product__input' id='address' required=true value=order.address)
-                          div(class="dropdown")
-                            button(class="dropbtn") Временные слоты доставки
-                            div(class="dropdown-content")
-                              each timeslot in timeslots.timeslots
-                                 a(href="#" onclick='handleTimeSlot('+order.id+", \'"+timeslot.timeslot_start+'\', \''+timeslot.timeslot_end+'\');')= (new Date(Date.parse(timeslot.timeslot_start))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})+"     "+(new Date(Date.parse(timeslot.timeslot_end))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
-                        else
-                           if(order.status=="SHIPPING")
-                               p(class="product-card__name") Заказ в доставке
-                           if(order.status=="COMPLETED")
-                               p(class="product-card__name") Заказ успешно завершён
-                           if(order.status=="REFUND")
-                               p(class="product-card__name") Заказ возмещён
-                           if(order.status=="DISCARDED")
-                               p(class="product-card__name") Заказ отменён
+    div(class='order-container')
+        div(class='catalogue-filter-container')
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Фильтры
+                    button(id='apply-filter-form-toggle' class='profile__card-edit' onclick='javascript:showFilters();') показать
+                form(id='apply-filter-form' style='display: none' class='profile__card-from' onsubmit='javascript:applyFilters();')
+                    div(class='profile__card-form-options')
+                        label(for='filter-items-per-page' class='profile__card-from-label') Элементов на странице
+                        input(id='filter-items-per-page' class='profile__card-form-input--text' type='number' min=1 max=100 required=true value=20)
+                    input(type='submit' value='Применить' class='profile__card-from-submit')
+        div(class='catalogue-navigation-container')
+            if page === 1
+                a(href="#" class="category-navigation-container__navigation-button--disabled") ←
+            else
+                a(href="#" class="category-navigation-container__navigation-button" onclick='handlePreviousPage();') ←
+            if page === pageCount
+                a(href="#" class="category-navigation-container__navigation-button--disabled") →
+            else
+                a(href="#" class="category-navigation-container__navigation-button" onclick='handleNextPage();') →
+            div(class='category-navigation-container__page-count--container')
+                p(class='category-navigation-container__page-count--text') Страница #{page} из #{pageCount}
+        div(class='order-controls-container')
+            div(class='category-navigation-container__page-count--container')
+                p(class='category-navigation-container__page-count--text')= 'Сумма заказа ' + Number.parseInt(order.sum) + ' ₽'
+            if(order.status === 'BOOKED')
+                div(class='category-navigation-container__page-count--container')
+                    p(class='category-navigation-container__page-count--text')= 'Заказ забронирован до ' + (new Date((new Date(Date.parse(order.start_timestamp))).setDate((new Date(Date.parse(order.start_timestamp))).getDate() + 2))).toLocaleDateString('ru-RU', {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'})
+                div(class='category-navigation-container__page-count--container')
+                    p(class='category-navigation-container__page-count--text')= 'Заказ забронирован ' + order.times_booked + ' раз(а)'
+            if(order.status === 'SHIPPING')
+                    div(class='category-navigation-container__page-count--container')
+                        p(class='category-navigation-container__page-count--text') Заказ в доставке
+            if(order.status === "COMPLETED")
+                    div(class='category-navigation-container__page-count--container')
+                        p(class='category-navigation-container__page-count--text') Заказ успешно завершён
+            if(order.status === 'REFUND')
+                    div(class='category-navigation-container__page-count--container')
+                        p(class='category-navigation-container__page-count--text') Заказ возмещён
+            if(order.status === 'DISCARDED')
+                    div(class='category-navigation-container__page-count--container')
+                        p(class='category-navigation-container__page-count--text') Заказ отменён
+        if(order.status === 'BOOKED')
+            div(class='order-controls-container')
+                a(class='product__button' href='#' id='rebooking button' onclick='handleReBooking(' + order.id + ', ' + order.times_booked + ', "' + order.start_timestamp + '");') Перебронировать заказ
+                a(class='product__button' href='#' id='payment button' onclick='handlePaying(' + order.id + ', "' + order.start_timestamp + '");') Оплатить заказ
+                a(class='product__button' href='#' id='unbooking button' onclick='handleUnBooking(' + order.id + ', "' + order.start_timestamp + '");') Разбронировать заказ
+                a(class='product__button' href="#" id='discarding button' onclick='handleDiscarding(' + order.id + ');') Отменить заказ
+
+        if(order.status === 'PAID')
+            div(class='catalogue-filter-container')
+                div(class='profile__card')
+                    div(class='profile__card-header')
+                        p(class='profile__card-name') Фильтры
+                    form(id='apply-filter-form' class='profile__card-from' onsubmit='javascript:validateData(' + order.id + ');')
+                        div(class='profile__card-form-options')
+                            label(class='profile__card-from-label' for='address') Адрес
+                            input(class='profile__card-form-input--text' id='address' required=true value=order.address)
+                        div(class='profile__card-form-options')
+                            label(for='timeslot' class='profile__card-from-label') Слот доставки
+                            select(id='timeslot' class='profile__card-from-input--select' required=true)
+                                each timeslot in timeslots.timeslots
+                                    option(value='' + timeslot.timeslot_start + ',' + timeslot.timeslot_end + '')= (new Date(Date.parse(timeslot.timeslot_start))).toLocaleDateString("ru-RU", {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'}) + " → " + (new Date(Date.parse(timeslot.timeslot_end))).toLocaleDateString("ru-RU", {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'})
+                        input(type='submit' value='Продолжить' class='profile__card-from-submit')
+            //a(class='product__button' href='#' id='delivery button' onclick='handleAddress(' + order.id + ');') Добавить адрес
+            //div(class='product__input-group')
+            //    label(class='product__input-label' for='address') Адрес
+            //    input(class='product__input' id='address' required=true value=order.address)
+            //div(class='dropdown')
+            //    button(class='dropbtn') Временные слоты доставки
+            //    div(class='dropdown-content')
+            //      each timeslot in timeslots.timeslots
+            //          a(href='#' onclick='handleTimeSlot(' + order.id + ', "' + timeslot.timeslot_start + '", "' + timeslot.timeslot_end + '");')= (new Date(Date.parse(timeslot.timeslot_start))).toLocaleDateString("ru-RU", {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'}) + "     " + (new Date(Date.parse(timeslot.timeslot_end))).toLocaleDateString("ru-RU", {year: 'numeric',month: 'numeric',day: 'numeric',hour: 'numeric',minute: 'numeric'})
+        div(class='order-items-container')
             if (!empty)
-              each product in productsInOrder
-                  div(class="products-card")
-                      //if product.photos[0]
-                      //    img(src=product.photos[0].photo_url class="product-card__photo")
-                      //else
-                      //    img(src="https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=" class="product-card__photo")
-                      ////img(src=product.photo class="product-card__photo")
-                      div(class='product-card__text')
-                          div(class="product-card__header")
-                              a(class="product-card__name" href='/products/' + product.product.id)= product.product.name
-                          p(class='product-card__description')= "Цена "+product.product.price
-                          p(class='product-card__description')= "Количество "+product.number
+                each product in productsInOrder
+                    div(class='catalogue-item-card')
+                        each photo in product.product.photo
+                            img(src=photo.photo_url class='catalogue-item-card__photo')
+                        if !product.product.photo[0]
+                            img(class='catalogue-item-card__photo' src='https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=')
+                        div(class='catalogue-item-card__text')
+                            div(class='catalogue-item-card__content-container')
+                                div(class='catalogue-item-card__text-lines-container')
+                                    a(class="catalogue-item-card__text-header" href='/products/' + product.product.id + '?page=1')= product.product.name
+                                    p(class='catalogue-item-card__text-line')= product.product.price + ' ₽ x ' + product.number + ' шт = ' + Number.parseFloat(Number.parseFloat(product.product.price * product.number).toFixed(2))+ ' ₽'
                           
             else
                 p(class='empty-list') Заказ пуст

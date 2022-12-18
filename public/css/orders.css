@@ -171,4 +171,17 @@
     margin: 0 0 5px;
 }
 
+.order-controls-container {
+    margin: 0 auto;
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    flex-grow: 0;
+    width: 100%;
+}
+
+.order-controls-card__text {
+
+}
+
 
