@@ -49,7 +49,6 @@ function getProductData() {
 async function addProduct(seller_id) {
   event.preventDefault();
   const productData = getProductData();
-  console.log(productData);
   const rsp = await _api.createProduct(
     productData.name,
     productData.description,

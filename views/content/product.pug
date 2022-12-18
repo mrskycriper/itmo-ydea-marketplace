@@ -3,75 +3,115 @@ extends ../template
 block additionalScripts
     script(src='/js/product.js')
 
+block title
+    title= product.name
+
 block content
-    div(class="product-main")
-        div(class="product-card" id="productData")
-            div(class="product-picture")
+    div(class='product-page-container')
+        div(class='product-card' id="productData")
+            div(class='product-card__content')
                 if photos[0]
-                    img(src=photos[0].photo_url)
-                else 
-                    img(src="https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=")
-            div(class="product-info")
-                h1(id="productNameField") #{product.name}
-                h3(id="productDescriptionField") #{product.description}
-                p()= 'Рейтинг: ' +  (Number.parseFloat(product.rating_average).toFixed(2)) + '/5'
-                h3(id="productPrice") Цена: #{product.price}$
-                p(id="numberOfProduct") Единиц товара: #{product.number}
-                p(id="categoryOfProduct") КАТЕГОРИЯ: #{product.category.category}
-                p()
-                    a(href='/sellers/' + product.seller_id) ПРОДАВЕЦ
-            div(class="break")
-        if edit
-            div(class="editRow" id="editRow")
-                a( href="javascript:editProduct();") Изменить товар
-        h1() Отзывы о товаре
-        div(class="reviews-container")
+                    img(class='product-card__image' src=photos[0].photo_url )
+                else
+                    img(class='product-card__image' src='https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=')
+                div(class='product-card__info-container')
+                    p(class='product-card__header-text' id="productNameField")= product.name
+                    p(class='product-card__description-text' id="productDescriptionField")= product.description
+                    p(class='product-card__text')= 'Рейтинг: ' +  Number.parseFloat(Number.parseFloat(product.rating_average).toFixed(1)) + ' / 5'
+                    p(class='product-card__text' id="productPrice")= 'Цена: ' + product.price + ' ₽'
+                    p(class='product-card__text' id="numberOfProduct")= 'На складе: ' + (product.number - product.number_booked) + ' шт'
+                    a(class='product-card__link' href='/catalogue?page=1&product_category_id=' + product.category.id id="categoryOfProduct")= 'Категория товара: ' + product.category.category
+                    a(class='product-card__link' href='/sellers/' + product.seller_id)= 'Продавец: ' + product.seller.user.name
+            if edit
+                div(class='product-card__footer')
+                    button(id='image-form-toggle' class='profile__card-edit' onclick='javascript:showEditImage();') Изменить изображение товара
+                    button(id='product-form-toggle' class='profile__card-edit' onclick='javascript:showEditProduct();') Изменить товар
+                if photos[0]
+                    form(id='edit-image-form' style='display: none' class='profile__card-from' onsubmit='javascript:editImage(' + photos[0].id + ', ' + product.id + ');')
+                        div(class='profile__card-form-options')
+                            if photos[0]
+                                label(for='image-url' class='profile__card-from-label' ) URL изображения
+                                input(id='image-url' class='profile__card-form-input--text' type='text' required=true value=photos[0].photo_url)
+                            else
+                                label(for='image-url' class='profile__card-from-label' ) URL изображения
+                                input(id='image-url' class='profile__card-form-input--text' type='text' required=true)
+                        input(type='submit' value='Применить' class='profile__card-from-submit')
+                else
+                    form(id='edit-image-form' style='display: none' class='profile__card-from' onsubmit='javascript:editImage("no",' + product.id + ');')
+                        div(class='profile__card-form-options')
+                            if photos[0]
+                                label(for='image-url' class='profile__card-from-label' ) URL изображения
+                                input(id='image-url' class='profile__card-form-input--text' type='text' required=true value=photos[0].photo_url)
+                            else
+                                label(for='image-url' class='profile__card-from-label' ) URL изображения
+                                input(id='image-url' class='profile__card-form-input--text' type='text' required=true)
+                        input(type='submit' value='Применить' class='profile__card-from-submit')
+                form(id='edit-product-form' style='display: none' class='profile__card-from' onsubmit='javascript:editProduct(' + product.id + ');')
+                    div(class='profile__card-form-options')
+                        label(for='name' class='profile__card-from-label' ) Название товара
+                        input(id='name' class='profile__card-form-input--text' type='text' required=true value=product.name)
+                    div(class='profile__card-form-options')
+                        label(for='category' class='profile__card-from-label') Категория
+                        select(id='category' class='profile__card-from-input--select' required=true)
+                            each category in categories
+                                if (category.id === product.category.id)
+                                    option(value=category.id selected)= category.category
+                                else
+                                    option(value=category.id)= category.category
+                    div(class='profile__card-form-options')
+                        label(for='product-description' class='profile__card-from-label') Описание товара
+                        textarea(id='product-description' class='profile__card-from-input--textarea' required=true maxlength=1000)= product.description
+                    div(class='profile__card-form-options')
+                        label(for='price' class='profile__card-from-label' ) Цена товара
+                        input(id='price' class='profile__card-form-input--number' type='number' min=1 required=true value=Number.parseInt(product.price))
+                    div(class='profile__card-form-options')
+                        label(for='quantity' class='profile__card-from-label' ) Количество товара
+                        input(id='quantity' class='profile__card-form-input--number' type='number' min=1 required=true value=Number.parseInt(product.number))
+                    input(type='submit' value='Применить' class='profile__card-from-submit')
+        p(class='review-header') Отзывы о товаре
+        div(class='catalogue-filter-container')
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Фильтры
+                    button(id='apply-filter-form-toggle' class='profile__card-edit' onclick='javascript:showFilters();') показать
+                form(id='apply-filter-form' style='display: none' class='profile__card-from' onsubmit='javascript:applyFilters();')
+                    div(class='profile__card-form-options')
+                        label(for='filter-items-per-page' class='profile__card-from-label') Элементов на странице
+                        input(id='filter-items-per-page' class='profile__card-form-input--text' type='number' min=1 max=100 required=true value=20)
+                    input(type='submit' value='Применить' class='profile__card-from-submit')
+        div(class='catalogue-navigation-container')
+            if page === 1
+                a(href="#" class="category-navigation-container__navigation-button--disabled") ←
+            else
+                a(href="#" class="category-navigation-container__navigation-button" onclick='handlePreviousPage();') ←
+            if page === pageCount
+                a(href="#" class="category-navigation-container__navigation-button--disabled") →
+            else
+                a(href="#" class="category-navigation-container__navigation-button" onclick='handleNextPage();') →
+            div(class='category-navigation-container__page-count--container')
+                p(class='category-navigation-container__page-count--text') Страница #{page} из #{pageCount}
+        div(class='reviews-container')
             if reviews[0]
                 each review in reviews
-                    div(class="review-card")
-                        h2() #{review.user.name}
-                        h3() Оценка: #{review.rating}/5
-                        p() #{review.text}
+                    div(class='review-card')
+                        p(class='review-card__name')= review.user.name
+                        p(class='review-card__rating')= 'Оценка: ' + review.rating + ' / 5'
+                        p(class='review-card__text')=review.text
             else 
-                p() Здесь пока нет ни одного отзыва
-        div(class="review-form")
-            form()
-                textarea(rows="10" id="reviewText") 
-                div(class="buttons")
-                    form()
-                        fieldset(id="reviewRating")
-                            div()
-                                label() Оценка
-                                input(type="radio" name="rating" id="ratingChoice0" value="0")
-                                label(for="ratingChoice0") 0
-                                input(type="radio" name="rating" id="ratingChoice1" value="1")
-                                label(for="ratingChoice1") 1
-                                input(type="radio" name="rating" id="ratingChoice2" value="2")
-                                label(for="ratingChoice2") 2
-                                input(type="radio" name="rating" id="ratingChoice3" value="3")
-                                label(for="ratingChoice3") 3
-                                input(type="radio" name="rating" id="ratingChoice4" value="4")
-                                label(for="ratingChoice4") 4
-                                input(type="radio" name="rating" id="ratingChoice5" value="5")
-                                label(for="ratingChoice5") 5
-                                p(id="sendResponseReview") 
-                        button(type="button" onclick="javascript:sendReview();") Отправить
-
-
-    script. 
-        productID=#{product.id};
-    script.
-        productName="#{product.name}";
-    script.
-        productDescription="#{product.description}";
-    script.
-        productCategoryID="#{product.category_id}";
-    script. 
-        productCategory="#{product.category.category}";
-    script.
-        productNumber="#{product.number}";
-    script.
-        productPrice="#{product.price}";
-    script. 
-        currentUserId="#{userid}"
+                p(class='empty-list') Здесь пока нет ни одного отзыва
+        div(class='review-form')
+            form(class='profile__card-from' onsubmit='javascript:postReview("' + userid + '", ' + product.id + ');')
+                div(class='profile__card-form-options')
+                    label(for='review-text' class='profile__card-from-label') Текст (не обязателен)
+                    textarea(id='review-text' class='profile__card-from-input--textarea' maxlength=1000)
+                div(class='profile__card-form-options')
+                    label(for='review-rating' class='profile__card-from-label') Оценка
+                    select(id='review-rating' class='profile__card-from-input--select' required=true)
+                        option(value='0') 0 / 5
+                        option(value='1') 1 / 5
+                        option(value='2') 2 / 5
+                        option(value='3') 3 / 5
+                        option(value='4') 4 / 5
+                        option(value='5') 5 / 5
+                input(type='submit' value='Отправить' class='profile__card-from-submit')
 

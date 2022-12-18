@@ -24,13 +24,6 @@ async function handlePreviousPage() {
   }
 }
 
-window.addEventListener('load', () => {
-  let form = document.querySelector('input');
-  form.onsubmit = (event) => {
-    event.preventDefault();
-  };
-});
-
 function showFilters() {
   let form = document.getElementById('apply-filter-form');
   let text = document.getElementById('apply-filter-form-toggle');
@@ -90,6 +83,7 @@ async function applyFilters() {
   }
 
   urlParams.set('perPage', filterData.per_page);
+  urlParams.set('page', '1');
 
   window.location.search = urlParams;
 }

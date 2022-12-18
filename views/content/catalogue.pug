@@ -65,7 +65,7 @@ block content
 
                             div(class='catalogue-item-card__content-container')
                                 div(class='catalogue-item-card__text-lines-container')
-                                    a(class='catalogue-item-card__text-header' href='/products/' + product.id)= product.name
+                                    a(class='catalogue-item-card__text-header' href='/products/' + product.id + '?page=1')= product.name
                                     p(class='catalogue-item-card__text-line')= product.price + ' ₽'
                                     p(class='catalogue-item-card__text-line')= 'Рейтинг ' + Number.parseFloat((Number.parseFloat(product.rating_average).toFixed(1))) + ' / 5'
                                 div(class='catalogue-item-card__add-to-cart-container')
@@ -75,10 +75,6 @@ block content
                                                 label(for='item-quantity-' + product.id class='catalogue-item-card__add-to-cart-form--label') Количество
                                                 input(id='item-quantity-' + product.id class='catalogue-item-card__add-to-cart-form--input' type='number' min=1 required=true value=1)
                                             input(type='submit' value='В корзину' class='catalogue-item-card__add-to-cart-form--submit')
-                                        //a(class="product__button" href="#" onclick='javascript:handleCreateProductsInOrder(' + product.id + ', \'' + userid + '\');') Добавить в корзину
-                                        //div(class='product__input-group')
-                                        //    label(class='product__input-label' for='number') Количество
-                                        //    input(class='product__input' id='number ' + product.id required=true value="1")
                                     else
                                         p(class='catalogue-item-card__add-to-cart-container--empty') Нет в наличии
             else

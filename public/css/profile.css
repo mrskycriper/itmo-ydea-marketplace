@@ -107,7 +107,7 @@
     outline: none;
     resize: none;
     height: 80px;
-    width: 400px;
+    width: 100%;
 }
 
 .profile__card-form-input--text {

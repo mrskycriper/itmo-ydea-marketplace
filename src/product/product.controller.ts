@@ -89,6 +89,18 @@ export class ProductController {
     type: 'number',
     description: 'Unique product id',
   })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    description: 'Page number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    type: 'number',
+    description: 'Number of products per page',
+    required: false,
+  })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiNotFoundResponse({ description: 'Not Found' })
@@ -97,12 +109,19 @@ export class ProductController {
   async getProduct(
     @SessionDecorator() session: SessionContainer,
     @Param('productId', ParseIntPipe) productId: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,
   ): Promise<object> {
     let userId = null;
     try {
       userId = session.getUserId();
     } catch (e) {}
-    return await this.productService.getProduct(productId, userId);
+    return await this.productService.getProduct(
+      productId,
+      userId,
+      page,
+      perPage,
+    );
   }
 
   @ApiCookieAuth()
