@@ -3,7 +3,6 @@ import {
   ApiBody,
   ApiCookieAuth,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -15,13 +14,13 @@ import {
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
-  Put,
   Query,
   Render,
   UseGuards,
@@ -37,10 +36,8 @@ import { SetAddressDto } from './dto/set.address.dto';
 import { EditProductsInOrderDto } from './dto/edit.productsinorder.dto';
 import { CreateOrderGuard } from 'src/auth/guards/create.order.guard';
 import { CreateProductsInOrderGuard } from 'src/auth/guards/create.productsinorder.guard';
-import { DeleteProductsInOrderGuard } from 'src/auth/guards/delete.productsinorder.guard';
 import { EditGetOrderGuard } from 'src/auth/guards/editget.order.guard';
 import { AdminGuard } from 'src/auth/guards/admin.guard';
-import { EditProductsInOrderGuard } from 'src/auth/guards/edit.productsinorder.guard';
 
 @ApiTags('order')
 @Controller()
@@ -126,6 +123,18 @@ export class OrderController {
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Get orders' })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    description: 'Page number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    type: 'number',
+    description: 'Number of products per page',
+    required: false,
+  })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -133,8 +142,16 @@ export class OrderController {
   @UseGuards(AuthGuard)
   @Render('orders')
   @Get('orders')
-  async getOrders(@SessionDecorator() session: SessionContainer) {
-    return await this.orderService.getOrders(session.getUserId());
+  async getOrders(
+    @SessionDecorator() session: SessionContainer,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,
+  ) {
+    return await this.orderService.getOrders(
+      session.getUserId(),
+      page,
+      perPage,
+    );
   }
 
   @ApiCookieAuth()

@@ -154,13 +154,39 @@ export class OrderService {
     }
   }
 
-  async getOrders(userId: string) {
+  async getOrders(userId: string, page: number, perPage: number) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user == null) {
       throw new NotFoundException('User not found');
     }
-    const orders = await prisma.order.findMany({ where: { user_id: userId } });
-    return { title: 'Заказы', orders: orders };
+    if (page <= 0) {
+      throw new BadRequestException('Page number should be above zero.');
+    }
+    if (perPage <= 0) {
+      throw new BadRequestException(
+        'Number of product per page should be above zero.',
+      );
+    }
+    const orders = await prisma.order.findMany({
+      where: { user_id: userId },
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
+    const allOrders = await prisma.order.findMany({
+      where: { user_id: userId },
+    });
+    let empty = true;
+    if (Object.keys(orders).length != 0) {
+      empty = false;
+    }
+    let pageCount = Math.ceil(allOrders.length / perPage);
+    if (pageCount == 0) {
+      pageCount = 1;
+    }
+    if (page > pageCount) {
+      throw new BadRequestException('Invalid page number');
+    }
+    return { orders: orders, empty: empty, page: page, pageCount: pageCount };
   }
 
   async getTimeslots() {
@@ -178,7 +204,7 @@ export class OrderService {
       new Date(date.setHours(17, 0, 0, 0)),
       new Date(date.setHours(19, 0, 0, 0)),
     );
-    let timeslots = [timeSlotMorning, timeSlotDay, timeSlotEvening];
+    const timeslots = [timeSlotMorning, timeSlotDay, timeSlotEvening];
     return { timeslots: timeslots };
   }
 
