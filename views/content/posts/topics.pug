@@ -3,6 +3,9 @@ extends ../../template
 block additionalScripts
     script(src='/js/topic.js')
 
+block title
+    title Категория #{categoryName}
+
 block content
     div(class='categories-main')
         div(class='chat-header')
