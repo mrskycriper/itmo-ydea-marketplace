@@ -17,7 +17,7 @@
     position: absolute;
     background-color: #f1f1f1;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
     z-index: 1;
   }
   
@@ -33,62 +33,6 @@
   .dropdown:hover .dropdown-content {display: block;}
   
   .dropdown:hover .dropbtn {background-color: #3e8e41;}
-
-.orders-container {
-    max-width: 500px;
-    flex-grow: 5;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    border: 5px;
-    border-color: aliceblue;
-    border-radius: 15px;
-}
-
-.order-card {
-    margin: 5px auto;
-    padding: 10px;
-    background: #156f9c;
-    display: flex;
-    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
-    border: 5px;
-    border-color: aliceblue;
-    border-radius: 15px;
-    width: 100%;
-}
-
-.order-card__text {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.order-card__header {
-    display: flex;
-    margin-bottom: 10px;
-    justify-content: space-between;
-}
-
-.order-card__name:any-link {
-    display: inline-block;
-    margin: 0;
-    font-size: 18px;
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.order-card__name:hover {
-    text-decoration: underline;
-}
-
-
-.order-card__description {
-    margin: 0;
-    font-size: 16px;
-    color: white;
-    overflow-wrap: anywhere;
-}
 
 .order__button:any-link {
     display: inline-block;
@@ -157,6 +101,74 @@
     box-sizing: border-box;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.025);
     outline: none;
+}
+
+.order-container {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+}
+
+.order-navigation-container {
+    margin: 0 auto;
+    max-width: 800px;
+    display: flex;
+    justify-content: center;
+    flex-grow: 0;
+    width: 100%;
+}
+
+.order-items-container {
+    max-width: 800px;
+    flex-grow: 1;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.order-card {
+    margin: 10px;
+    background-color: #156f9c;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+.order-card__text {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    padding: 10px;
+}
+
+.order-card__header {
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.order-card__name:any-link {
+    display: inline-block;
+    margin: 0;
+    font-size: 28px;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.order-card__name:hover {
+    text-decoration: underline;
+}
+
+
+.order-card__description {
+    font-size: 18px;
+    color: white;
+    overflow-wrap: anywhere;
+    margin: 0 0 5px;
 }
 
 

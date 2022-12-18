@@ -1,30 +1,57 @@
 extends ../template
 
 block additionalScripts
+    script(src='/js/orders.js')
+
+block title
+    title Список заказов
 
 block content
-            if (!empty)
-              each order in orders
-                  if(order.status != "COLLECTING")
-                    div(class="order-card")
-                        div(class='order-card__text')
-                            div(class="order-card__header")
-                                a(class="order-card__name" href='/orders/' + order.id)= "Заказ номер "+order.id
-                            p(class='product-card__description')= "Сумма заказа "+order.sum
-                            p(class='product-card__description')= "Дата заказа "+(new Date(Date.parse(order.start_timestamp))).toLocaleDateString("en-US", {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric'})
-                            if(order.status == "BOOKING")
-                              p(class='product-card__description') Заказ забронирован
-                            if(order.status == "PAID")
-                              p(class='product-card__description') Заказ оплачен
-                            if(order.status == "SHIPPING")
-                              p(class='product-card__description') Заказ в доставке
-                            if(order.status == "COMPLETED")
-                              p(class='product-card__description') Заказ успешно завершён
-                            if(order.status == "REFUND")
-                              p(class='product-card__description') Заказ возмещён
-                            if(order.status == "DISCARDED")
-                              p(class='product-card__description') Заказ отменён
-                            
-                            
+    div(class='order-container')
+        div(class="catalogue-filter-container")
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Фильтры
+                    button(id='apply-filter-form-toggle' class='profile__card-edit' onclick='javascript:showFilters();') показать
+                form(id='apply-filter-form' style='display: none' class='profile__card-from' onsubmit='javascript:applyFilters();')
+                    div(class='profile__card-form-options')
+                        label(for='filter-items-per-page' class='profile__card-from-label') Элементов на странице
+                        input(id='filter-items-per-page' class='profile__card-form-input--text' type='number' min=1 max=100 required=true value=20)
+                    input(type='submit' value='Применить' class='profile__card-from-submit')
+        div(class="catalogue-navigation-container")
+            if page === 1
+                a(href="#" class="category-navigation-container__navigation-button--disabled") ←
             else
-                p(class='empty-list') Список заказов пуст
+                a(href="#" class="category-navigation-container__navigation-button" onclick='handlePreviousPage();') ←
+            if page === pageCount
+                a(href="#" class="category-navigation-container__navigation-button--disabled") →
+            else
+                a(href="#" class="category-navigation-container__navigation-button" onclick='handleNextPage();') →
+            div(class='category-navigation-container__page-count--container')
+                p(class='category-navigation-container__page-count--text') Страница #{page} из #{pageCount}
+        div(class='order-items-container')
+                if (!empty)
+                    each order in orders
+                        if(order.status !== 'COLLECTING')
+                            div(class='order-card')
+                                div(class='order-card__text')
+                                    div(class='order-card__header')
+                                        a(class='order-card__name' href='/orders/' + order.id)= 'Заказ № ' + order.id
+                                    p(class='order-card__description')= 'Сумма заказа: ' + order.sum + ' ₽'
+                                    p(class='order-card__description')= 'Дата заказа: ' + (new Date(Date.parse(order.start_timestamp))).toLocaleDateString('ru-RU', {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})
+                                    if(order.status === 'BOOKING')
+                                        p(class='order-card__description') Статус заказа: Забронирован
+                                    if(order.status === 'PAID')
+                                        p(class='order-card__description') Статус заказа: Оплачен
+                                    if(order.status === 'SHIPPING')
+                                        p(class='order-card__description') Статус заказа: В доставке
+                                    if(order.status === 'COMPLETED')
+                                        p(class='product-card__description') Статус заказа: Завершён
+                                    if(order.status === 'REFUND')
+                                        p(class='order-card__description') Статус заказа: Возмещён
+                                    if(order.status === 'DISCARDED')
+                                        p(class='order-card__description') Статус заказа: Отменён
+
+
+                else
+                    p(class='empty-list') Список заказов пуст
