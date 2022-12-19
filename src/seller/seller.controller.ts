@@ -84,13 +84,11 @@ export class SellerController {
   @ApiNotFoundResponse({ description: 'Not Found' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @Get('sellers/:sellerId')
-  // @Render('seller')
-  // TODO Рендер страницы продавца
+  @Render('seller')
   async getSeller(
-    @SessionDecorator() session: SessionContainer,
     @Param('sellerId', ParseIntPipe) sellerId: number,
   ): Promise<object> {
-    return await this.sellerService.getSeller(sellerId, session.getUserId());
+    return await this.sellerService.getSeller(sellerId);
   }
 
   @ApiOperation({ summary: 'Update seller' })

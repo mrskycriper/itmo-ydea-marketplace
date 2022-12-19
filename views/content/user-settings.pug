@@ -3,25 +3,71 @@ extends ../template
 block additionalScripts
     script(src='/js/profile.js')
 
+block title
+    title= user.name
+
 block content
     p(class='profile__header-text' id='name')= user.name
     div(class='profile__container')
         div(class='profile__card')
             p(class='profile__card-name') Роль
             p(class='profile__card-content')= role
-        if (!is_seller)
-            div(class='profile__card')
-                p(class='profile__card-name') Список заказов
-                a(href='/orders' class='profile__button')= 'Открыть'
-        else
+        if (is_seller)
             div(class='profile__card')
                 div(class='profile__card-header')
                     p(class='profile__card-name') Описание
-                    button(class='profile__card-edit' onclick='javascript:showEditBio();') изменить
+                    button(id='seller-description-form-toggle' class='profile__card-edit' onclick='javascript:showEditDescription();') изменить
                 p(class='profile__card-content')= seller.description
-                form(id='bio-form' style='display: none' class='profile__card-from' onsubmit='javascript:editBio(' + seller.id + ');')
+                form(id='edit-description-form' style='display: none' class='profile__card-from' onsubmit='javascript:editDescription(' + seller.id + ');')
                     div(class='profile__card-form-options')
-                        label(for='bio' class='profile__card-from-label') Описание
-                        textarea(id='bio' type='text' class='profile__card-from-input--text' maxlength=1000)= seller.description
+                        label(for='description' class='profile__card-from-label') Описание
+                        textarea(id='description' type='text' class='profile__card-from-input--textarea' maxlength=1000)= seller.description
                     input(type='submit' value='Обновить' class='profile__card-from-submit')
+            div(class='profile__card')
+                a(class='profile__card-link' href="/catalogue?page=1&seller_id=" + seller.id) Перейти к моим товарам
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Добавление товаров
+                    button(id='product-form-toggle' class='profile__card-edit' onclick='javascript:showAddProduct();') развернуть
+                form(id='add-product-form' style='display: none' class='profile__card-from' onsubmit='javascript:addProduct(' + seller.id + ');')
+                    div(class='profile__card-form-options')
+                        label(for='name' class='profile__card-from-label' ) Название товара
+                        input(id='name' class='profile__card-form-input--text' type='text' required=true)
+                    div(class='profile__card-form-options')
+                        label(for='category' class='profile__card-from-label') Категория
+                        select(id='category' class='profile__card-from-input--select' required=true)
+                          each category in categories
+                              option(value=category.id)= category.category
+                    div(class='profile__card-form-options')
+                        label(for='product-description' class='profile__card-from-label') Описание товара
+                        textarea(id='product-description' class='profile__card-from-input--textarea' required=true maxlength=1000)
+                    div(class='profile__card-form-options')
+                        label(for='price' class='profile__card-from-label' ) Цена товара
+                        input(id='price' class='profile__card-form-input--number' type='number' min=1 required=true)
+                    div(class='profile__card-form-options')
+                        label(for='quantity' class='profile__card-from-label' ) Количество товара
+                        input(id='quantity' class='profile__card-form-input--number' type='number' min=1 required=true)
+                    input(type='submit' value='Добавить' class='profile__card-from-submit')
+        if (is_admin)
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Редактор ролей
+                    button(id='edit-role-form-toggle' class='profile__card-edit' onclick='javascript:showEditRole();') развернуть
+                form(id='edit-role-form' style='display: none' class='profile__card-from' onsubmit='javascript:editRole();')
+                    div(class='profile__card-form-options')
+                        label(for='edit-role-userid' class='profile__card-from-label' ) UUID пользователя
+                        input(id='edit-role-userid' class='profile__card-form-input--text' type='text' required=true)
+                    div(class='profile__card-form-options')
+                        label(for='edit-role-selector' class='profile__card-from-label') Новая роль
+                        select(id='edit-role-selector' class='profile__card-from-input--select' required=true)
+                            option(value='1') Администратор
+                            option(value='2') Модератор
+                            option(value='3') Техподдержка
+                            option(value='4') Продавец
+                            option(value='5') Пользователь
+                    input(type='submit' value='Изменить' class='profile__card-from-submit')
+            div(class='profile__card')
+                p(class='profile__card-name') Редактор категорий
+                a(class='profile__card-link' href="/category-editor") Открыть
+
 

@@ -1,0 +1,81 @@
+extends ../template
+
+block additionalScripts
+    script(src='/js/catalogue.js')
+
+block title
+    title Каталог
+
+block content
+    div(class="catalogue-container")
+        div(class="catalogue-filter-container")
+            div(class='profile__card')
+                div(class='profile__card-header')
+                    p(class='profile__card-name') Фильтры
+                    button(id='apply-filter-form-toggle' class='profile__card-edit' onclick='javascript:showFilters();') показать
+                form(id='apply-filter-form' style='display: none' class='profile__card-from' onsubmit='javascript:applyFilters();')
+                    div(class='profile__card-form-options')
+                        label(for='filter-sort-by-price' class='profile__card-from-label') Сортировка по цене
+                        select(id='filter-sort-by-price' class='profile__card-from-input--select' required=true)
+                            option(value='no') Без сортировки
+                            option(value='up') По возрастанию
+                            option(value='down') По убыванию
+                    div(class='profile__card-form-options')
+                        label(for='filter-sort-by-rating' class='profile__card-from-label') Сортировка по рейтингу
+                        select(id='filter-sort-by-rating' class='profile__card-from-input--select' required=true)
+                            option(value='no') Без сортировки
+                            option(value='up') По возрастанию
+                            option(value='down') По убыванию
+                    div(class='profile__card-form-options')
+                        label(for='filter-seller' class='profile__card-from-label') Продавец
+                        select(id='filter-seller' class='profile__card-from-input--select' required=true)
+                            option(value='any') Любой продавец
+                            each seller in sellers
+                                option(value=seller.id)= seller.user.name
+                    div(class='profile__card-form-options')
+                        label(for='filter-product-category' class='profile__card-from-label') Категория
+                        select(id='filter-product-category' class='profile__card-from-input--select' required=true)
+                            option(value='any') Любая категория
+                            each category in categories
+                                option(value=category.id)= category.category
+                    div(class='profile__card-form-options')
+                        label(for='filter-items-per-page' class='profile__card-from-label') Элементов на странице
+                        input(id='filter-items-per-page' class='profile__card-form-input--text' type='number' min=1 max=100 required=true value=20)
+                    input(type='submit' value='Применить' class='profile__card-from-submit')
+        div(class="catalogue-navigation-container")
+            if page === 1
+                a(href="#" class="category-navigation-container__navigation-button--disabled") ←
+            else
+                a(href="#" class="category-navigation-container__navigation-button" onclick='handlePreviousPage();') ←
+            if page === pageCount
+                a(href="#" class="category-navigation-container__navigation-button--disabled") →
+            else
+                a(href="#" class="category-navigation-container__navigation-button" onclick='handleNextPage();') →
+            div(class='category-navigation-container__page-count--container')
+                p(class='category-navigation-container__page-count--text') Страница #{page} из #{pageCount}
+        div(class="catalogue-items-container")
+            if (!empty)
+                each product in products
+                    div(class='catalogue-item-card' id='products-card')
+                        each photo in product.photo
+                                img(src=photo.photo_url class='catalogue-item-card__photo')
+                        if !product.photo[0]
+                            img(class='catalogue-item-card__photo' src='https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=')
+                        div(class='catalogue-item-card__text')
+
+                            div(class='catalogue-item-card__content-container')
+                                div(class='catalogue-item-card__text-lines-container')
+                                    a(class='catalogue-item-card__text-header' href='/products/' + product.id + '?page=1')= product.name
+                                    p(class='catalogue-item-card__text-line')= product.price + ' ₽'
+                                    p(class='catalogue-item-card__text-line')= 'Рейтинг ' + Number.parseFloat((Number.parseFloat(product.rating_average).toFixed(1))) + ' / 5'
+                                div(class='catalogue-item-card__add-to-cart-container')
+                                    if(product.number > 0 && product.number > product.number_booked)
+                                        form(id='add-to-cart-form' class='catalogue-item-card__add-to-cart-form' onsubmit='javascript:addProductToCart(' + product.id + ', "' + userid + '");')
+                                            div(class='catalogue-item-card__add-to-cart-form--options')
+                                                label(for='item-quantity-' + product.id class='catalogue-item-card__add-to-cart-form--label') Количество
+                                                input(id='item-quantity-' + product.id class='catalogue-item-card__add-to-cart-form--input' type='number' min=1 required=true value=1)
+                                            input(type='submit' value='В корзину' class='catalogue-item-card__add-to-cart-form--submit')
+                                    else
+                                        p(class='catalogue-item-card__add-to-cart-container--empty') Нет в наличии
+            else
+                p(class='empty-list') Каталог пуст

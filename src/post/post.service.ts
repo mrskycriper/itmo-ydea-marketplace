@@ -104,7 +104,7 @@ export class PostService {
       postTitle: post.title,
       postContent: post.content,
       createdAt: post.created_at,
-      authorName: author.name,
+      author: author,
       comments: comments,
       postId: postId,
       page: page,

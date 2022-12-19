@@ -3,6 +3,9 @@ extends ../../template
 block additionalScripts
     script(src='/js/post.js')
 
+block title
+    title Пост #{postTitle}
+
 block content
     div(class='categories-main')
         div(class='chat-header')
@@ -13,7 +16,7 @@ block content
             p(class='post-card__title')= postTitle
             p(class='post-card__content')= postContent
             div(class='post-card__footer')
-                a(class='post-card__author' href='/users/' + authorName)= authorName
+                p(class='post-card__author' id='post-author-string' onclick='javascript:togglePostNameId("' + author.name + '","' + author.id + '")')= author.name
                 //p(class='post-card__date')= createdAt.toLocaleString('ru-RU', {hour: 'numeric',minute: 'numeric',year: 'numeric',month: 'numeric',day: 'numeric'})
         div(class="category-navigation-container")
             if page === 1
@@ -24,7 +27,8 @@ block content
                 a(href="#" class="category-navigation-container__navigation-button--disabled") →
             else
                 a(href='/posts/' + postId + '?page=' + (page + 1) class="category-navigation-container__navigation-button") →
-            p(class="category-navigation-container__page-count") Страница #{page} из #{pageCount}
+            div(class='category-navigation-container__page-count--container')
+                p(class='category-navigation-container__page-count--text') Страница #{page} из #{pageCount}
             if(post)
                 button(class="category-navigation-container__create-chat-button" onclick='javascript:showCreateComment();') Добавить комментарий
         if(post)
@@ -40,7 +44,7 @@ block content
                       img(src="https://ui-avatars.com/api/?name=" + comment.author.name + "&rounded=true&size=48" class="comment-card__avatar")
                       div(class='comment-card__text')
                           div(class="comment-card__header")
-                              a(class="comment-card__name" href='/users/' + comment.author.name)= comment.author.name
+                              p(class="comment-card__name" id='comment-author-string' onclick='javascript:toggleCommentNameId("' + comment.author.name + '","' + comment.author.id + '")')= comment.author.name
                               //p(class="comment-card__date")= comment.createdAt.toLocaleString('ru-RU', {hour: 'numeric',minute: 'numeric',year: 'numeric',month: 'numeric',day: 'numeric'})
                           p(class='comment-card__content')= comment.content
             else

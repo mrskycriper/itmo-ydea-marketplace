@@ -27,29 +27,56 @@ export class OrderService {
       where: { id: user.id },
       data: { current_order_id: order.id },
     });
-    return await this.getOrder(order.id);
+    return await this.getOrder(order.id, 1, 20);
   }
 
-  async getOrder(orderId: number) {
+  async getOrder(orderId: number, page: number, perPage: number) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
     });
     if (order == null) {
       throw new NotFoundException('Order not found');
     }
+    if (page <= 0) {
+      throw new BadRequestException('Page number should be above zero.');
+    }
+    if (perPage <= 0) {
+      throw new BadRequestException(
+        'Number of product per page should be above zero.',
+      );
+    }
     const productsInOrder = await prisma.productsInOrder.findMany({
       where: { order_id: orderId },
-      include: { product: true },
+      skip: (page - 1) * perPage,
+      take: perPage,
+      include: { product: { include: { photo: true } } },
     });
-    let title = 'Заказ ' + order.id;
-    if (order.status == 'COLLECTING') {
-      title = 'Корзина';
+    const allProductsInOrder = await prisma.productsInOrder.findMany({
+      where: { order_id: orderId },
+      include: { product: { include: { photo: true } } },
+    });
+
+    let empty = true;
+    if (Object.keys(productsInOrder).length != 0) {
+      empty = false;
+    }
+    let pageCount = Math.ceil(allProductsInOrder.length / perPage);
+    if (pageCount == 0) {
+      pageCount = 1;
+    }
+    if (page > pageCount) {
+      throw new BadRequestException('Invalid page number');
     }
 
+    const timeslots = await this.getTimeslots();
+
     return {
-      title: title,
       order: order,
       productsInOrder: productsInOrder,
+      timeslots: timeslots,
+      empty: empty,
+      page: page,
+      pageCount: pageCount,
     };
   }
 
@@ -121,17 +148,25 @@ export class OrderService {
     });
   }
 
-  async getShoppingCart(userId: string) {
+  async getShoppingCart(userId: string, page: number, perPage: number) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user == null) {
       throw new NotFoundException('User not found');
+    }
+    if (page <= 0) {
+      throw new BadRequestException('Page number should be above zero.');
+    }
+    if (perPage <= 0) {
+      throw new BadRequestException(
+        'Number of product per page should be above zero.',
+      );
     }
     const orderId = user.current_order_id;
     if (orderId == 0) {
       const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId);
       return this.createOrder(createOrderDto);
     } else {
-      return await this.getOrder(orderId);
+      return await this.getOrder(orderId, page, perPage);
     }
   }
 
@@ -145,19 +180,46 @@ export class OrderService {
       const createOrderDto = new CreateOrderDto(new Date(Date.now()), userId);
       const order = await this.createOrder(createOrderDto);
       const newUser = await prisma.user.findUnique({ where: { id: userId } });
-      return {id: newUser.current_order_id};
+      return { id: newUser.current_order_id };
     } else {
-      return {id: orderId};
+      return { id: orderId };
     }
   }
 
-  async getOrders(userId: string) {
+  async getOrders(userId: string, page: number, perPage: number) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user == null) {
       throw new NotFoundException('User not found');
     }
-    const orders = await prisma.order.findMany({ where: { user_id: userId } });
-    return { title: 'Заказы', orders: orders };
+    if (page <= 0) {
+      throw new BadRequestException('Page number should be above zero.');
+    }
+    if (perPage <= 0) {
+      throw new BadRequestException(
+        'Number of product per page should be above zero.',
+      );
+    }
+    const orders = await prisma.order.findMany({
+      where: { user_id: userId },
+      skip: (page - 1) * perPage,
+      take: perPage,
+      orderBy: { start_timestamp: 'desc' },
+    });
+    const allOrders = await prisma.order.findMany({
+      where: { user_id: userId },
+    });
+    let empty = true;
+    if (Object.keys(orders).length != 0) {
+      empty = false;
+    }
+    let pageCount = Math.ceil(allOrders.length / perPage);
+    if (pageCount == 0) {
+      pageCount = 1;
+    }
+    if (page > pageCount) {
+      throw new BadRequestException('Invalid page number');
+    }
+    return { orders: orders, empty: empty, page: page, pageCount: pageCount };
   }
 
   async getTimeslots() {
@@ -175,7 +237,8 @@ export class OrderService {
       new Date(date.setHours(17, 0, 0, 0)),
       new Date(date.setHours(19, 0, 0, 0)),
     );
-    return [timeSlotMorning, timeSlotDay, timeSlotEvening];
+    const timeslots = [timeSlotMorning, timeSlotDay, timeSlotEvening];
+    return { timeslots: timeslots };
   }
 
   async setTimeslot(orderId: number, setTimeSlotDto: SetTimeSlotDto) {
@@ -296,6 +359,12 @@ export class OrderService {
         sum: sum,
       },
     });
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        current_order_id: orderId,
+      },
+    });
   }
 
   async discardOrder(orderId: number) {
@@ -315,6 +384,28 @@ export class OrderService {
         status: 'DISCARDED',
       },
     });
+
+    if (status == 'BOOKED') {
+      const productsInOrder = await prisma.productsInOrder.findMany({
+        where: { order_id: orderId },
+        include: { product: true },
+      });
+      let sum = 0;
+      for (const i of productsInOrder) {
+        sum += i.number * Number(i.product.price);
+        await this.unBookProduct(i.id);
+      }
+    }
+
+    if (status == 'COLLECTING') {
+      const userId = order.user_id;
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          current_order_id: 0,
+        },
+      });
+    }
   }
 
   async payForOrder(orderId: number) {
@@ -389,7 +480,7 @@ export class OrderService {
       throw new NotFoundException('Product not found');
     }
 
-    if (product.number_booked > productInOrder.number) {
+    if (product.number_booked < productInOrder.number) {
       throw new BadRequestException('Booked products exceeded total quantity');
     }
     await prisma.product.update({

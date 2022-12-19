@@ -15,6 +15,12 @@ export class SellerService {
     const seller = await prisma.seller.create({
       data: createSellerDto,
     });
+    await prisma.user.update({
+      where: { id: createSellerDto.user_id },
+      data: {
+        is_seller: true
+      }
+    });
     return { sellerId: seller.id };
   }
 
@@ -28,23 +34,16 @@ export class SellerService {
     await prisma.seller.delete({ where: { id: sellerId } });
   }
 
-  async getSeller(sellerId: number, userId: string) {
+  async getSeller(sellerId: number) {
     const seller = await prisma.seller.findUnique({
       where: { id: sellerId },
+      include: { user: true },
     });
     if (seller == null) {
       throw new NotFoundException('Seller not found');
     }
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    let edit = false;
-    if (user != null) {
-      if (user.id == seller.user_id || user.is_admin || user.is_moderator) {
-        edit = true;
-      }
-    }
     return {
       seller: seller,
-      edit: edit,
     };
   }
 

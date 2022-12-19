@@ -71,6 +71,7 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
     let role = 'Покупатель';
+    let is_admin = false;
     if (user.is_seller) {
       role = 'Продавец';
     }
@@ -82,7 +83,10 @@ export class UserService {
     }
     if (user.is_admin) {
       role = 'Администратор';
+      is_admin = true;
     }
+
+    const categories = await prisma.product_category.findMany({});
 
     let seller = false;
     if (user.is_seller) {
@@ -97,13 +101,24 @@ export class UserService {
         is_seller: seller,
         seller: seller[0],
         role: role,
+        categories: categories,
+        is_admin: is_admin,
       };
     } else {
       return {
         user: user,
         is_seller: seller,
         role: role,
+        categories: categories,
+        is_admin: is_admin,
       };
     }
+  }
+
+  async getCategoryEditor() {
+    const categories = await prisma.product_category.findMany({});
+    return {
+      categories: categories,
+    };
   }
 }

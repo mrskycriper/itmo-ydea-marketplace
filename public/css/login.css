@@ -25,15 +25,17 @@
     height: 100%;
     box-sizing: border-box;
     max-width: 450px;
-    padding: 30px;
-    border-radius: 10px;
-    background-color: #156f9c;
-    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     flex-direction: column;
     flex-shrink: 1;
     flex-grow: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 10px 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.025);
+    background: rgba(75, 79, 81, 0.43);
 }
 
 .login-form__input-group {
@@ -85,17 +87,19 @@
     font-weight: bold;
     padding: 5px;
     border-radius: 5px;
-    border: 1px solid #3232321A;
+    /*border: 1px solid #3232321A;*/
     font-size: 16px;
     flex-grow: 0;
     display: inline-block;
     color: white;
     width: 100%;
-    margin-top: 40px;
+    margin-top: 15px;
+    border: none;
     line-height: 30px;
-    background-color: #1EA5E8;
+    background-color: #156f9c;
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
 }
 
 .login-form__submit-button:hover {
@@ -157,18 +161,20 @@
     font-weight: bold;
     padding: 5px;
     border-radius: 5px;
-    border: 1px solid #3232321A;
+    /*border: 1px solid #3232321A;*/
+    border: none;
     font-size: 16px;
     flex-grow: 0;
     display: inline-block;
     color: white;
     width: 100%;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     line-height: 30px;
-    background-color: #1EA5E8;
+    background-color: #156f9c;
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
 }
 
 .register-form__submit-button:hover {

@@ -3,7 +3,6 @@ import {
   ApiBody,
   ApiCookieAuth,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -15,13 +14,13 @@ import {
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
-  Put,
   Query,
   Render,
   UseGuards,
@@ -37,10 +36,8 @@ import { SetAddressDto } from './dto/set.address.dto';
 import { EditProductsInOrderDto } from './dto/edit.productsinorder.dto';
 import { CreateOrderGuard } from 'src/auth/guards/create.order.guard';
 import { CreateProductsInOrderGuard } from 'src/auth/guards/create.productsinorder.guard';
-import { DeleteProductsInOrderGuard } from 'src/auth/guards/delete.productsinorder.guard';
 import { EditGetOrderGuard } from 'src/auth/guards/editget.order.guard';
 import { AdminGuard } from 'src/auth/guards/admin.guard';
-import { EditProductsInOrderGuard } from 'src/auth/guards/edit.productsinorder.guard';
 
 @ApiTags('order')
 @Controller()
@@ -91,7 +88,7 @@ export class OrderController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
-  @UseGuards(DeleteProductsInOrderGuard)
+  //@UseGuards(DeleteProductsInOrderGuard)
   @Delete('productsInOrder/:productsInOrderId')
   async removeProductFromOrder(
     @Param('productsInOrderId') productsInOrderId: string,
@@ -101,14 +98,35 @@ export class OrderController {
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Get shopping cart' })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    description: 'Page number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    type: 'number',
+    description: 'Number of products per page',
+    required: false,
+  })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @Get('cart')
-  async getShoppingCart(@SessionDecorator() session: SessionContainer) {
-    return await this.orderService.getShoppingCart(session.getUserId());
+  @Render('cart')
+  async getShoppingCart(
+    @SessionDecorator() session: SessionContainer,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,
+  ) {
+    return await this.orderService.getShoppingCart(
+      session.getUserId(),
+      page,
+      perPage,
+    );
   }
 
   @ApiCookieAuth()
@@ -125,30 +143,66 @@ export class OrderController {
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Get orders' })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    description: 'Page number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    type: 'number',
+    description: 'Number of products per page',
+    required: false,
+  })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
+  @Render('orders')
   @Get('orders')
-  async getOrders(@SessionDecorator() session: SessionContainer) {
-    return await this.orderService.getOrders(session.getUserId());
+  async getOrders(
+    @SessionDecorator() session: SessionContainer,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,
+  ) {
+    return await this.orderService.getOrders(
+      session.getUserId(),
+      page,
+      perPage,
+    );
   }
 
   @ApiCookieAuth()
   @ApiOperation({ summary: 'Get order' })
   @ApiParam({ name: 'orderId', type: 'string', description: 'Unique order id' })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    description: 'Page number',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    type: 'number',
+    description: 'Number of products per page',
+    required: false,
+  })
   @ApiOkResponse({ description: 'OK' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
   @UseGuards(AuthGuard)
   @UseGuards(EditGetOrderGuard)
   @Get('orders/:orderId')
-  // @Render('order')
+  @Render('order')
   async getOrder(
     @Param('orderId', ParseIntPipe) orderId: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,
   ): Promise<object> {
-    return await this.orderService.getOrder(orderId);
+    return await this.orderService.getOrder(orderId, page, perPage);
   }
 
   @ApiOperation({ summary: 'Get timeslots' })
@@ -261,7 +315,7 @@ export class OrderController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Not Found' })
-  @UseGuards(EditProductsInOrderGuard)
+  //@UseGuards(EditProductsInOrderGuard)
   @Patch('productsInOrder/:productsInOrderId')
   async editProductInOrder(
     @Param('productsInOrderId') productsInOrderId: string,

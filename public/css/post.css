@@ -5,7 +5,7 @@
     box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     width: 100%;
-    margin: 10px auto 10px;
+    margin: 20px auto 10px;
 }
 
 .post-card__title {
@@ -29,13 +29,14 @@
     margin-top: 30px;
 }
 
-.post-card__author:any-link {
-    text-decoration: none;
+.post-card__author {
+    margin: 0;
     color: white;
+    display: inline;
 }
 
 .post-card__author:hover {
-    text-decoration: underline;
+    cursor: pointer;
 }
 
 .post-card__date {
@@ -44,7 +45,7 @@
 }
 
 .comment-card {
-    margin: 5px auto;
+    margin: 10px auto;
     padding: 10px;
     background: #156f9c;
     display: flex;
@@ -73,7 +74,7 @@
     justify-content: space-between;
 }
 
-.comment-card__name:any-link {
+.comment-card__name {
     display: inline-block;
     margin: 0;
     font-size: 18px;
@@ -83,7 +84,7 @@
 }
 
 .comment-card__name:hover {
-    text-decoration: underline;
+    cursor: pointer;
 }
 
 .comment-card__date {

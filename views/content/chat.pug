@@ -3,6 +3,15 @@ extends ../template
 block additionalScripts
     script(src='/js/chat.js')
 
+block title
+    if (!support)
+        title #{chatName}
+    else
+      each user in users
+          if users.length !== 1
+              if (user.user_id !== userid)
+                  title= "Чат с пользователем " + user.user.name
+
 block content
     div(class='chat-main')
         div(class='chat-header')

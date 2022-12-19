@@ -158,17 +158,21 @@ class Api {
 
   bookOrder = (order_id) => this.#api.patch('/order/' + order_id + '/book');
   unbookOrder = (order_id) => this.#api.patch('/order/' + order_id + '/unbook');
+  discardOrder = (order_id) =>
+    this.#api.patch('/order/' + order_id + '/discard');
   payForOrder = (order_id) => this.#api.patch('/order/' + order_id + '/pay');
   refundOrder = (order_id) => this.#api.patch('/order/' + order_id + '/refund');
   completeOrder = (order_id) =>
     this.#api.patch('/order/' + order_id + '/complete');
 
-  createProduct = (name, price, number, seller_id) =>
+  createProduct = (name, description, category_id, price, number, seller_id) =>
     this.#api.post('/products', {
       name: name,
       number: number,
       price: price,
       seller_id: seller_id,
+      category_id: category_id,
+      description: description,
     });
 
   deleteProduct = (product_id) => this.#api.delete('/products/' + product_id);
@@ -204,15 +208,20 @@ class Api {
     });
 
   createProductCategory = (category) =>
-    this.#api.post('/productcategories', {
+    this.#api.post('/product-categories', {
+      category: category,
+    });
+
+  editProductCategory = (category_id, category) =>
+    this.#api.patch('/product-categories/' + category_id, {
       category: category,
     });
 
   deleteProductCategory = (category_id) =>
-    this.#api.delete('/productcategories/' + category_id);
-  getProductCategory = (category_id) =>
-    this.#api.get('/productcategories/' + category_id);
-  getProductCategories = () => this.#api.get('/productcategories/');
+    this.#api.delete('/product-categories/' + category_id);
+
+  getProductCategories = () => this.#api.get('/product-categories');
+
   getCatalogue = () => this.#api.get('/products');
 
   createSeller = (description, user_id) =>

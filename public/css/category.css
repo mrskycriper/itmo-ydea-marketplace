@@ -50,7 +50,7 @@
     flex-grow: 0;
     width: 100%;
     height: 100%;
-    padding: 10px 10px 0;
+    padding-top: 10px;
 }
 
 .category-navigation-container {
@@ -93,16 +93,22 @@
     pointer-events: none;
 }
 
-.category-navigation-container__page-count {
+.category-navigation-container__page-count--container {
     color: white;
-    text-align: center;
     background-color: #156f9c;
     box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
-    display: inline-block;
     padding: 15px;
     margin: 10px;
     border-radius: 10px;
     cursor: default;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.category-navigation-container__page-count--text {
+    margin: 0;
+    text-align: center;
 }
 
 .category-navigation-container__create-chat-button {

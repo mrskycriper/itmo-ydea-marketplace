@@ -3,6 +3,9 @@ extends ../../template
 block additionalScripts
     script(src='/js/post.js')
 
+block title
+    title Настройки поста #{postTitle}
+
 block content
     div(class='chat-main')
         div(class='chat-header')
