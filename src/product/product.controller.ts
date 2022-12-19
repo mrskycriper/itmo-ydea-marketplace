@@ -289,9 +289,9 @@ export class ProductController {
     @Query('seller_id', new DefaultValuePipe(-1), ParseIntPipe)
     seller_id: number,
     @Query('product_category_id') product_category_id: string,
-    @Query('price_sort', new DefaultValuePipe(-1), ParseIntPipe)
+    @Query('price_sort', new DefaultValuePipe(0), ParseIntPipe)
     price_sort: number,
-    @Query('rating_sort', new DefaultValuePipe(-1), ParseIntPipe)
+    @Query('rating_sort', new DefaultValuePipe(0), ParseIntPipe)
     rating_sort: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('perPage', new DefaultValuePipe(20), ParseIntPipe) perPage: number,

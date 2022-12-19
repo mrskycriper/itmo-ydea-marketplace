@@ -316,9 +316,9 @@ export class ProductService {
   async getCatalogue(
     seller_id = -1,
     product_category_id: string = null,
-    price_sort = -1,
-    rating_sort = -1,
-    page = 0,
+    price_sort = 0,
+    rating_sort = 0,
+    page = 1,
     perPage = 20,
   ) {
     if (seller_id != -1) {
