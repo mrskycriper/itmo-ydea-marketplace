@@ -15,6 +15,12 @@ export class SellerService {
     const seller = await prisma.seller.create({
       data: createSellerDto,
     });
+    await prisma.user.update({
+      where: { id: createSellerDto.user_id },
+      data: {
+        is_seller: true
+      }
+    });
     return { sellerId: seller.id };
   }
 
