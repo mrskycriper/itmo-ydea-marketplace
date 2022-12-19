@@ -59,7 +59,7 @@ async function applyFilters() {
   } else if (filterData.sort_by_price === 'up') {
     urlParams.set('price_sort', '1');
   } else if (filterData.sort_by_price === 'down') {
-    urlParams.set('price_sort', '0');
+    urlParams.set('price_sort', '-1');
   }
 
   if (filterData.sort_by_rating === 'no') {
@@ -67,7 +67,7 @@ async function applyFilters() {
   } else if (filterData.sort_by_rating === 'up') {
     urlParams.set('rating_sort', '1');
   } else if (filterData.sort_by_rating === 'down') {
-    urlParams.set('rating_sort', '0');
+    urlParams.set('rating_sort', '-1');
   }
 
   if (filterData.seller === 'any') {
